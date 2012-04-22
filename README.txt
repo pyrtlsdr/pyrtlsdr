@@ -1,4 +1,4 @@
-PyRtlSdr v0.1, 20/4/2012 (http://www.reddit.com/r/RTLSDR/)
+PyRtlSdr v0.11 (22/4/2012)
 A Python wrapper for librtlsdr (http://sdr.osmocom.org/trac/wiki/rtl-sdr) based
 on python-librtlsdr by dbasden (https://github.com/dbasden/python-librtlsdr).
 
@@ -18,4 +18,4 @@ Typical usage:
     > print sdr.read_samples(1024)
     ...
     
--- roger_
+-- roger_ (http://www.reddit.com/r/RTLSDR/)

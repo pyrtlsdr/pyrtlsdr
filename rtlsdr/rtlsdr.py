@@ -1,9 +1,15 @@
 from __future__ import division
-from librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
 from ctypes import *
-from functools import wraps
-import time
+from librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
+from itertools import izip
 
+# see if NumPy is available
+has_numpy = True
+try:
+    import numpy as np
+except:
+    has_numpy = False
+    
 class BaseRtlSdr(object):
     DEFAULT_GAIN = 1
     DEFAULT_FC = 80e6
@@ -117,6 +123,10 @@ class BaseRtlSdr(object):
         return result
     
     def read_bytes(self, num_bytes=DEFAULT_READ_SIZE):
+        ''' Read specified number of bytes from tuner. Does not attempt to unpack
+        complex samples (see read_samples()), and data may be unsafe as buffer is
+        reused.
+        '''
         # FIXME: libsdrrtl may not be able to read an arbitrary number of bytes
         
         num_bytes = int(num_bytes)
@@ -141,6 +151,10 @@ class BaseRtlSdr(object):
         return self.buffer
     
     def read_samples(self, num_samples=DEFAULT_READ_SIZE):
+        ''' Read specified number of complex samples from tuner. Real and imaginary
+        parts are normalized to be in the range [-1, 1]. Data is safe after
+        this call (will not get overwritten by another one).
+        '''
         num_bytes = 2*num_samples
         
         raw_data = self.read_bytes(num_bytes)
@@ -149,8 +163,18 @@ class BaseRtlSdr(object):
         return iq
 
     def packed_bytes_to_iq(self, bytes):
-        # TODO: use NumPy for this
-        iq = [complex(i/255, q/255) for i, q in zip(bytes[::2], bytes[1::2])]
+        ''' Convenience function to unpack array of bytes to Python list/array
+        of complex numbers and normalize range. Called automatically by read_samples()
+        '''
+        if has_numpy:
+            # use NumPy array
+            iq = np.empty(len(bytes)//2, 'complex')
+            iq.real, iq.imag = bytes[::2], bytes[1::2]
+            iq /= (255/2)
+            iq -= (1 + 1j)
+        else:
+            # use normal list
+            iq = [complex(i/(255/2) - 1, j/(255/2) - 1) for i, q in izip(bytes[::2], bytes[1::2])]
 
         return iq
     
@@ -158,6 +182,7 @@ class BaseRtlSdr(object):
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
     gain = property(get_gain, set_gain)
 
+# This adds async read support to base class BaseRtlSdr (don't use that one)
 class RtlSdr(BaseRtlSdr):
     DEFAULT_ASYNC_BUF_NUMBER = 32
     DEFAULT_READ_SIZE = 1024
@@ -165,9 +190,10 @@ class RtlSdr(BaseRtlSdr):
     read_async_canceling = False
 
     def read_bytes_async(self, callback, num_bytes=DEFAULT_READ_SIZE, context=None):
-        '''Continuously read "num_bytes" bytes from tuner and call Python function
+        ''' Continuously read "num_bytes" bytes from tuner and call Python function
         "callback" with the result. "context" is any Python object that will be
         make available to callback function (default supplies this RtlSdr object).
+        Data may be overwritten (see read_bytes())
         '''
         num_bytes = int(num_bytes)
         
@@ -204,9 +230,8 @@ class RtlSdr(BaseRtlSdr):
         self._callback_bytes(values, context)
 
     def read_samples_async(self, callback, num_samples=DEFAULT_READ_SIZE, context=None):
-        '''Same as read_bytes_async() but unpacks bytes into a list of complex
-        numbers.
-        '''
+        ''' Combination of read_samples() and read_bytes_async() '''
+        
         num_bytes = 2*num_samples
         
         self._callback_samples = callback        
@@ -220,7 +245,10 @@ class RtlSdr(BaseRtlSdr):
         self._callback_samples(iq, context)
     
     def cancel_read_async(self):       
-        '''Cancel async read. See also decorators limit_time() and limit_calls()'''
+        ''' Cancel async read. This should be called eventually when using async
+        reads, or callbacks will never stop. See also decorators limit_time() 
+        and limit_calls() in helpers.py.
+        '''
 
         result = librtlsdr.rtlsdr_cancel_async(self.dev_p)
         # sometimes we get additional callbacks after canceling an async read,
@@ -232,55 +260,12 @@ class RtlSdr(BaseRtlSdr):
             
         self.read_async_canceling = True
     
-
-def limit_time(max_seconds):
-    '''Decorator to cancel async reads after "max_seconds" seconds elapse.
-    Call to read_samples_async() or read_bytes_async() must not override context 
-    parameter.
-    '''
-    def decorator(f):
-        f._start_time = None
-
-        @wraps(f)
-        def wrapper(buffer, rtlsdr_obj):
-            if f._start_time is None:
-                f._start_time = time.time()
-                
-            elapsed = time.time() - f._start_time
-            if elapsed > max_seconds:
-                rtlsdr_obj.cancel_read_async()
-                return
-            
-            return f(buffer, rtlsdr_obj)
-
-        return wrapper
-    return decorator
-
-def limit_calls(max_calls):
-    '''Decorator to cancel async reads after "max_calls" function calls occur.
-    Call to read_samples_async() or read_bytes_async() must not override context 
-    parameter.
-    '''
-    def decorator(f):
-        f._num_calls = 0
-
-        @wraps(f)
-        def wrapper(buffer, rtlsdr_obj):
-            f._num_calls += 1
-
-            if f._num_calls > max_calls:
-                rtlsdr_obj.cancel_read_async()
-                return
-            
-            return f(buffer, rtlsdr_obj)
-
-        return wrapper
-    return decorator
-
-@limit_calls(5)
 def test_callback(buffer, rtlsdr_obj):
-    print 'In callback'
-    print '\tsignal mean:', sum(buffer)/len(buffer)
+    print '  in callback'
+    print '  signal mean:', sum(buffer)/len(buffer)
+
+    # note we may get additional callbacks even after calling this
+    rtlsdr_obj.cancel_read_async()
     
 def main():            
     sdr = RtlSdr()
@@ -289,16 +274,18 @@ def main():
     sdr.rs = 2e6
     sdr.fc = 70e6
     sdr.gain = 5
-    print '\tsample rate: %0.6f MHz' % (sdr.rs/1e6)
-    print '\tcenter ferquency %0.6f MHz' % (sdr.fc/1e6)
-    print '\tgain: %d dB' % sdr.gain
+    print '  sample rate: %0.6f MHz' % (sdr.rs/1e6)
+    print '  center frequency %0.6f MHz' % (sdr.fc/1e6)
+    print '  gain: %d dB' % sdr.gain
 
     print 'Reading samples...'    
     samples = sdr.read_samples(1024)
-    print '\tsignal mean:', sum(samples)/len(samples)
+    print '  signal mean:', sum(samples)/len(samples)
     
     print 'Testing callback...'
     sdr.read_samples_async(test_callback)
+    
+    sdr.close()
     
 if __name__ == '__main__':
     main()
