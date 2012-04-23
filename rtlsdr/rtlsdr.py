@@ -7,7 +7,7 @@ from itertools import izip
 has_numpy = True
 try:
     import numpy as np
-except:
+except ImportError:
     has_numpy = False
     
 class BaseRtlSdr(object):
@@ -147,7 +147,7 @@ class BaseRtlSdr(object):
             self.close()
             raise IOError('Short read, requested %d bytes, received %d'\
                           % (num_bytes, self.num_bytes_read.value))
-                          
+            
         return self.buffer
     
     def read_samples(self, num_samples=DEFAULT_READ_SIZE):
@@ -195,7 +195,7 @@ class RtlSdr(BaseRtlSdr):
         make available to callback function (default supplies this RtlSdr object).
         Data may be overwritten (see read_bytes())
         '''
-        num_bytes = int(num_bytes)
+        num_bytes = int(num_bytes)       
         
         # we don't call the provided callback directly, but add a layer inbetween
         # to convert the raw buffer to a safer type
@@ -225,7 +225,11 @@ class RtlSdr(BaseRtlSdr):
     def _bytes_converter_callback(self, raw_buffer, num_bytes, context):
         # convert buffer to safer type
         array_type = (c_ubyte*num_bytes)        
-        values = array_type.from_address(addressof(raw_buffer))
+        values = cast(raw_buffer, POINTER(array_type)).contents
+        
+        # skip callback if cancel_read_async() called
+        if self.read_async_canceling:
+            return
         
         self._callback_bytes(values, context)
 
