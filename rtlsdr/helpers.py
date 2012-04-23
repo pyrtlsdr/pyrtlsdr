@@ -16,11 +16,12 @@ def limit_time(max_seconds):
                 f._start_time = time.time()
                 
             elapsed = time.time() - f._start_time
-            if elapsed > max_seconds:
-                rtlsdr_obj.cancel_read_async()
-                return
+            if elapsed < max_seconds:
+                return f(buffer, rtlsdr_obj)
             
-            return f(buffer, rtlsdr_obj)
+            rtlsdr_obj.cancel_read_async()
+            
+            return 
 
         return wrapper
     return decorator
@@ -37,19 +38,21 @@ def limit_calls(max_calls):
         def wrapper(buffer, rtlsdr_obj):
             f._num_calls += 1
 
-            if f._num_calls > max_calls:
-                rtlsdr_obj.cancel_read_async()
-                return
+            if f._num_calls <= max_calls:
+                return f(buffer, rtlsdr_obj)
             
-            return f(buffer, rtlsdr_obj)
+            rtlsdr_obj.cancel_read_async()
+            
+            return
 
         return wrapper
     return decorator
 
-@limit_calls(5)
+@limit_time(0.01)
+@limit_calls(20)
 def test_callback(buffer, rtlsdr_obj):
     print 'In callback'
-    print '\tsignal mean:', sum(buffer)/len(buffer)
+    print '   signal mean:', sum(buffer)/len(buffer)
     
 def main():   
     from rtlsdr import RtlSdr
@@ -57,12 +60,12 @@ def main():
     sdr = RtlSdr()
     
     print 'Configuring SDR...'
-    sdr.rs = 2e6
+    sdr.rs = 1e6
     sdr.fc = 70e6
     sdr.gain = 5
-    print '\tsample rate: %0.6f MHz' % (sdr.rs/1e6)
-    print '\tcenter ferquency %0.6f MHz' % (sdr.fc/1e6)
-    print '\tgain: %d dB' % sdr.gain
+    print '   sample rate: %0.6f MHz' % (sdr.rs/1e6)
+    print '   center ferquency %0.6f MHz' % (sdr.fc/1e6)
+    print '   gain: %d dB' % sdr.gain
     
     print 'Testing callback...'
     sdr.read_samples_async(test_callback)

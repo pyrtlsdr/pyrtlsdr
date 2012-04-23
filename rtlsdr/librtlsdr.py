@@ -16,7 +16,7 @@ def load_librtlsdr():
         except:
             pass
     else:        
-        raise ImportError('Cannot find librtlsdr binary')
+        raise ImportError('Error loading librtlsdr (library missing or dependency issue)')
         
     return dll
 
