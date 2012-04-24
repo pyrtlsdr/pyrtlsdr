@@ -7,7 +7,7 @@ pyrtlsdr is a simple Python interface to devices supported by the RTL-SDR projec
 * Windows/Linux/OSX
 * Python 2.7.x
 * librtlsdr
-* **Optional**: NumPy (to provides samples in a more convient object)
+* **Optional**: NumPy (to provides samples in a more convenient object)
 
 matplotlib is also useful for plotting data. The librtlsdr binaries (rtlsdr.dll in Windows and librtlsdr.so in Linux) should be in the pyrtlsdr directory, or a system path.
 
@@ -16,7 +16,7 @@ matplotlib is also useful for plotting data. The librtlsdr binaries (rtlsdr.dll 
 All functions in librtlsdr are accessible via librtlsdr.py. A Pythonic interface is available in rtlsdr.py (recommended).
 
 Typical usage:
-
+'''python
     from rtlsdr import RtlSdr
 
     sdr = RtlSdr()
@@ -24,6 +24,7 @@ Typical usage:
     sdr.fc = 70e6
     print sdr.read_samples(1024)
     ...
+'''
 
 See the files 'test.py' for more examples.
 
