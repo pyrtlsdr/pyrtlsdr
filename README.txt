@@ -1,21 +1,34 @@
-PyRtlSdr v0.11 (22/4/2012)
-A Python wrapper for librtlsdr (http://sdr.osmocom.org/trac/wiki/rtl-sdr) based
-on python-librtlsdr by dbasden (https://github.com/dbasden/python-librtlsdr).
+# Description
 
-All functions in librtlsdr are accessible via librtlsdr.py. A Pythonic interface
-is available in rtlsdr.py (recommended) and includes all major functionality, 
-including asynchronous read support. 
+pyrtlsdr is a simple Python interface to devices supported by the RTL-SDR project, which turns certain USB DVB-T dongles employing the Realtek RTL2832U chipset into low-cost, general purpose software-defined radio receivers. It wraps all the functions in the [librtlsdr library](http://sdr.osmocom.org/trac/wiki/rtl-sdr) (including asynchronous read support), and also provides a more Pythonic API.
 
-No additional dependencies are required, except for the librtlsdr binaries (e.g.
-rtlsdr.dll in Windows and librtlsdr.so in Linux), which much be located in the
-PyRtlSdr directory, or a system path.
+# Dependancies
+
+* Windows/Linux/OSX
+* Python 2.7.x
+* librtlsdr
+* **Optional**: NumPy (to provides samples in a more convient object)
+
+matplotlib is also useful for plotting data. The librtlsdr binaries (rtlsdr.dll in Windows and librtlsdr.so in Linux) should be in the pyrtlsdr directory, or a system path.
+
+# Usage
+
+All functions in librtlsdr are accessible via librtlsdr.py. A Pythonic interface is available in rtlsdr.py (recommended).
 
 Typical usage:
-    > from rtlsdr import RtlSdr
-    > sdr = RtlSdr()
-    > sdr.rs = 2e6
-    > sdr.fc = 70e6
-    > print sdr.read_samples(1024)
+
+    from rtlsdr import RtlSdr
+
+    sdr = RtlSdr()
+    sdr.rs = 2e6
+    sdr.fc = 70e6
+    print sdr.read_samples(1024)
     ...
-    
--- roger_ (http://www.reddit.com/r/RTLSDR/)
+
+See the files 'test.py' for more examples.
+
+# Resources
+
+For help, feel free to make a post [here](http://redd.it/skvdi). Credit to dbasden for his earlier wrapper [python-librtlsdr](https://github.com/dbasden/python-librtlsdr).
+
+--roger_
