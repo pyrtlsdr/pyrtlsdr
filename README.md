@@ -10,7 +10,7 @@ and also provides a more Pythonic API.
 * Windows/Linux/OSX
 * Python 2.7.x
 * librtlsdr
-* **Optional**: NumPy (to provides samples in a more convenient object)
+* **Optional**: NumPy (wraps data in a more convenient form)
 
 matplotlib is also useful for plotting data. The librtlsdr binaries (rtlsdr.dll in Windows and librtlsdr.so in Linux) 
 should be in the pyrtlsdr directory, or a system path.
