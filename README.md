@@ -17,20 +17,44 @@ should be in the pyrtlsdr directory, or a system path.
 
 # Usage
 
-All functions in librtlsdr are accessible via librtlsdr.py. A Pythonic interface is available in rtlsdr.py (recommended).
+All functions in librtlsdr are accessible via librtlsdr.py and a Pythonic interface is available in rtlsdr.py (recommended).
+Some documentation can be found in docstrings in the latter file.
 
-Typical usage:
+# Examples
+
+Simple way to read and print some samples:
 
 ```python
 from rtlsdr import RtlSdr
 
 sdr = RtlSdr()
-sdr.rs = 2e6
-sdr.fc = 70e6
+sdr.sample_rate = 2e6
+sdr.center_freq = 70e6
 print sdr.read_samples(1024)
 ```
 
-See the files 'test.py' for more examples.
+Plotting the PSD with matplotlib:
+
+```python
+from pylab import *
+from rtlsdr import *
+
+sdr = RtlSdr()
+
+sdr.sample_rate = 3.2e6
+sdr.center_freq = 95e6
+sdr.gain = 5
+
+samples = sdr.read_samples(500e3)
+
+psd(samples, NFFT=1024, Fs=sdr.sample_rate/1e6, Fc=sdr.center_freq/1e6)   
+xlabel('Frequency (MHz)')
+ylabel('Relative power (dB)')
+
+show()
+```
+
+See the file 'test.py' for more examples.
 
 # Credit
 
