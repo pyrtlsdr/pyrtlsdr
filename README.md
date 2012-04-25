@@ -9,7 +9,7 @@ and also provides a more Pythonic API.
 
 * Windows/Linux/OSX
 * Python 2.7.x
-* librtlsdr (support for changed introduced on 4/24 will be added soon)
+* librtlsdr (complete support for changes introduced on 4/24 will be added soon)
 * **Optional**: NumPy (wraps data in a more convenient form)
 
 matplotlib is also useful for plotting data. The librtlsdr binaries (rtlsdr.dll in Windows and librtlsdr.so in Linux) 
@@ -28,9 +28,12 @@ Simple way to read and print some samples:
 from rtlsdr import RtlSdr
 
 sdr = RtlSdr()
+
+# configure device
 sdr.sample_rate = 2e6
 sdr.center_freq = 70e6
-print sdr.read_samples(1024)
+
+print sdr.read_samples(32)
 ```
 
 Plotting the PSD with matplotlib:
@@ -41,12 +44,14 @@ from rtlsdr import *
 
 sdr = RtlSdr()
 
+# configure device
 sdr.sample_rate = 3.2e6
 sdr.center_freq = 95e6
 sdr.gain = 5
 
 samples = sdr.read_samples(500e3)
 
+# use matplotlib to estimate and plot the PSD
 psd(samples, NFFT=1024, Fs=sdr.sample_rate/1e6, Fc=sdr.center_freq/1e6)   
 xlabel('Frequency (MHz)')
 ylabel('Relative power (dB)')
