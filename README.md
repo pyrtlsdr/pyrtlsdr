@@ -9,7 +9,7 @@ and also provides a more Pythonic API.
 
 * Windows/Linux/OSX
 * Python 2.7.x
-* librtlsdr
+* librtlsdr (support for changed introduced on 4/24 will be added soon)
 * **Optional**: NumPy (wraps data in a more convenient form)
 
 matplotlib is also useful for plotting data. The librtlsdr binaries (rtlsdr.dll in Windows and librtlsdr.so in Linux) 
@@ -32,9 +32,8 @@ print sdr.read_samples(1024)
 
 See the files 'test.py' for more examples.
 
-# Resources
+# Credit
 
-For help, feel free to make a post [here](http://redd.it/skvdi). Credit to dbasden for his earlier wrapper 
-[python-librtlsdr](https://github.com/dbasden/python-librtlsdr).
+Credit to dbasden for his earlier wrapper [python-librtlsdr](https://github.com/dbasden/python-librtlsdr).
 
---roger_
+-- Roger
