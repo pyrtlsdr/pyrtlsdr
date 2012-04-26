@@ -16,7 +16,8 @@ def load_librtlsdr():
         except:
             pass
     else:        
-        raise ImportError('Error loading librtlsdr (library missing or dependency issue)')
+        raise ImportError('Error loading librtlsdr. Make sure librtlsdr '\
+                          '(and all of its dependencies) are in your path')
         
     return dll
 
@@ -54,7 +55,7 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint]
 
 # int rtlsdr_get_center_freq(rtlsdr_dev_t *dev);
 f = librtlsdr.rtlsdr_get_center_freq
-f.restype, f.argtypes = c_int, [p_rtlsdr_dev]
+f.restype, f.argtypes = c_uint, [p_rtlsdr_dev]
 
 # int rtlsdr_set_freq_correction(rtlsdr_dev_t *dev, int ppm);
 f = librtlsdr.rtlsdr_set_freq_correction
@@ -78,7 +79,7 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint]
 
 # int rtlsdr_get_sample_rate(rtlsdr_dev_t *dev);
 f = librtlsdr.rtlsdr_get_sample_rate
-f.restype, f.argtypes = c_int, [p_rtlsdr_dev]
+f.restype, f.argtypes = c_uint, [p_rtlsdr_dev]
 
 #/* streaming functions */
 
@@ -105,5 +106,15 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, rtlsdr_read_async_cb_t, py_object,
 # int rtlsdr_cancel_async(rtlsdr_dev_t *dev);
 f = librtlsdr.rtlsdr_cancel_async
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev]
+
+# RTLSDR_API int rtlsdr_set_xtal_freq(rtlsdr_dev_t *dev, uint32_t rtl_freq,
+#				    uint32_t tuner_freq);
+f = librtlsdr.rtlsdr_set_xtal_freq
+f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint, c_uint]
+
+# RTLSDR_API int rtlsdr_get_xtal_freq(rtlsdr_dev_t *dev, uint32_t *rtl_freq,
+#				    uint32_t *tuner_freq);
+f = librtlsdr.rtlsdr_get_xtal_freq
+f.restype, f.argtypes = c_int, [p_rtlsdr_dev, POINTER(c_uint), POINTER(c_uint)]
 
 __all__  = ['librtlsdr', 'p_rtlsdr_dev', 'rtlsdr_read_async_cb_t']
