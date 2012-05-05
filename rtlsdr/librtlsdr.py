@@ -6,24 +6,24 @@ def load_librtlsdr():
     driver_files += ['..//rtlsdr.dll', '..//librtlsdr.so']
     driver_files += ['rtlsdr//rtlsdr.dll', 'rtlsdr//librtlsdr.so']
     driver_files += [find_library('rtlsdr'), find_library('librtlsdr')]
-    
+
     dll = None
-    
+
     for driver in driver_files:
         try:
             dll = CDLL(driver)
             break
         except:
             pass
-    else:        
+    else:
         raise ImportError('Error loading librtlsdr. Make sure librtlsdr '\
                           '(and all of its dependencies) are in your path')
-        
+
     return dll
 
 librtlsdr = load_librtlsdr()
 
-# we don't care about the rtlsdr_dev struct and it's allocated by librtlsdr, so 
+# we don't care about the rtlsdr_dev struct and it's allocated by librtlsdr, so
 # we won't even bother filling it in
 p_rtlsdr_dev = c_void_p
 
@@ -73,6 +73,10 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 f = librtlsdr.rtlsdr_get_tuner_gain
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev]
 
+# RTLSDR_API int rtlsdr_set_tuner_gain_mode(rtlsdr_dev_t *dev, int manual);
+f = librtlsdr.rtlsdr_set_tuner_gain_mode
+f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
+
 # int rtlsdr_set_sample_rate(rtlsdr_dev_t *dev, uint32_t rate);
 f = librtlsdr.rtlsdr_set_sample_rate
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint]
@@ -116,5 +120,6 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint, c_uint]
 #				    uint32_t *tuner_freq);
 f = librtlsdr.rtlsdr_get_xtal_freq
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, POINTER(c_uint), POINTER(c_uint)]
+
 
 __all__  = ['librtlsdr', 'p_rtlsdr_dev', 'rtlsdr_read_async_cb_t']
