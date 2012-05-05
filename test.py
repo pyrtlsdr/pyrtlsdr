@@ -12,7 +12,7 @@ def main():
     print 'Configuring SDR...'
     sdr.rs = 3e6
     sdr.fc = 100e6
-    sdr.gain = -1
+    sdr.gain = 10
     print '  sample rate: %0.6f MHz' % (sdr.rs/1e6)
     print '  center frequency %0.6f MHz' % (sdr.fc/1e6)
     print '  gain: %d dB' % sdr.gain
