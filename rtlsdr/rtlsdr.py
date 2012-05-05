@@ -11,6 +11,9 @@ except ImportError:
     has_numpy = False
     
 class BaseRtlSdr(object):
+    #Gain values in tenths of a dB
+    GAIN_VALUES = [-10, 15, 40, 65, 90, 115, 140, 165, 190, \
+        215, 240, 290, 340, 420, 430, 450, 470, 490]
     DEFAULT_GAIN = 1
     DEFAULT_FC = 80e6
     DEFAULT_RS = 1e6
@@ -40,6 +43,7 @@ class BaseRtlSdr(object):
         # set default state
         self.set_sample_rate(self.DEFAULT_RS)
         self.set_center_freq(self.DEFAULT_FC)
+        self.manual_gain_mode = False
         self.set_gain(self.DEFAULT_GAIN)
         
     def close(self):
@@ -75,6 +79,21 @@ class BaseRtlSdr(object):
         center_freq = round(reported_center_freq, -3)
         
         return center_freq
+    
+    def get_gain_mode(self):
+        return self.manual_gain_mode
+    
+    def set_gain_mode(self, manual):
+        manual = int(manual)
+        
+        result = librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev_p, manual)        
+        if result < 0:
+            self.close()
+            raise IOError('Error code %d when setting gain mode rate to %d'\
+                          % (result, manual))
+        
+        self.manual_gain_mode = manual != 0
+        return
         
     def set_sample_rate(self, rate):
         rate = int(rate)
@@ -103,7 +122,10 @@ class BaseRtlSdr(object):
         return real_rate
         
     def set_gain(self, gain):
-        gain = int(gain)
+        gain = self.GAIN_VALUES[int(gain)]
+        
+        if not self.manual_gain_mode:
+            self.set_gain_mode(True)
         
         result = librtlsdr.rtlsdr_set_tuner_gain(self.dev_p, gain)        
         if result < 0:
@@ -180,6 +202,7 @@ class BaseRtlSdr(object):
     
     center_freq = fc = property(get_center_freq, set_center_freq)
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
+    manual_gain = property(get_gain_mode, set_gain_mode)
     gain = property(get_gain, set_gain)
 
 # This adds async read support to base class BaseRtlSdr (don't use that one)
