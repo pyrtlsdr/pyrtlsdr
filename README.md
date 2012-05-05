@@ -60,6 +60,8 @@ ylabel('Relative power (dB)')
 show()
 ```
 
+Resulting plot [here](http://i.imgur.com/hFhg8.png).
+
 See the file 'test.py' for more examples.
 
 # Credit
