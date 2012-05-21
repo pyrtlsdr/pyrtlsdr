@@ -5,23 +5,12 @@ employing the Realtek RTL2832U chipset into low-cost, general purpose software-d
 functions in the [librtlsdr library](http://sdr.osmocom.org/trac/wiki/rtl-sdr) (including asynchronous read support),
 and also provides a more Pythonic API.
 
-# Dependencies
-
-* Windows/Linux/OSX
-* Python 2.7.x
-* librtlsdr (builds dated after 5/5/12)
-* **Optional**: distribute (a fork of the Setuptools project) for using setup script
-* **Optional**: NumPy (wraps samples in a more convenient form)
-
-matplotlib is also useful for plotting data. The librtlsdr binaries (rtlsdr.dll in Windows and librtlsdr.so in Linux)
-should be in the pyrtlsdr directory, or a system path.
-
 # Usage
 
 All functions in librtlsdr are accessible via librtlsdr.py and a Pythonic interface is available in rtlsdr.py (recommended).
 Some documentation can be found in docstrings in the latter file.
 
-# Examples
+## Examples
 
 Simple way to read and print some samples:
 
@@ -47,7 +36,7 @@ from rtlsdr import *
 sdr = RtlSdr()
 
 # configure device
-sdr.sample_rate = 3.2e6
+sdr.sample_rate = 2.4e6
 sdr.center_freq = 95e6
 sdr.gain = 4
 
@@ -63,7 +52,18 @@ show()
 
 Resulting plot [here](http://i.imgur.com/hFhg8.png).
 
-See the file 'test.py' for more examples.
+See the files 'demo_waterfall.py' and 'test.py' for more examples.
+
+# Dependencies
+
+* Windows/Linux/OSX
+* Python 2.7.x
+* librtlsdr (builds dated after 5/5/12)
+* **Optional**: distribute (a fork of the Setuptools project) for using setup script
+* **Optional**: NumPy (wraps samples in a more convenient form)
+
+matplotlib is also useful for plotting data. The librtlsdr binaries (rtlsdr.dll in Windows and librtlsdr.so in Linux)
+should be in the pyrtlsdr directory, or a system path. Note that these binaries may have additional dependencies.
 
 # Credit
 

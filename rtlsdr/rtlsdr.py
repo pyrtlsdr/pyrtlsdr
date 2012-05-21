@@ -14,10 +14,16 @@ except ImportError:
 class BaseRtlSdr(object):
     GAIN_VALUES = [-10, 15, 40, 65, 90, 115, 140, 165, 190, \
                    215, 240, 290, 340, 420, 430, 450, 470, 490]
+
+    # the following are the actual gain values (in dB) supported librtlsdr
+    VALID_GAINS_DB = [val/10 for val in GAIN_VALUES]
+
+    # some default values for various parameters
     DEFAULT_GAIN = 'auto'
     DEFAULT_FC = 80e6
     DEFAULT_RS = 1.024e6
     DEFAULT_READ_SIZE = 1024
+
     CRYSTAL_FREQ = 28800000
 
     buffer = []
@@ -25,9 +31,11 @@ class BaseRtlSdr(object):
     device_opened = False
 
     def __init__(self, device_index=0):
-        # initialize device
+        # this is the pointer to the device structure used by all librtlsdr
+        # functions
         self.dev_p = p_rtlsdr_dev(None)
 
+        # initialize device
         result = librtlsdr.rtlsdr_open(self.dev_p, device_index)
         if result < 0:
             raise IOError('Error code %d when opening SDR (device index = %d)'\
