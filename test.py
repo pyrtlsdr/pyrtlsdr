@@ -18,11 +18,11 @@ def main():
     print '  gain: %d dB' % sdr.gain
 
     print 'Reading samples...'
-    samples = sdr.read_samples(500e3)
+    samples = sdr.read_samples(256*1024)
     print '  signal mean:', sum(samples)/len(samples)
 
     print 'Testing callback...'
-    sdr.read_samples_async(test_callback, 500e3)
+    sdr.read_samples_async(test_callback, 256*1024)
 
     try:
         import pylab as mpl
