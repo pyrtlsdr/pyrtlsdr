@@ -20,7 +20,7 @@ from rtlsdr import RtlSdr
 sdr = RtlSdr()
 
 # configure device
-sdr.sample_rate = 2e6
+sdr.sample_rate = 2.048e6
 sdr.center_freq = 70e6
 sdr.gain = 'auto'
 

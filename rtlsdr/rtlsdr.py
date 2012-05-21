@@ -127,7 +127,7 @@ class BaseRtlSdr(object):
         ''' Set gain of tuner.
         If gain is 'auto', AGC mode is enabled; otherwise gain is in dB. The actual
         gain used is rounded to the nearest value supported by the device (see the
-        values in RtlSdr.GAIN_VALUES for these in tenths of dB's).
+        values in RtlSdr.VALID_GAINS_DB).
         '''
         if isinstance(gain, str) and gain == 'auto':
             # disable manual gain -> enable AGC
