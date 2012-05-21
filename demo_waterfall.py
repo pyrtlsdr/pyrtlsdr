@@ -3,6 +3,7 @@ import matplotlib.animation as animation
 from matplotlib.mlab import psd
 import pylab as pyl
 import numpy as np
+import sys
 from rtlsdr import RtlSdr
 
 # A simple waterfall, spectrum plotter
@@ -127,7 +128,15 @@ class Waterfall(object):
 
     def start(self):
         self.update_plot_labels()
-        ani = animation.FuncAnimation(self.fig, self.update, interval=50, blit=True)
+        if sys.platform == 'darwin':
+            # Disable blitting. The matplotlib.animation's restore_region()
+            # method is only implemented for the Agg-based backends,
+            # which the macosx backend is not.
+            blit = False
+        else:
+            blit = True
+        ani = animation.FuncAnimation(self.fig, self.update, interval=50,
+                blit=blit)
 
         pyl.show()
 
