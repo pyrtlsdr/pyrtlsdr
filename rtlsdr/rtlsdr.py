@@ -16,7 +16,7 @@ class BaseRtlSdr(object):
                    215, 240, 290, 340, 420, 430, 450, 470, 490]
     DEFAULT_GAIN = 'auto'
     DEFAULT_FC = 80e6
-    DEFAULT_RS = 1e6
+    DEFAULT_RS = 1.024e6
     DEFAULT_READ_SIZE = 1024
     CRYSTAL_FREQ = 28800000
 
@@ -321,7 +321,7 @@ def main():
     sdr = RtlSdr()
 
     print 'Configuring SDR...'
-    sdr.rs = 2e6
+    sdr.rs = 2.4e6
     sdr.fc = 70e6
     sdr.gain = 4
     print '  sample rate: %0.6f MHz' % (sdr.rs/1e6)

@@ -10,8 +10,8 @@ from rtlsdr import RtlSdr
 #
 # Controls:
 #
-# * Scroll mouse-wheel up and down to change the center frequency (hold shift for
-#   finer control)
+# * Scroll mouse-wheel up or down, or press the left or right arrow keys, to
+#   change the center frequency (hold shift for finer control).
 # * Press "+" and "-" to control gain, and space to enable AGC.
 # * Type a frequency (in MHz) and press enter to directly change the center frequency
 
@@ -47,7 +47,7 @@ class Waterfall(object):
         self.ax.set_xlabel('Current frequency (MHz)')
         self.ax.get_yaxis().set_visible(False)
 
-        self.fig.canvas.mpl_connect('scroll_event', self.on_click)
+        self.fig.canvas.mpl_connect('scroll_event', self.on_scroll)
         self.fig.canvas.mpl_connect('key_press_event', self.on_key_press)
         self.fig.canvas.mpl_connect('key_release_event', self.on_key_release)
 
@@ -59,14 +59,12 @@ class Waterfall(object):
         self.image.set_extent(freq_range + (0, 1))
         self.fig.canvas.draw_idle()
 
-    def on_click(self, event):
+    def on_scroll(self, event):
         if event.button == 'up':
             self.sdr.fc += FREQ_INC_FINE if self.shift_key_down else FREQ_INC_COARSE
-
             self.update_plot_labels()
         elif event.button == 'down':
             self.sdr.fc -= FREQ_INC_FINE if self.shift_key_down else FREQ_INC_COARSE
-
             self.update_plot_labels()
 
     def on_key_press(self, event):
@@ -78,6 +76,12 @@ class Waterfall(object):
             self.sdr.gain = 'auto'
         elif event.key == 'shift':
             self.shift_key_down = True
+        elif event.key == 'right':
+            self.sdr.fc += FREQ_INC_FINE if self.shift_key_down else FREQ_INC_COARSE
+            self.update_plot_labels()
+        elif event.key == 'left':
+            self.sdr.fc -= FREQ_INC_FINE if self.shift_key_down else FREQ_INC_COARSE
+            self.update_plot_labels()
         elif event.key == 'enter':
             # see if valid frequency was entered, then change center frequency
             try:
@@ -148,7 +152,7 @@ def main():
     wf = Waterfall(sdr)
 
     # some defaults
-    sdr.rs = 3e6
+    sdr.rs = 2.4e6
     sdr.fc = 100e6
     sdr.gain = 10
 

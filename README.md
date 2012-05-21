@@ -9,8 +9,8 @@ and also provides a more Pythonic API.
 
 * Windows/Linux/OSX
 * Python 2.7.x
-* distribute (a fork of the Setuptools project)
 * librtlsdr (builds dated after 5/5/12)
+* **Optional**: distribute (a fork of the Setuptools project) for using setup script
 * **Optional**: NumPy (wraps samples in a more convenient form)
 
 matplotlib is also useful for plotting data. The librtlsdr binaries (rtlsdr.dll in Windows and librtlsdr.so in Linux)

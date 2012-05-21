@@ -10,7 +10,7 @@ def main():
     sdr = RtlSdr()
 
     print 'Configuring SDR...'
-    sdr.rs = 3e6
+    sdr.rs = 2.4e6
     sdr.fc = 100e6
     sdr.gain = 10
     print '  sample rate: %0.6f MHz' % (sdr.rs/1e6)
