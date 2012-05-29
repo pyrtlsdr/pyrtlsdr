@@ -65,6 +65,15 @@ See the files 'demo_waterfall.py' and 'test.py' for more examples.
 matplotlib is also useful for plotting data. The librtlsdr binaries (rtlsdr.dll in Windows and librtlsdr.so in Linux)
 should be in the pyrtlsdr directory, or a system path. Note that these binaries may have additional dependencies.
 
+# Troubleshooting
+
+* Some operating systems (Linux, OS X) seem to result in libusb buffer issues when performing small reads. Try reading 1024
+(or higher powers of two) samples at a time if you have problems.
+* If you're having librtlsdr import errors in Windows, make sure all the DLL files are in your system path, or the same folder
+as this README file. Also make sure you have all of *their* dependencies (e.g. the Visual Studio runtime files). If rtl_sdr.exe
+works, then you should be okay.
+* In Windows, you can't mix the 64 bit version of Python with 32 bit builds of librtlsdr.
+
 # Credit
 
 Credit to dbasden for his earlier wrapper [python-librtlsdr](https://github.com/dbasden/python-librtlsdr).

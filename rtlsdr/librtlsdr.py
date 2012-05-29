@@ -121,5 +121,8 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint, c_uint]
 f = librtlsdr.rtlsdr_get_xtal_freq
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, POINTER(c_uint), POINTER(c_uint)]
 
+# RTLSDR_API int rtlsdr_set_testmode(rtlsdr_dev_t *dev, int on);
+f = librtlsdr.rtlsdr_set_testmode
+f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 
 __all__  = ['librtlsdr', 'p_rtlsdr_dev', 'rtlsdr_read_async_cb_t']

@@ -30,7 +30,12 @@ class BaseRtlSdr(object):
     num_bytes_read = c_int32(0)
     device_opened = False
 
-    def __init__(self, device_index=0):
+    def __init__(self, device_index=0, test_mode_enabled=False):
+        ''' Initialize RtlSdr object.
+        The test_mode_enabled parameter can be used to enable a special test mode, which will return the value of an
+        internal RTL2832 8-bit counter with calls to read_bytes()
+        '''
+
         # this is the pointer to the device structure used by all librtlsdr
         # functions
         self.dev_p = p_rtlsdr_dev(None)
@@ -40,7 +45,14 @@ class BaseRtlSdr(object):
         if result < 0:
             raise IOError('Error code %d when opening SDR (device index = %d)'\
                           % (result, device_index))
+        
+        # enable test mode if necessary
+        result = librtlsdr.rtlsdr_set_testmode(self.dev_p, int(test_mode_enabled))
+        if result != 0:
+            raise IOError('Error code %d when setting test mode'\
+                          % (result))
 
+        # reset buffers
         result = librtlsdr.rtlsdr_reset_buffer(self.dev_p)
         if result < 0:
             raise IOError('Error code %d when resetting buffer (device index = %d)'\
@@ -169,7 +181,7 @@ class BaseRtlSdr(object):
         result = librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev_p, int(enabled))
         if result < 0:
             raise IOError('Error code %d when setting gain mode'\
-                          % (result, device_index))
+                          % (result))
 
         return
 
