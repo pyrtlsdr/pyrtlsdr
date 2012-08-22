@@ -237,7 +237,7 @@ class BaseRtlSdr(object):
             iq -= (1 + 1j)
         else:
             # use normal list
-            iq = [complex(i/(255/2) - 1, j/(255/2) - 1) for i, q in izip(bytes[::2], bytes[1::2])]
+            iq = [complex(i/(255/2) - 1, q/(255/2) - 1) for i, q in izip(bytes[::2], bytes[1::2])]
 
         return iq
 
