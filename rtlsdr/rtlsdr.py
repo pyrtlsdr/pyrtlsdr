@@ -48,7 +48,7 @@ class BaseRtlSdr(object):
         
         # enable test mode if necessary
         result = librtlsdr.rtlsdr_set_testmode(self.dev_p, int(test_mode_enabled))
-        if result != 0:
+        if result < 0:
             raise IOError('Error code %d when setting test mode'\
                           % (result))
 
