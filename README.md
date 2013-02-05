@@ -74,8 +74,12 @@ as this README file. Also make sure you have all of *their* dependencies (e.g. t
 works, then you should be okay.
 * In Windows, you can't mix the 64 bit version of Python with 32 bit builds of librtlsdr.
 
+# License
+
+All of the code contained here is licensed by the GNU General Public License v3.
+
 # Credit
 
 Credit to dbasden for his earlier wrapper [python-librtlsdr](https://github.com/dbasden/python-librtlsdr).
 
--- Roger
+Copyright (C) 2013 by Roger <https://github.com/roger->
