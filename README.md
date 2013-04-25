@@ -7,6 +7,9 @@ and also provides a more Pythonic API.
 
 # Usage
 
+pyrtlsdr can be installed by downloading the source files and running `python setup.py install`, or using [pip](http://www.pip-installer.org/en/latest/) and
+`pip install pyrtlsdr`.
+
 All functions in librtlsdr are accessible via librtlsdr.py and a Pythonic interface is available in rtlsdr.py (recommended).
 Some documentation can be found in docstrings in the latter file.
 
@@ -59,7 +62,6 @@ See the files 'demo_waterfall.py' and 'test.py' for more examples.
 * Windows/Linux/OSX
 * Python 2.7.x
 * librtlsdr (builds dated after 5/5/12)
-* **Optional**: distribute (a fork of the Setuptools project) for using setup script
 * **Optional**: NumPy (wraps samples in a more convenient form)
 
 matplotlib is also useful for plotting data. The librtlsdr binaries (rtlsdr.dll in Windows and librtlsdr.so in Linux)
