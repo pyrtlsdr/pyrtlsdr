@@ -56,6 +56,14 @@ f.restype, f.argtypes = c_uint, []
 f = librtlsdr.rtlsdr_get_device_name
 f.restype, f.argtypes = c_char_p, [c_uint]
 
+# int rtlsdr_get_device_usb_strings(uint32_t index, char *manufact,
+#                                   char *product, char *serial)
+f = librtlsdr.rtlsdr_get_device_usb_strings
+f.restype, f.argtypes = c_int, [c_uint,
+                                POINTER(c_ubyte),
+                                POINTER(c_ubyte),
+                                POINTER(c_ubyte)]
+
 # int rtlsdr_open(rtlsdr_dev_t **dev, uint32_t index);
 f = librtlsdr.rtlsdr_open
 f.restype, f.argtypes = c_int, [POINTER(p_rtlsdr_dev), c_uint]
