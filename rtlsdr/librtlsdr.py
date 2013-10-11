@@ -98,6 +98,10 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 f = librtlsdr.rtlsdr_get_tuner_gain
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev]
 
+# int rtlsdr_get_tuner_gains(rtlsdr_dev_t *dev, int *gains)
+f = librtlsdr.rtlsdr_get_tuner_gains
+f.restype, f.argtypes = c_int, [p_rtlsdr_dev, POINTER(c_int)]
+
 # RTLSDR_API int rtlsdr_set_tuner_gain_mode(rtlsdr_dev_t *dev, int manual);
 f = librtlsdr.rtlsdr_set_tuner_gain_mode
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]

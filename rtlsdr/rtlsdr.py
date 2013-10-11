@@ -29,12 +29,6 @@ except ImportError:
 
 
 class BaseRtlSdr(object):
-    GAIN_VALUES = [-10, 15, 40, 65, 90, 115, 140, 165, 190, \
-                   215, 240, 290, 340, 420, 430, 450, 470, 490]
-
-    # the following are the actual gain values (in dB) supported librtlsdr
-    VALID_GAINS_DB = [val/10 for val in GAIN_VALUES]
-
     # some default values for various parameters
     DEFAULT_GAIN = 'auto'
     DEFAULT_FC = 80e6
@@ -43,6 +37,8 @@ class BaseRtlSdr(object):
 
     CRYSTAL_FREQ = 28800000
 
+    gain_values = []
+    valid_gains_db = []
     buffer = []
     num_bytes_read = c_int32(0)
     device_opened = False
@@ -74,6 +70,9 @@ class BaseRtlSdr(object):
         if result < 0:
             raise IOError('Error code %d when resetting buffer (device index = %d)'\
                           % (result, device_index))
+
+        self.gain_values = self.get_gains()
+        self.valid_gains_db = [val/10 for val in self.gain_values]
 
         self.device_opened = True
 
@@ -156,7 +155,7 @@ class BaseRtlSdr(object):
         ''' Set gain of tuner.
         If gain is 'auto', AGC mode is enabled; otherwise gain is in dB. The actual
         gain used is rounded to the nearest value supported by the device (see the
-        values in RtlSdr.VALID_GAINS_DB).
+        values in RtlSdr.valid_gains_db).
         '''
         if isinstance(gain, str) and gain == 'auto':
             # disable manual gain -> enable AGC
@@ -165,14 +164,14 @@ class BaseRtlSdr(object):
             return
 
         # find supported gain nearest to one requested
-        errors = [abs(10*gain - g) for g in self.GAIN_VALUES]
+        errors = [abs(10*gain - g) for g in self.gain_values]
         nearest_gain_ind = errors.index(min(errors))
 
         # disable AGC
         self.set_manual_gain_enabled(True)
 
         result = librtlsdr.rtlsdr_set_tuner_gain(self.dev_p,
-                                                 self.GAIN_VALUES[nearest_gain_ind])
+                                                 self.gain_values[nearest_gain_ind])
         if result < 0:
             self.close()
             raise IOError('Error code %d when setting gain to %d'\
@@ -189,6 +188,22 @@ class BaseRtlSdr(object):
             raise IOError('Error when getting gain')
 
         return result/10
+
+    def get_gains(self):
+        ''' Get list of supported gains from driver
+        All gains are in tenths of a dB
+        '''
+        buffer = (c_int *50)()
+        result = librtlsdr.rtlsdr_get_tuner_gains(self.dev_p, buffer)
+        if result == 0:
+            self.close()
+            raise IOError('Error when getting gains')
+
+        gains = []
+        for i in range(result):
+            gains.append(buffer[i])
+
+        return gains
 
     def set_manual_gain_enabled(self, enabled):
         ''' Enable manual gain control of tuner.
