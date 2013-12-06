@@ -217,6 +217,16 @@ class BaseRtlSdr(object):
 
         return
 
+    def get_tuner_type(self):
+        ''' Get the tuner type.
+        '''
+        result = librtlsdr.rtlsdr_get_tuner_type(self.dev_p)
+        if result < 0:
+            raise IOError('Error code %d when getting tuner type'\
+                          % (result))
+
+        return result
+
     def read_bytes(self, num_bytes=DEFAULT_READ_SIZE):
         ''' Read specified number of bytes from tuner. Does not attempt to unpack
         complex samples (see read_samples()), and data may be unsafe as buffer is
