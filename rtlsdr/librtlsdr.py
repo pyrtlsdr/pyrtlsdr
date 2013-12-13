@@ -90,6 +90,10 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 f = librtlsdr.rtlsdr_get_freq_correction
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev]
 
+# enum rtlsdr_tuner rtlsdr_get_tuner_type(rtlsdr_dev_t *dev);
+f = librtlsdr.rtlsdr_get_tuner_type
+f.restype, f.argtypes = c_int, [p_rtlsdr_dev]
+
 # int rtlsdr_set_tuner_gain(rtlsdr_dev_t *dev, int gain);
 f = librtlsdr.rtlsdr_set_tuner_gain
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
