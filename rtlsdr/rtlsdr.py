@@ -217,6 +217,16 @@ class BaseRtlSdr(object):
 
         return
 
+    def set_agc_mode(self, enabled):
+        ''' Enable RTL2832 AGC
+        '''
+        result = librtlsdr.rtlsdr_set_agc_mode(self.dev_p, int(enabled))
+        if result < 0:
+            raise IOError('Error code %d when setting AGC mode'\
+                          % (result))
+
+        return result
+
     def get_tuner_type(self):
         ''' Get the tuner type.
         '''
