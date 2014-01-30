@@ -130,7 +130,7 @@ class BaseRtlSdr(object):
         if result < 0:
             self.close()
             raise IOError('Error code %d when setting sample rate to %d Hz'\
-                          % (result, freq))
+                          % (result, rate))
 
         return
 
