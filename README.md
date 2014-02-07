@@ -27,7 +27,7 @@ sdr.sample_rate = 2.048e6
 sdr.center_freq = 70e6
 sdr.gain = 'auto'
 
-print sdr.read_samples(512)
+print(sdr.read_samples(512))
 ```
 
 Plotting the PSD with matplotlib:
