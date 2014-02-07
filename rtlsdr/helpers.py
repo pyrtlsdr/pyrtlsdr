@@ -15,8 +15,7 @@
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from __future__ import division
-from __future__ import print_function
+from __future__ import division, print_function
 from functools import wraps
 import time
 

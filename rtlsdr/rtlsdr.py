@@ -15,17 +15,12 @@
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from __future__ import division
-from __future__ import print_function
+from __future__ import division, print_function
 from ctypes import *
-try:
-    from librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
-except ImportError:
-    from .librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
-try:
-    from itertools import izip
-except ImportError:
-    izip = zip
+try:                from  librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
+except ImportError: from .librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
+try:                from itertools import izip
+except ImportError: izip = zip
 
 # see if NumPy is available
 has_numpy = True
