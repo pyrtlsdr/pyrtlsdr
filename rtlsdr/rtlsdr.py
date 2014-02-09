@@ -227,6 +227,20 @@ class BaseRtlSdr(object):
 
         return result
 
+    def set_direct_sampling(self, direct):
+        ''' Enable direct sampling.
+        direct -- sampling mode
+        If direct is 0 disable direct sampling
+        If direct is 1 use ADC I input
+        If direct is 2 use ADC Q input
+        '''
+        result = librtlsdr.rtlsdr_set_direct_sampling(self.dev_p, direct)
+        if result < 0:
+            raise IOError('Error code %d when setting AGC mode'\
+                          % (result))
+
+        return result
+
     def get_tuner_type(self):
         ''' Get the tuner type.
         '''

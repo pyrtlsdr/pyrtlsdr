@@ -114,6 +114,11 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 f = librtlsdr.rtlsdr_set_agc_mode
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 
+# RTLSDR_API  int rtlsdr_set_direct_sampling(rtlsdr_dev_t *dev, int on)
+f = librtlsdr.rtlsdr_set_direct_sampling
+f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
+
+
 # int rtlsdr_set_sample_rate(rtlsdr_dev_t *dev, uint32_t rate);
 f = librtlsdr.rtlsdr_set_sample_rate
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint]
