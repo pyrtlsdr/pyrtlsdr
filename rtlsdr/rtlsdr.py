@@ -230,10 +230,24 @@ class BaseRtlSdr(object):
     def set_direct_sampling(self, direct):
         ''' Enable direct sampling.
         direct -- sampling mode
-        If direct is 0 disable direct sampling
-        If direct is 1 use ADC I input
-        If direct is 2 use ADC Q input
+        If direct is False or 0, disable direct sampling
+        If direct is 'i' or 1, use ADC I input
+        If direct is 'q' or 2, use ADC Q input
         '''
+
+        # convert parameter
+        if isinstance(direct, str):
+            if direct.lower() == 'i':
+                direct = 1
+            elif direct.lower() == 'q':
+                direct = 2
+            else:
+                raise SyntaxError('invalid value "%s"' % direct)
+
+        # make sure False works as an option
+        if not direct:
+            direct = 0
+
         result = librtlsdr.rtlsdr_set_direct_sampling(self.dev_p, direct)
         if result < 0:
             raise IOError('Error code %d when setting AGC mode'\
