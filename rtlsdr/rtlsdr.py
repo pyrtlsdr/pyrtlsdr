@@ -120,6 +120,29 @@ class BaseRtlSdr(object):
 
         return center_freq
 
+    def set_freq_correction(self, err_ppm):
+        ''' Set frequency offset of tuner (in PPM). '''
+
+        freq = int(err_ppm)
+
+        result = librtlsdr.rtlsdr_set_freq_correction(self.dev_p, err_ppm)
+        if result < 0:
+            self.close()
+            raise IOError('Error code %d when setting freq. offset to %d ppm'\
+                          % (result, err_ppm))
+
+        return
+
+    def get_freq_correction(self):
+        ''' Get frequency offset of tuner (in PPM). '''
+
+        result = librtlsdr.rtlsdr_get_freq_correction(self.dev_p)
+        if result < 0:
+            self.close()
+            raise IOError('Error code %d when getting freq. offset in ppm.'\
+                          % (result))
+        return
+
     def set_sample_rate(self, rate):
         ''' Set sample rate of tuner (in Hz).
         Use get_sample_rate() to see the precise sample rate used. '''
