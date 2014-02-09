@@ -347,6 +347,7 @@ class BaseRtlSdr(object):
     center_freq = fc = property(get_center_freq, set_center_freq)
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
     gain = property(get_gain, set_gain)
+    freq_correction = property(get_freq_correction, set_freq_correction)
 
 
 # This adds async read support to base class BaseRtlSdr (don't use that one)
