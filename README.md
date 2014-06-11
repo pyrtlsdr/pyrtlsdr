@@ -61,7 +61,7 @@ See the files 'demo_waterfall.py' and 'test.py' for more examples.
 # Dependencies
 
 * Windows/Linux/OSX
-* Python 2.7.x
+* Python 2.7.x/3.3+
 * librtlsdr (builds dated after 5/5/12)
 * **Optional**: NumPy (wraps samples in a more convenient form)
 
