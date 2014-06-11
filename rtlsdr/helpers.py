@@ -15,7 +15,7 @@
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from __future__ import division
+from __future__ import division, print_function
 from functools import wraps
 import time
 
@@ -70,8 +70,8 @@ def limit_calls(max_calls):
 @limit_time(0.01)
 @limit_calls(20)
 def test_callback(buffer, rtlsdr_obj):
-    print 'In callback'
-    print '   signal mean:', sum(buffer)/len(buffer)
+    print('In callback')
+    print('   signal mean:', sum(buffer)/len(buffer))
 
 
 def main():
@@ -79,15 +79,15 @@ def main():
 
     sdr = RtlSdr()
 
-    print 'Configuring SDR...'
+    print('Configuring SDR...')
     sdr.rs = 1e6
     sdr.fc = 70e6
     sdr.gain = 5
-    print '   sample rate: %0.6f MHz' % (sdr.rs/1e6)
-    print '   center ferquency %0.6f MHz' % (sdr.fc/1e6)
-    print '   gain: %d dB' % sdr.gain
+    print('   sample rate: %0.6f MHz' % (sdr.rs/1e6))
+    print('   center ferquency %0.6f MHz' % (sdr.fc/1e6))
+    print('   gain: %d dB' % sdr.gain)
 
-    print 'Testing callback...'
+    print('Testing callback...')
     sdr.read_samples_async(test_callback)
 
 
