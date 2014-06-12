@@ -1,7 +1,7 @@
 # Description
 
 pyrtlsdr is a simple Python interface to devices supported by the RTL-SDR project, which turns certain USB DVB-T dongles
-employing the Realtek RTL2832U chipset into low-cost, general purpose software-defined radio receivers. It wraps all the
+employing the Realtek RTL2832U chipset into low-cost, general purpose software-defined radio receivers. It wraps many of the
 functions in the [librtlsdr library](http://sdr.osmocom.org/trac/wiki/rtl-sdr) (including asynchronous read support),
 and also provides a more Pythonic API.
 
