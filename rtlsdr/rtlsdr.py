@@ -354,7 +354,7 @@ class BaseRtlSdr(object):
 
 # This adds async read support to base class BaseRtlSdr (don't use that one)
 class RtlSdr(BaseRtlSdr):
-    DEFAULT_ASYNC_BUF_NUMBER = 32
+    DEFAULT_ASYNC_BUF_NUMBER = 0 # librtlsdr will use the default (15)
     DEFAULT_READ_SIZE = 1024
 
     read_async_canceling = False
