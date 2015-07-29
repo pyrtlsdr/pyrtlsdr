@@ -176,6 +176,20 @@ class BaseRtlSdr(object):
 
         return real_rate
 
+    def set_bandwidth(self, bw):
+        '''Set tuner bandwidth (in Hz).
+        Set to 0 (default) for automatic bandwidth selection. '''
+
+        bw = int(bw)
+
+        result = librtlsdr.rtlsdr_set_tuner_bandwidth(self.dev_p, bw)
+        if result != 0:
+            self.close()
+            raise IOError('Error code %d when setting tuner bandwidth to %d Hz'\
+                          % (result, bw))
+
+        return
+
     def set_gain(self, gain):
         ''' Set gain of tuner.
         If gain is 'auto', AGC mode is enabled; otherwise gain is in dB. The actual

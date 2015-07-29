@@ -127,6 +127,10 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint]
 f = librtlsdr.rtlsdr_get_sample_rate
 f.restype, f.argtypes = c_uint, [p_rtlsdr_dev]
 
+# int rtlsdr_set_tuner_bandwidth(rtlsdr_dev_t *dev, uint32_t bw);
+f = librtlsdr.rtlsdr_set_tuner_bandwidth
+f.restype, f.argtypes = c_uint, [p_rtlsdr_dev, c_uint]
+
 #/* streaming functions */
 
 # int rtlsdr_reset_buffer(rtlsdr_dev_t *dev);
