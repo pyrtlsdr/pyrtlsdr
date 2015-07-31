@@ -187,8 +187,16 @@ class BaseRtlSdr(object):
             self.close()
             raise IOError('Error code %d when setting tuner bandwidth to %d Hz'\
                           % (result, bw))
+        self._bandwidth = bw
 
         return
+
+    def get_bandwidth(self):
+        '''Get bandwith value (in Hz)
+        This value is stored locally and may not reflect the real tuner bandwidth
+        '''
+
+        return getattr(self, '_bandwidth', None)
 
     def set_gain(self, gain):
         ''' Set gain of tuner.
@@ -364,6 +372,7 @@ class BaseRtlSdr(object):
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
     gain = property(get_gain, set_gain)
     freq_correction = property(get_freq_correction, set_freq_correction)
+    bandwidth = property(get_bandwidth, set_bandwidth)
 
 
 # This adds async read support to base class BaseRtlSdr (don't use that one)
