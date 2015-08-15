@@ -133,7 +133,7 @@ class RequestHandler(BaseRequestHandler):
     def handle_method_call(self, data):
         method_name, arg = data.split('!')
         method_name = method_name.strip()
-        arg = args.strip()
+        arg = arg.strip()
         if method_name not in API_METHODS:
             return None, None
         return self._handle_method_call(method_name, arg)
