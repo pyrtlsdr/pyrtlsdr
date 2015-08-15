@@ -205,13 +205,13 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         s.close()
         return resp
     def _communicate_method(self, method_name, arg='', recv_size=1024):
-        msg = '!'.join([method_name, json.dumps(arg)])
+        msg = '!'.join([method_name, numpyjson.dumps(arg)])
         return self._communicate(msg, recv_size)
     def _communicate_descriptor(self, prop_name, value=None, recv_size=1024):
         if value is None:
             msg = '%s?' % (prop_name)
         else:
-            msg = '='.join([prop_name, json.dumps(value)])
+            msg = '='.join([prop_name, numpyjson.dumps(value)])
         return self._communicate(msg, recv_size)
     def get_center_freq(self):
         return self._communicate_descriptor('fc')
