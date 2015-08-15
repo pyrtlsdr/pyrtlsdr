@@ -1,5 +1,6 @@
 import sys
 import threading
+import socket
 
 PY2 = sys.version_info[0] == 2
 if PY2:
@@ -186,3 +187,63 @@ class RequestHandler(BaseRequestHandler):
         return value, resp_type
     def format_response(self, resp, resp_type):
         return numpyjson.dumps({'type':str(resp_type), 'value':resp})
+
+class RtlSdrTcpClient(RtlSdrTcpBase):
+    def open(self, *args):
+        self.device_opened = True
+    def _build_socket(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((self.hostname, self.port))
+        return s
+    def _communicate(self, tx_message, recv_size=1024):
+        s = self._build_socket()
+        s.sendall(tx_message)
+        resp = s.recv(recv_size)
+        if resp:
+            resp = numpyjson.loads(resp)
+            if isinstance(resp, dict):
+                t = resp.get('type')
+                if t in ["<type '%s'>" % (tname) for tname in ['float', 'int', 'str']]:
+                    t = t.split("'")[1]
+                    t = eval(t)
+                    resp = t(resp['value'])
+        s.close()
+        return resp
+    def _communicate_method(self, method_name, arg='', recv_size=1024):
+        msg = '!'.join([method_name, json.dumps(arg)])
+        return self._communicate(msg, recv_size)
+    def _communicate_descriptor(self, prop_name, value=None, recv_size=1024):
+        if value is None:
+            msg = '%s?' % (prop_name)
+        else:
+            msg = '='.join([prop_name, json.dumps(value)])
+        return self._communicate(msg, recv_size)
+    def get_center_freq(self):
+        return self._communicate_descriptor('fc')
+    def set_center_freq(self, value):
+        self._communicate_descriptor('fc', value)
+    def get_sample_rate(self):
+        return self._communicate_descriptor('rs')
+    def set_sample_rate(self, value):
+        self._communicate_descriptor('rs', value)
+    def get_gain(self):
+        return self._communicate_descriptor('gain')
+    def set_gain(self, value):
+        self._communicate_descriptor('gain', value)
+    def get_freq_correction(self):
+        return self._communicate_descriptor('freq_correction')
+    def set_freq_correction(self, value):
+        self._communicate_descriptor('freq_correction', value)
+    def get_gains(self):
+        return self._communicate_method('get_gains')
+    def get_tuner_type(self):
+        return self._communicate_method('get_tuner_type')
+    def set_direct_sampling(self, value):
+        self._communicate_method('set_direct_sampling', value)
+    def read_samples(self, num_samples=RtlSdr.DEFAULT_READ_SIZE):
+        recv_size = num_samples * 32
+        return self._communicate_method('read_samples', num_samples, recv_size)
+    center_freq = fc = property(get_center_freq, set_center_freq)
+    sample_rate = rs = property(get_sample_rate, set_sample_rate)
+    gain = property(get_gain, set_gain)
+    freq_correction = property(get_freq_correction, set_freq_correction)
