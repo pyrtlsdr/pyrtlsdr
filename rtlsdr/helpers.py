@@ -18,6 +18,12 @@
 from __future__ import division, print_function
 from functools import wraps
 import time
+import base64
+import json
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
 def limit_time(max_seconds):
     '''Decorator to cancel async reads after "max_seconds" seconds elapse.
@@ -73,6 +79,40 @@ def test_callback(buffer, rtlsdr_obj):
     print('In callback')
     print('   signal mean:', sum(buffer)/len(buffer))
 
+## From http://stackoverflow.com/questions/27909658/
+
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            data_b64 = base64.b64encode(obj.dumps())
+            return dict(__ndarray__=data_b64)
+        return json.JSONEncoder.default(self, obj)
+
+def json_numpy_obj_hook(dct):
+    if isinstance(dct, dict) and '__ndarray__' in dct:
+        data = base64.b64decode(dct['__ndarray__'])
+        return np.loads(data)
+    return dct
+
+class NumpyJson(object):
+    def dumps(self, *args, **kwargs):
+        kwargs.setdefault('cls', NumpyEncoder)
+        return json.dumps(*args, **kwargs)
+
+    def loads(self, *args, **kwargs):
+        kwargs.setdefault('object_hook', json_numpy_obj_hook)
+        return json.loads(*args, **kwargs)
+
+    def dump(self, *args, **kwargs):
+        kwargs.setdefault('cls', NumpyEncoder)
+        return json.dump(*args, **kwargs)
+
+    def load(self, *args, **kwargs):
+        kwargs.setdefault('object_hook', json_numpy_obj_hook)
+        return json.load(*args, **kwargs)
+
+numpyjson = NumpyJson()
+##
 
 def main():
     from rtlsdr import RtlSdr
