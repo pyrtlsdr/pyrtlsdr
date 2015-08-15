@@ -201,11 +201,7 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         if resp:
             resp = numpyjson.loads(resp)
             if isinstance(resp, dict):
-                t = resp.get('type')
-                if t in ["<type '%s'>" % (tname) for tname in ['float', 'int', 'str']]:
-                    t = t.split("'")[1]
-                    t = eval(t)
-                    resp = t(resp['value'])
+                resp = resp['value']
         s.close()
         return resp
     def _communicate_method(self, method_name, arg='', recv_size=1024):
