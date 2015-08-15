@@ -128,7 +128,6 @@ class RequestHandler(BaseRequestHandler):
             resp, resp_type = None, None
         if resp is not None:
             resp_data = self.format_response(resp, resp_type)
-            print('TX: ', resp_data)
             self.request.sendall(resp_data)
     def handle_method_call(self, data):
         method_name, arg = data.split('!')
