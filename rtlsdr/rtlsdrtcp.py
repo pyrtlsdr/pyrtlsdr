@@ -35,14 +35,16 @@ class RtlSdrTcpBase(RtlSdr):
 class RtlSdrTcpServer(RtlSdrTcpBase):
     def open(self, device_index=0, test_mode_enabled=False):
         if not self.device_ready:
-            if self.server_thread is None:
-                self.build_server()
             return
         super(RtlSdrTcpServer, self).open(device_index, test_mode_enabled)
-    def build_server(self):
-        self.server_thread = ServerThread(self)
-    def run_forever(self):
+    def run(self):
+        if self.server_thread is None:
+            self.server_thread = ServerThread(self)
+        if self.server_thread.running.is_set():
+            return
         self.server_thread.start()
+    def run_forever(self):
+        self.run()
         while True:
             try:
                 self.server_thread.stopped.wait(1.)
@@ -50,7 +52,10 @@ class RtlSdrTcpServer(RtlSdrTcpBase):
                 self.close()
                 break
     def close(self):
-        self.server_thread.stop()
+        if self.server_thread is not None:
+            if self.server_thread.running.is_set():
+                self.server_thread.stop()
+            self.server_thread = None
         super(RtlSdrTcpServer, self).close()
 
 class ServerThread(threading.Thread):
@@ -67,6 +72,7 @@ class ServerThread(threading.Thread):
         self.running.set()
         self.server.serve_forever()
         self.running.clear()
+        rtl_sdr.device_ready = False
         self.stopped.set()
     def stop(self):
         self.server.shutdown()
