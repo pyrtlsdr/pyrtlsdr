@@ -277,5 +277,42 @@ def run_server():
     server = RtlSdrTcpServer(**o)
     server.run_forever()
 
+def test():
+    import time
+    server = RtlSdrTcpServer()
+    server.run()
+    client = RtlSdrTcpClient()
+    test_props = [
+        ['sample_rate', 2e6],
+        ['center_freq', 6e6],
+        ['gain', 10.],
+        ['freq_correction', 20]
+    ]
+    try:
+        gains = client.get_gains()
+        gains = [gain / 10. for gain in gains]
+        print('gains: ', gains)
+        for prop_name, set_value in test_props:
+            if prop_name != 'gain':
+                value = getattr(client, prop_name)
+                print('%s initial value: %s' % (prop_name, value))
+            else:
+                set_value = gains[1]
+            setattr(client, prop_name, set_value)
+            value = getattr(client, prop_name)
+            print('%s set to %s, real value: %s' % (prop_name, set_value, value))
+            assert int(value) == int(set_value)
+            time.sleep(.2)
+        tuner_type = client.get_tuner_type()
+        print('tuner_type: ', tuner_type)
+        for num_samples in [1024, 4096, 16384, 65536, 131072]:
+            print('Reading %s samples...' % (num_samples))
+            samples = client.read_samples(num_samples)
+            print('%s samples received' % (len(samples)))
+            assert len(samples) == num_samples
+    finally:
+        server.close()
+    print('Complete')
+
 if __name__ == '__main__':
     run_server()
