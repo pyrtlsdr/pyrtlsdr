@@ -44,6 +44,7 @@ class RtlSdrTcpServer(RtlSdrTcpBase):
         if self.server_thread.running.is_set():
             return
         self.server_thread.start()
+        self.server_thread.running.wait()
     def run_forever(self):
         self.run()
         while True:
