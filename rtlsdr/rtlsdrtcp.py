@@ -134,7 +134,7 @@ class RequestHandler(BaseRequestHandler):
             resp, resp_type = self.handle_prop_get(data)
         else:
             resp, resp_type = None, None
-        if resp is not None:
+        if resp is not None or resp_type is not None:
             resp_data = self.format_response(resp, resp_type)
             self.request.sendall(resp_data)
     def handle_method_call(self, data):
@@ -173,7 +173,10 @@ class RequestHandler(BaseRequestHandler):
             resp = m(_arg)
         else:
             resp = m()
-        return resp, api_data.get('return_type')
+        resp_type = api_data.get('return_type')
+        if resp_type is None:
+            resp_type = '__ack__'
+        return resp, resp_type
     def handle_prop_set(self, data):
         prop_name, value = data.split('=')
         prop_name = prop_name.strip()
@@ -193,7 +196,10 @@ class RequestHandler(BaseRequestHandler):
         resp_type = API_METHODS.get(api_data[0], {}).get('return_type')
         return value, resp_type
     def format_response(self, resp, resp_type):
-        return numpyjson.dumps({'type':str(resp_type), 'value':resp})
+        d = {'success':True}
+        if resp_type != '__ack__':
+            d.update({'type':str(resp_type), 'value':resp})
+        return numpyjson.dumps(d)
 
 class RtlSdrTcpClient(RtlSdrTcpBase):
     def open(self, *args):
@@ -211,7 +217,7 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         if resp:
             resp = numpyjson.loads(resp)
             if isinstance(resp, dict):
-                resp = resp['value']
+                resp = resp.get('value')
         s.close()
         return resp
     def _communicate_method(self, method_name, arg='', recv_size=1024):
