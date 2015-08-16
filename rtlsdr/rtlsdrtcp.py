@@ -180,7 +180,7 @@ class RequestHandler(BaseRequestHandler):
         api_data = API_DESCRIPTORS.get(prop_name)
         if api_data is None:
             return None, None
-        method_name = API_METHODS.get(api_data[1])
+        method_name = api_data[1]
         return self._handle_method_call(method_name, value)
     def handle_prop_get(self, data):
         prop_name = data.split('?')[0].strip()
