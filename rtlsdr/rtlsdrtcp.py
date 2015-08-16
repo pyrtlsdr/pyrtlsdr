@@ -196,6 +196,8 @@ class RequestHandler(BaseRequestHandler):
 class RtlSdrTcpClient(RtlSdrTcpBase):
     def open(self, *args):
         self.device_opened = True
+    def close(self):
+        self.device_opened = False
     def _build_socket(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.hostname, self.port))
