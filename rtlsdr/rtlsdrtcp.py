@@ -1,6 +1,7 @@
 import sys
 import threading
 import socket
+import argparse
 
 PY2 = sys.version_info[0] == 2
 if PY2:
@@ -250,3 +251,30 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
     gain = property(get_gain, set_gain)
     freq_correction = property(get_freq_correction, set_freq_correction)
+
+def run_server():
+    p = argparse.ArgumentParser()
+    p.add_argument(
+        '-a', '--address',
+        dest='hostname',
+        metavar='address',
+        default='127.0.0.1',
+        help='Listen address (default is "127.0.0.1")')
+    p.add_argument(
+        '-p', '--port',
+        dest='port',
+        type=int,
+        default=1235,
+        help='Port to listen on (default is 1235)')
+    p.add_argument(
+        '-d', '--device-index',
+        dest='device_index',
+        type=int,
+        default=0)
+    args, remaining = p.parse_known_args()
+    o = vars(args)
+    server = RtlSdrTcpServer(**o)
+    server.run_forever()
+
+if __name__ == '__main__':
+    run_server()
