@@ -154,7 +154,7 @@ class RequestHandler(BaseRequestHandler):
         if 'args' in api_data and not arg:
             return None, None
         _arg = None
-        if isinstance(api_data['args'], list):
+        if isinstance(api_data.get('args'), list):
             for arg_type in api_data['args']:
                 try:
                     _arg = arg_type(arg)
