@@ -96,19 +96,23 @@ def json_numpy_obj_hook(dct):
 
 class NumpyJson(object):
     def dumps(self, *args, **kwargs):
-        kwargs.setdefault('cls', NumpyEncoder)
+        if np is not None:
+            kwargs.setdefault('cls', NumpyEncoder)
         return json.dumps(*args, **kwargs)
 
     def loads(self, *args, **kwargs):
-        kwargs.setdefault('object_hook', json_numpy_obj_hook)
+        if np is not None:
+            kwargs.setdefault('object_hook', json_numpy_obj_hook)
         return json.loads(*args, **kwargs)
 
     def dump(self, *args, **kwargs):
-        kwargs.setdefault('cls', NumpyEncoder)
+        if np is not None:
+            kwargs.setdefault('cls', NumpyEncoder)
         return json.dump(*args, **kwargs)
 
     def load(self, *args, **kwargs):
-        kwargs.setdefault('object_hook', json_numpy_obj_hook)
+        if np is not None:
+            kwargs.setdefault('object_hook', json_numpy_obj_hook)
         return json.load(*args, **kwargs)
 
 numpyjson = NumpyJson()
