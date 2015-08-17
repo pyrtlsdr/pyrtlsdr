@@ -292,7 +292,7 @@ def test():
         ['sample_rate', 2e6],
         ['center_freq', 6e6],
         ['gain', 10.],
-        ['freq_correction', 20]
+        #['freq_correction', 20]
     ]
     try:
         gains = client.get_gains()
