@@ -16,6 +16,7 @@ except ImportError:
     from .rtlsdr import RtlSdr
     from .helpers import numpyjson
 
+MAX_BUFFER_SIZE = 4096
 
 class RtlSdrTcpBase(RtlSdr):
     # Use port 1235 as default since rtl_tcp uses 1234
@@ -136,7 +137,12 @@ class RequestHandler(BaseRequestHandler):
             resp, resp_type = None, None
         if resp is not None or resp_type is not None:
             resp_data = self.format_response(resp, resp_type)
-            self.request.sendall(resp_data)
+            if isinstance(resp_data, list):
+                self.request.sendall(resp_data[0])
+                client_resp = self.request.recv(1024)
+                self.request.sendall(resp_data[1])
+            else:
+                self.request.sendall(resp_data)
     def handle_method_call(self, data):
         method_name, arg = data.split('!')
         method_name = method_name.strip()
@@ -154,7 +160,7 @@ class RequestHandler(BaseRequestHandler):
         if 'args' in api_data and not arg:
             return None, None
         _arg = None
-        if isinstance(api_data['args'], list):
+        if isinstance(api_data.get('args'), list):
             for arg_type in api_data['args']:
                 try:
                     _arg = arg_type(arg)
@@ -199,7 +205,13 @@ class RequestHandler(BaseRequestHandler):
         d = {'success':True}
         if resp_type != '__ack__':
             d.update({'type':str(resp_type), 'value':resp})
-        return numpyjson.dumps(d)
+        msg = numpyjson.dumps(d)
+        if len(msg) <= MAX_BUFFER_SIZE:
+            return msg
+        header = {'success':True, 'multipart':True, 'payload_size':len(msg)}
+        header = numpyjson.dumps(header)
+        return [header, msg]
+
 
 class RtlSdrTcpClient(RtlSdrTcpBase):
     def open(self, *args):
@@ -210,20 +222,27 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.hostname, self.port))
         return s
-    def _communicate(self, tx_message, recv_size=1024):
+    def _communicate(self, tx_message, recv_size=MAX_BUFFER_SIZE):
         s = self._build_socket()
         s.sendall(tx_message)
         resp = s.recv(recv_size)
         if resp:
             resp = numpyjson.loads(resp)
             if isinstance(resp, dict):
+                if resp.get('multipart'):
+                    msg_len = resp.get('payload_size')
+                    s.sendall('ready')
+                    resp = ''
+                    while len(resp) < msg_len:
+                        resp += s.recv(recv_size)
+                    resp = numpyjson.loads(resp)
                 resp = resp.get('value')
         s.close()
         return resp
-    def _communicate_method(self, method_name, arg='', recv_size=1024):
+    def _communicate_method(self, method_name, arg='', recv_size=MAX_BUFFER_SIZE):
         msg = '!'.join([method_name, numpyjson.dumps(arg)])
         return self._communicate(msg, recv_size)
-    def _communicate_descriptor(self, prop_name, value=None, recv_size=1024):
+    def _communicate_descriptor(self, prop_name, value=None, recv_size=MAX_BUFFER_SIZE):
         if value is None:
             msg = '%s?' % (prop_name)
         else:
@@ -252,8 +271,7 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
     def set_direct_sampling(self, value):
         self._communicate_method('set_direct_sampling', value)
     def read_samples(self, num_samples=RtlSdr.DEFAULT_READ_SIZE):
-        recv_size = num_samples * 32
-        return self._communicate_method('read_samples', num_samples, recv_size)
+        return self._communicate_method('read_samples', num_samples)
     center_freq = fc = property(get_center_freq, set_center_freq)
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
     gain = property(get_gain, set_gain)
