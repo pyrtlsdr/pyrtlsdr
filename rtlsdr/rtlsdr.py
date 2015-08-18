@@ -143,7 +143,7 @@ class BaseRtlSdr(object):
             self.close()
             raise IOError('Error code %d when getting freq. offset in ppm.'\
                           % (result))
-        return
+        return result
 
     def set_sample_rate(self, rate):
         ''' Set sample rate of tuner (in Hz).
