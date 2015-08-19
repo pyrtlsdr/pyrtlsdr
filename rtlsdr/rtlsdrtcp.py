@@ -1,4 +1,5 @@
 import sys
+import time
 import threading
 import socket
 import argparse
@@ -8,6 +9,11 @@ if PY2:
     from SocketServer import TCPServer, BaseRequestHandler
 else:
     from socketserver import TCPServer, BaseRequestHandler
+
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
 try:
     from rtlsdr import RtlSdr
@@ -111,6 +117,131 @@ API_DESCRIPTORS = {
     'gain':('get_gain', 'set_gain'),
     'freq_correction':('get_freq_correction', 'set_freq_correction')
 }
+
+class MessageBase(object):
+    def __init__(self, **kwargs):
+        self.data_len = None
+        self.timestamp = kwargs.get('timestamp')
+        self.header = self.get_header(**kwargs)
+        self.data = self.get_data(**kwargs)
+        self.data_is_complex = False
+    @classmethod
+    def from_remote(cls, sock):
+        header = sock.recv(MAX_BUFFER_SIZE)
+        kwargs = numpyjson.loads(header)
+        if kwargs.get('ACK'):
+            cls = AckMessage
+        return cls(**kwargs)
+    def get_header(self, **kwargs):
+        d = {}
+        ts = kwargs.get('timestamp')
+        if ts is None:
+            ts = time.time()
+        d['timestamp'] = ts
+        return d
+    def get_data(self, **kwargs):
+        return kwargs.get('data')
+    def send_message(self, sock):
+        header, data = self._serialize()
+        sock.sendall(header)
+    def get_response(self, sock):
+        cls = self.get_response_class()
+        return cls.from_remote(sock)
+    def get_ack_response(self, sock):
+        return AckMessage.from_remote(sock)
+    def _serialize(self):
+        if not self.data_is_complex:
+            d = self.header.copy()
+            d['data'] = self.data
+            return numpyjson.dumps(d), None
+        data = self._serialize_data()
+        if data is not None:
+            self.data_len = len(data)
+        header = self._serialize_header()
+        return header, data
+    def _serialize_header(self):
+        header = self.header
+        header['data_len'] = self.data_len
+        return numpyjson.dumps(self.header)
+    def _serialize_data(self):
+        return numpyjson.dumps(self.data)
+
+class AckMessage(MessageBase):
+    def get_header(self, **kwargs):
+        d = super(AckMessage, self).get_header(**kwargs)
+        d['ACK'] = True
+        d['ok'] = kwargs.get('ok', True)
+        return d
+
+class ServerMessage(MessageBase):
+    def __init__(self, **kwargs):
+        super(ServerMessage, self).__init__(**kwargs)
+        is_complex = False
+        if self.data is not None:
+            if np is not None and isinstance(self.data, np.ndarray):
+                is_complex = True
+            elif isinstance(self.data, list) and len(self.data):
+                if isinstance(self.data[0], complex):
+                    is_complex = True
+        self.data_is_complex = is_complex
+    @classmethod
+    def from_remote(cls, sock):
+        header = sock.recv(MAX_BUFFER_SIZE)
+        kwargs = numpyjson.loads(header)
+        data_len = kwargs.get('data_len')
+        data = kwargs.get('data')
+        if data_len is None or data is not None:
+            return cls(**kwargs)
+        ack_msg = AckMessage()
+        ack_msg.send_message(sock)
+        recv = None
+        while data_len > 0:
+            _recv = sock.recv(MAX_BUFFER_SIZE)
+            if recv is None:
+                recv = _recv
+            else:
+                recv += _recv
+            data_len -= len(_recv)
+        kwargs['data'] = numpyjson.loads(recv)
+        return cls(**kwargs)
+    def send_message(self, sock):
+        header, data = self._serialize()
+        sock.sendall(header)
+        if data is not None:
+            ack = self.get_ack_response(sock)
+            if not ack.header.get('ok'):
+                return False
+            data_len = self.data_len
+            while data_len > 0:
+                sent = sock.send(data)
+                data_len -= sent
+                data = data[sent:]
+        else:
+            ack = AckMessage()
+            ack.send_message(sock)
+    def get_header(self, **kwargs):
+        d = super(ServerMessage, self).get_header(**kwargs)
+        d['success'] = kwargs.get('success', True)
+        client_message = kwargs.get('client_message')
+        if client_message is not None:
+            d['request'] = client_message.header
+        else:
+            d['request'] = kwargs.get('request')
+        return d
+    def get_response_class(self):
+        return AckMessage
+
+class ClientMessage(MessageBase):
+    def send_message(self, sock):
+        super(ClientMessage, self).send_message(sock)
+        return self.get_response(sock)
+    def get_header(self, **kwargs):
+        d = super(ClientMessage, self).get_header(**kwargs)
+        keys = ['type', 'name']
+        d.update({k: kwargs.get(k) for k in keys})
+        return d
+    def get_response_class(self):
+        return ServerMessage
 
 class RequestHandler(BaseRequestHandler):
     '''Expected data:
