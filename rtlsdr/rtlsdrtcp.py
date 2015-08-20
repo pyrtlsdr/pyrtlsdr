@@ -262,7 +262,6 @@ class RequestHandler(BaseRequestHandler):
         rtl_sdr = self.server.rtl_sdr
         method_name = rx_message.header.get('name')
         arg = rx_message.data
-        print 'method_call: ', method_name, arg
         if method_name not in API_METHODS:
             return False
         try:
@@ -273,7 +272,6 @@ class RequestHandler(BaseRequestHandler):
             resp = m(arg)
         else:
             resp = m()
-        print '%s resp: %s' % (method_name, resp)
         tx_message = ServerMessage(client_message=rx_message, data=resp)
         tx_message.send_message(self.request)
     def handle_prop_set(self, rx_message):
@@ -281,7 +279,6 @@ class RequestHandler(BaseRequestHandler):
         prop_name = rx_message.header.get('name')
         value = rx_message.data
         api_data = API_DESCRIPTORS.get(prop_name)
-        print 'prop_set: ', prop_name, value, api_data
         if api_data is None:
             return False
         setattr(rtl_sdr, prop_name, value)
