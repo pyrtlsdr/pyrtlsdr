@@ -3,6 +3,7 @@ import time
 import threading
 import socket
 import argparse
+import traceback
 
 PY2 = sys.version_info[0] == 2
 if PY2:
@@ -52,6 +53,9 @@ class RtlSdrTcpServer(RtlSdrTcpBase):
             return
         self.server_thread.start()
         self.server_thread.running.wait()
+        if self.server_thread.stopped.is_set():
+            self.server_thread = None
+            self.close()
     def run_forever(self):
         self.run()
         while True:
@@ -74,7 +78,13 @@ class ServerThread(threading.Thread):
         self.running = threading.Event()
         self.stopped = threading.Event()
     def run(self):
-        self.server = Server(self.rtl_sdr)
+        try:
+            self.server = Server(self.rtl_sdr)
+        except socket.error:
+            self.running.set()
+            self.stopped.set()
+            traceback.print_exc()
+            return
         rtl_sdr = self.rtl_sdr
         rtl_sdr.device_ready = True
         rtl_sdr.open(rtl_sdr.device_index, rtl_sdr.test_mode_enabled)
