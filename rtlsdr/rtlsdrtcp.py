@@ -244,105 +244,58 @@ class ClientMessage(MessageBase):
         return ServerMessage
 
 class RequestHandler(BaseRequestHandler):
-    '''Expected data:
-        Method call with arg:
-            method_name!arg
-        Method call without arg:
-            method_name!
-        Descriptor set:
-            descriptor_name=value
-        Descriptor get:
-            descriptor_name?
-    '''
     def handle(self):
-        recv_size = self.server.REQUEST_RECV_SIZE
-        data = self.data = self.request.recv(recv_size)
-        print('RX: ', data)
-        if '!' in data:
-            resp, resp_type = self.handle_method_call(data)
-        elif '=' in data:
-            resp, resp_type = self.handle_prop_set(data)
-        elif '?' in data:
-            resp, resp_type = self.handle_prop_get(data)
+        rx_message = ClientMessage.from_remote(self.request)
+        msg_type = rx_message.header.get('type')
+        if msg_type == 'method':
+            r = self.handle_method_call(rx_message)
+        elif msg_type == 'prop_set':
+            r = self.handle_prop_set(rx_message)
+        elif msg_type == 'prop_get':
+            r = self.handle_prop_get(rx_message)
         else:
-            resp, resp_type = None, None
-        if resp is not None or resp_type is not None:
-            resp_data = self.format_response(resp, resp_type)
-            if isinstance(resp_data, list):
-                self.request.sendall(resp_data[0])
-                client_resp = self.request.recv(1024)
-                self.request.sendall(resp_data[1])
-            else:
-                self.request.sendall(resp_data)
-    def handle_method_call(self, data):
-        method_name, arg = data.split('!')
-        method_name = method_name.strip()
-        arg = arg.strip()
-        if method_name not in API_METHODS:
-            return None, None
-        return self._handle_method_call(method_name, arg)
-    def _handle_method_call(self, method_name, arg):
+            r = False
+        if r is False:
+            nak = AckMessage(ok=False)
+            nak.send_message(self.request)
+    def handle_method_call(self, rx_message):
         rtl_sdr = self.server.rtl_sdr
-        api_data = API_METHODS.get(method_name)
+        method_name = rx_message.header.get('name')
+        arg = rx_message.data
+        print 'method_call: ', method_name, arg
+        if method_name not in API_METHODS:
+            return False
         try:
-            m = getattr(rtl_sdr, method_name.strip())
+            m = getattr(rtl_sdr, method_name)
         except AttributeError:
-            return None, None
-        if 'args' in api_data and not arg:
-            return None, None
-        _arg = None
-        if isinstance(api_data.get('args'), list):
-            for arg_type in api_data['args']:
-                try:
-                    _arg = arg_type(arg)
-                except ValueError:
-                    _arg = None
-                if _arg is not None:
-                    break
-            if _arg is None:
-                return None, None
-        elif 'args' in api_data:
-            try:
-                _arg = api_data['args'](arg)
-            except ValueError:
-                return None, None
-        if _arg is not None:
-            resp = m(_arg)
+            return False
+        if arg is not None:
+            resp = m(arg)
         else:
             resp = m()
-        resp_type = api_data.get('return_type')
-        if resp_type is None:
-            resp_type = '__ack__'
-        return resp, resp_type
-    def handle_prop_set(self, data):
-        prop_name, value = data.split('=')
-        prop_name = prop_name.strip()
-        value = value.strip()
+        print '%s resp: %s' % (method_name, resp)
+        tx_message = ServerMessage(client_message=rx_message, data=resp)
+        tx_message.send_message(self.request)
+    def handle_prop_set(self, rx_message):
+        rtl_sdr = self.server.rtl_sdr
+        prop_name = rx_message.header.get('name')
+        value = rx_message.data
+        api_data = API_DESCRIPTORS.get(prop_name)
+        print 'prop_set: ', prop_name, value, api_data
+        if api_data is None:
+            return False
+        setattr(rtl_sdr, prop_name, value)
+        tx_message = ServerMessage(client_message=rx_message)
+        tx_message.send_message(self.request)
+    def handle_prop_get(self, rx_message):
+        prop_name = rx_message.header.get('name')
         api_data = API_DESCRIPTORS.get(prop_name)
         if api_data is None:
-            return None, None
-        method_name = api_data[1]
-        return self._handle_method_call(method_name, value)
-    def handle_prop_get(self, data):
-        prop_name = data.split('?')[0].strip()
-        api_data = API_DESCRIPTORS.get(prop_name)
-        if api_data is None:
-            return None, None
+            return False
         rtl_sdr = self.server.rtl_sdr
         value = getattr(rtl_sdr, prop_name)
-        resp_type = API_METHODS.get(api_data[0], {}).get('return_type')
-        return value, resp_type
-    def format_response(self, resp, resp_type):
-        d = {'success':True}
-        if resp_type != '__ack__':
-            d.update({'type':str(resp_type), 'value':resp})
-        msg = numpyjson.dumps(d)
-        if len(msg) <= MAX_BUFFER_SIZE:
-            return msg
-        header = {'success':True, 'multipart':True, 'payload_size':len(msg)}
-        header = numpyjson.dumps(header)
-        return [header, msg]
-
+        tx_message = ServerMessage(client_message=rx_message, data=value)
+        tx_message.send_message(self.request)
 
 class RtlSdrTcpClient(RtlSdrTcpBase):
     def open(self, *args):
@@ -353,48 +306,44 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self.hostname, self.port))
         return s
-    def _communicate(self, tx_message, recv_size=MAX_BUFFER_SIZE):
+    def _communicate(self, tx_message):
         s = self._build_socket()
-        s.sendall(tx_message)
-        resp = s.recv(recv_size)
-        if resp:
-            resp = numpyjson.loads(resp)
-            if isinstance(resp, dict):
-                if resp.get('multipart'):
-                    msg_len = resp.get('payload_size')
-                    s.sendall('ready')
-                    resp = ''
-                    while len(resp) < msg_len:
-                        resp += s.recv(recv_size)
-                    resp = numpyjson.loads(resp)
-                resp = resp.get('value')
+        resp = tx_message.send_message(s)
+        if isinstance(resp, ServerMessage):
+            if not resp.header.get('success'):
+                ## TODO: raise an exception?
+                pass
+            return resp.data
+        elif isinstance(resp, AckMessage):
+            if not resp.header.get('ok'):
+                ## TODO: raise an exception?
+                pass
         s.close()
-        return resp
-    def _communicate_method(self, method_name, arg='', recv_size=MAX_BUFFER_SIZE):
-        msg = '!'.join([method_name, numpyjson.dumps(arg)])
-        return self._communicate(msg, recv_size)
-    def _communicate_descriptor(self, prop_name, value=None, recv_size=MAX_BUFFER_SIZE):
-        if value is None:
-            msg = '%s?' % (prop_name)
-        else:
-            msg = '='.join([prop_name, numpyjson.dumps(value)])
-        return self._communicate(msg, recv_size)
+    def _communicate_method(self, method_name, arg=None):
+        msg = ClientMessage(type='method', name=method_name, data=arg)
+        return self._communicate(msg)
+    def _communicate_descriptor_get(self, prop_name):
+        msg = ClientMessage(type='prop_get', name=prop_name)
+        return self._communicate(msg)
+    def _communicate_descriptor_set(self, prop_name, value):
+        msg = ClientMessage(type='prop_set', name=prop_name, data=value)
+        return self._communicate(msg)
     def get_center_freq(self):
-        return self._communicate_descriptor('fc')
+        return self._communicate_descriptor_get('fc')
     def set_center_freq(self, value):
-        self._communicate_descriptor('fc', value)
+        self._communicate_descriptor_set('fc', value)
     def get_sample_rate(self):
-        return self._communicate_descriptor('rs')
+        return self._communicate_descriptor_get('rs')
     def set_sample_rate(self, value):
-        self._communicate_descriptor('rs', value)
+        self._communicate_descriptor_set('rs', value)
     def get_gain(self):
-        return self._communicate_descriptor('gain')
+        return self._communicate_descriptor_get('gain')
     def set_gain(self, value):
-        self._communicate_descriptor('gain', value)
+        self._communicate_descriptor_set('gain', value)
     def get_freq_correction(self):
-        return self._communicate_descriptor('freq_correction')
+        return self._communicate_descriptor_get('freq_correction')
     def set_freq_correction(self, value):
-        self._communicate_descriptor('freq_correction', value)
+        self._communicate_descriptor_set('freq_correction', value)
     def get_gains(self):
         return self._communicate_method('get_gains')
     def get_tuner_type(self):
