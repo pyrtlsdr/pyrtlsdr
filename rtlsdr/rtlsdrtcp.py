@@ -104,28 +104,22 @@ class Server(TCPServer):
         server_addr = (rtl_sdr.hostname, rtl_sdr.port)
         TCPServer.__init__(self, server_addr, RequestHandler)
 
-API_METHODS = {
-    'get_center_freq':{'return_type':float},
-    'set_center_freq':{'args':float},
-    'get_sample_rate':{'return_type':float},
-    'set_sample_rate':{'args':float},
-    'get_gain':{'return_type':'float'},
-    'set_gain':{'args':[float, str]},
-    'get_freq_correction':{'return_type':int},
-    'set_freq_correction':{'args':int},
-    'get_gains':{'return_type':list},
-    'get_tuner_type':{'return_type':int},
-    'set_direct_sampling':{'args':bool},
-    'read_samples':{'args':int, 'return_type':'numpy'},
-    'read_samples_async':{'args':int, 'return_type':'numpy'}
-}
+API_METHODS = (
+    'get_center_freq', 'set_center_freq',
+    'get_sample_rate', 'set_sample_rate',
+    'get_gain', 'set_gain',
+    'get_freq_correction', 'set_freq_correction',
+    'get_gains',
+    'get_tuner_type',
+    'set_direct_sampling',
+    'read_samples',
+    'read_samples_async',
+)
 API_DESCRIPTORS = {
-    'center_freq':('get_center_freq', 'set_center_freq'),
-    'fc':('get_center_freq', 'set_center_freq'),
-    'sample_rate':('get_sample_rate', 'set_sample_rate'),
-    'rs':('get_sample_rate', 'set_sample_rate'),
-    'gain':('get_gain', 'set_gain'),
-    'freq_correction':('get_freq_correction', 'set_freq_correction')
+    'center_freq', 'fc',
+    'sample_rate', 'rs',
+    'gain',
+    'freq_correction',
 }
 
 class MessageBase(object):
@@ -293,16 +287,14 @@ class RequestHandler(BaseRequestHandler):
         rtl_sdr = self.server.rtl_sdr
         prop_name = rx_message.header.get('name')
         value = rx_message.data
-        api_data = API_DESCRIPTORS.get(prop_name)
-        if api_data is None:
+        if prop_name not in API_DESCRIPTORS:
             return False
         setattr(rtl_sdr, prop_name, value)
         tx_message = ServerMessage(client_message=rx_message)
         tx_message.send_message(self.request)
     def handle_prop_get(self, rx_message):
         prop_name = rx_message.header.get('name')
-        api_data = API_DESCRIPTORS.get(prop_name)
-        if api_data is None:
+        if prop_name not in API_DESCRIPTORS:
             return False
         rtl_sdr = self.server.rtl_sdr
         value = getattr(rtl_sdr, prop_name)
