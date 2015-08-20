@@ -138,7 +138,11 @@ class MessageBase(object):
     @classmethod
     def from_remote(cls, sock):
         header = sock.recv(MAX_BUFFER_SIZE)
-        kwargs = numpyjson.loads(header)
+        try:
+            kwargs = numpyjson.loads(header)
+        except ValueError:
+            print(header)
+            raise
         if kwargs.get('ACK'):
             cls = AckMessage
         return cls(**kwargs)
@@ -197,7 +201,11 @@ class ServerMessage(MessageBase):
     @classmethod
     def from_remote(cls, sock):
         header = sock.recv(MAX_BUFFER_SIZE)
-        kwargs = numpyjson.loads(header)
+        try:
+            kwargs = numpyjson.loads(header)
+        except ValueError:
+            print(header)
+            raise
         data_len = kwargs.get('data_len')
         data = kwargs.get('data')
         if data_len is None or data is not None:
