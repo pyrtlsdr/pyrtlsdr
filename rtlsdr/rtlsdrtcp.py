@@ -216,9 +216,6 @@ class ServerMessage(MessageBase):
                 sent = sock.send(data)
                 data_len -= sent
                 data = data[sent:]
-        else:
-            ack = AckMessage()
-            ack.send_message(sock)
     def get_header(self, **kwargs):
         d = super(ServerMessage, self).get_header(**kwargs)
         d['success'] = kwargs.get('success', True)
