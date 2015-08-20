@@ -42,11 +42,17 @@ class RtlSdrTcpBase(RtlSdr):
         super(RtlSdrTcpBase, self).__init__(device_index, test_mode_enabled)
 
 class RtlSdrTcpServer(RtlSdrTcpBase):
+    '''Server that connects to a physical dongle to allow client connections
+    '''
     def open(self, device_index=0, test_mode_enabled=False):
         if not self.device_ready:
             return
         super(RtlSdrTcpServer, self).open(device_index, test_mode_enabled)
     def run(self):
+        '''Runs the server thread and returns.  Use this only if you are
+        running mainline code afterwards.
+        The server must explicitly be stopped by the stop method before exit.
+        '''
         if self.server_thread is None:
             self.server_thread = ServerThread(self)
         if self.server_thread.running.is_set():
@@ -57,6 +63,9 @@ class RtlSdrTcpServer(RtlSdrTcpBase):
             self.server_thread = None
             self.close()
     def run_forever(self):
+        '''Runs the server and begins a mainloop.
+        The loop will exit with Ctrl-C.
+        '''
         self.run()
         while True:
             try:
@@ -65,6 +74,9 @@ class RtlSdrTcpServer(RtlSdrTcpBase):
                 self.close()
                 break
     def close(self):
+        '''Stops the server (if it's running) and closes the connection to the
+        dongle.
+        '''
         if self.server_thread is not None:
             if self.server_thread.running.is_set():
                 self.server_thread.stop()
@@ -123,6 +135,10 @@ API_DESCRIPTORS = {
 }
 
 class MessageBase(object):
+    '''Base class for messages sent between clients and servers.
+    Hanldes serialization/deserialization and communication with
+    socket type objects.
+    '''
     def __init__(self, **kwargs):
         self.data_len = None
         self.timestamp = kwargs.get('timestamp')
@@ -131,6 +147,9 @@ class MessageBase(object):
         self.data_is_complex = False
     @classmethod
     def from_remote(cls, sock):
+        '''Reads data for the socket buffer and reconstructs the appropriate
+        message that was sent by the other end.
+        '''
         header = sock.recv(MAX_BUFFER_SIZE)
         try:
             kwargs = numpyjson.loads(header)
@@ -175,6 +194,7 @@ class MessageBase(object):
         return numpyjson.dumps(self.data)
 
 class AckMessage(MessageBase):
+    '''Simple message type meant for ACKnolegemnt of message receipt.'''
     def get_header(self, **kwargs):
         d = super(AckMessage, self).get_header(**kwargs)
         d['ACK'] = True
@@ -194,6 +214,13 @@ class ServerMessage(MessageBase):
         self.data_is_complex = is_complex
     @classmethod
     def from_remote(cls, sock):
+        '''Reads data for the socket buffer and reconstructs the appropriate
+        message that was sent by the other end.
+
+        This method is used by clients to reconstruct ServerMessage objects
+        and if necessary, use multiple read calls to get the entire message
+        (if the message size is greater than the buffer length)
+        '''
         header = sock.recv(MAX_BUFFER_SIZE)
         try:
             kwargs = numpyjson.loads(header)
@@ -217,6 +244,10 @@ class ServerMessage(MessageBase):
         kwargs['data'] = numpyjson.loads(recv)
         return cls(**kwargs)
     def send_message(self, sock):
+        '''Sends the message data to clients.
+        If necessary, uses multiple calls to send to ensure all data has
+        actually been sent through the socket objects's buffer.
+        '''
         header, data = self._serialize()
         sock.sendall(header)
         if data is not None:
@@ -302,6 +333,11 @@ class RequestHandler(BaseRequestHandler):
         tx_message.send_message(self.request)
 
 class RtlSdrTcpClient(RtlSdrTcpBase):
+    '''Client object that connects to a remote server.
+    Exposes most of the methods and descriptors that are available in the
+    RtlSdr class in a transparent manner allowing an interface that is nearly
+    identical to the core API.
+    '''
     def open(self, *args):
         self.device_opened = True
     def close(self):
@@ -362,6 +398,9 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
     freq_correction = property(get_freq_correction, set_freq_correction)
 
 def run_server():
+    '''Convenience function to run the server from the command line
+    with options for hostname, port and device index.
+    '''
     p = argparse.ArgumentParser()
     p.add_argument(
         '-a', '--address',
