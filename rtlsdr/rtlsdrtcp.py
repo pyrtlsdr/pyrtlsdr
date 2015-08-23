@@ -119,6 +119,7 @@ class ServerThread(threading.Thread):
         self.stopped.set()
     def stop(self):
         self.server.shutdown()
+        self.server.server_close()
         self.stopped.wait()
 
 class Server(TCPServer):
@@ -127,6 +128,15 @@ class Server(TCPServer):
         self.rtl_sdr = rtl_sdr
         server_addr = (rtl_sdr.hostname, rtl_sdr.port)
         TCPServer.__init__(self, server_addr, RequestHandler)
+        self.handlers = set()
+    def server_close(self):
+        for h in self.handlers:
+            print h, h.finished
+            h.close()
+            print h.finished
+    #def finish_request(self, request, client_address):
+    #    handler = TcpServer.finish_request(self, request, client_address)
+    #    self.handlers.add(handler)
 
 API_METHODS = (
     'get_center_freq', 'set_center_freq',
@@ -311,6 +321,9 @@ class ClientMessage(MessageBase):
         return ServerMessage
 
 class RequestHandler(BaseRequestHandler):
+    def setup(self):
+        self.finished = False
+        self.server.handlers.add(self)
     def handle(self, rx_message=None):
         if rx_message is None:
             rx_message = ClientMessage.from_remote(self.request)
@@ -326,6 +339,13 @@ class RequestHandler(BaseRequestHandler):
         if r is False:
             nak = AckMessage(ok=False)
             nak.send_message(self.request)
+    def finish(self):
+        self.server.handlers.discard(self)
+    def close(self):
+        e = getattr(self, '_async_cancel', None)
+        if e is not None:
+            e.set()
+        self.finished = True
     def handle_method_call(self, rx_message):
         rtl_sdr = self.server.rtl_sdr
         method_name = rx_message.header.get('name')
@@ -375,21 +395,28 @@ class RequestHandler(BaseRequestHandler):
         tx_message.send_message(self.request)
     def _read_samples_callback(self, iq, context):
         print('async_callback: ', len(iq))
+        if self.server.rtl_sdr.read_async_canceling:
+            return
         tx_message = ServerMessage(client_message=self._client_message, data=iq)
         tx_message.header['request']['name'] = '_callback_samples'
-        tx_message.send_message(self.request)
+        try:
+            tx_message.send_message(self.request)
+        except socket.error:
+            self.cancel_async()
         print tx_message.header
     def wait_for_async(self):
         print('server waiting for async')
-        self.async_cancel = threading.Event()
+        self._async_cancel = threading.Event()
         sock = self.request
-        while not self.async_cancel.is_set():
-            self.async_cancel.wait(.1)
+        while not self._async_cancel.is_set():
+            self._async_cancel.wait(.1)
+            if self._async_cancel.is_set():
+                break
             try:
                 rx_message = ClientMessage.from_remote(sock)
             except ValueError:
                 rx_message = None
-            except socket.error:
+            except (CommunicationError, socket.error):
                 self.cancel_async()
             if rx_message is None:
                 continue
@@ -398,6 +425,8 @@ class RequestHandler(BaseRequestHandler):
             self.handle(rx_message)
         print('server async cancelled')
     def cancel_async(self):
+        if not self.server.rtl_sdr.read_async_canceling:
+            self.server.rtl_sdr.cancel_read_async()
         print('server cancelling async')
         e = getattr(self, '_async_cancel', None)
         if e is None:
@@ -496,13 +525,13 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
 
     def cancel_read_async(self):
         print 'client cancel_read_async called'
-        #self._communicate_method('cancel_read_async')
         t = getattr(self, '_async_thread', None)
         if t is not None:
             t.stop()
         self._async_thread = None
         self._keep_alive = False
         self._close_socket()
+        self._communicate_method('cancel_read_async')
     center_freq = fc = property(get_center_freq, set_center_freq)
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
     gain = property(get_gain, set_gain)
@@ -530,18 +559,18 @@ class AsyncClientThread(threading.Thread):
                 rx_message = ServerMessage.from_remote(sock)
             except ValueError:
                 continue
-            except socket.error:
-                client.cancel_read_async()
+            except (CommunicationError, socket.error):
+                #client.cancel_read_async()
                 break
             #print rx_message.header
             if rx_message.header.get('request', {}).get('name') == '_callback_samples':
                 client._callback_samples(rx_message.data, None)
+        recv = True
         if client._socket is not None:
-            # This is to avoid extra data from an uncaught callback
-            try:
-                client._communicate_method('cancel_read_async')
-            except ValueError:
-                pass
+            while recv:
+                recv = client._socket.recv(MAX_BUFFER_SIZE)
+            client._keep_alive = False
+            client._close_socket()
         self.stopped.set()
         print 'client async thread stopped'
     def stop(self):
@@ -630,8 +659,6 @@ def test_async(num_seconds):
             now = time.time()
             print('%s seconds left' % (start_time + num_seconds - now))
         client.cancel_read_async()
-    except:
-        raise
     finally:
         server.close()
 
