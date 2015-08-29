@@ -5,7 +5,6 @@ import select
 import socket
 import argparse
 import traceback
-from StringIO import StringIO
 
 PY2 = sys.version_info[0] == 2
 if PY2:
@@ -131,9 +130,7 @@ class Server(TCPServer):
         self.handlers = set()
     def server_close(self):
         for h in self.handlers:
-            print h, h.finished
             h.close()
-            print h.finished
     #def finish_request(self, request, client_address):
     #    handler = TcpServer.finish_request(self, request, client_address)
     #    self.handlers.add(handler)
@@ -147,9 +144,6 @@ API_METHODS = (
     'get_tuner_type',
     'set_direct_sampling',
     'read_samples',
-    'read_samples_async',
-    'cancel_read_async',
-    '_callback_samples',
 )
 API_DESCRIPTORS = {
     'center_freq', 'fc',
@@ -342,9 +336,6 @@ class RequestHandler(BaseRequestHandler):
     def finish(self):
         self.server.handlers.discard(self)
     def close(self):
-        e = getattr(self, '_async_cancel', None)
-        if e is not None:
-            e.set()
         self.finished = True
     def handle_method_call(self, rx_message):
         rtl_sdr = self.server.rtl_sdr
@@ -356,26 +347,12 @@ class RequestHandler(BaseRequestHandler):
             m = getattr(rtl_sdr, method_name)
         except AttributeError:
             raise CommunicationError('sdr has no attribute "%s"' % (method_name))
-        wait_for_async = False
-        cancel_async = False
-        if method_name == 'read_samples_async':
-            self._client_message = rx_message
-            print 'server reading async: %s' % (arg)
-            resp = m(self._read_samples_callback, arg)
-            wait_for_async = True
-        elif method_name == 'cancel_read_async':
-            resp = m()
-            cancel_async = True
-        elif arg is not None:
+        if arg is not None:
             resp = m(arg)
         else:
             resp = m()
         tx_message = ServerMessage(client_message=rx_message, data=resp)
         tx_message.send_message(self.request)
-        if wait_for_async:
-            self.wait_for_async()
-        elif cancel_async:
-            self.cancel_async()
     def handle_prop_set(self, rx_message):
         rtl_sdr = self.server.rtl_sdr
         prop_name = rx_message.header.get('name')
@@ -393,45 +370,6 @@ class RequestHandler(BaseRequestHandler):
         value = getattr(rtl_sdr, prop_name)
         tx_message = ServerMessage(client_message=rx_message, data=value)
         tx_message.send_message(self.request)
-    def _read_samples_callback(self, iq, context):
-        print('async_callback: ', len(iq))
-        if self.server.rtl_sdr.read_async_canceling:
-            return
-        tx_message = ServerMessage(client_message=self._client_message, data=iq)
-        tx_message.header['request']['name'] = '_callback_samples'
-        try:
-            tx_message.send_message(self.request)
-        except socket.error:
-            self.cancel_async()
-        print tx_message.header
-    def wait_for_async(self):
-        print('server waiting for async')
-        self._async_cancel = threading.Event()
-        sock = self.request
-        while not self._async_cancel.is_set():
-            self._async_cancel.wait(.1)
-            if self._async_cancel.is_set():
-                break
-            try:
-                rx_message = ClientMessage.from_remote(sock)
-            except ValueError:
-                rx_message = None
-            except (CommunicationError, socket.error):
-                self.cancel_async()
-            if rx_message is None:
-                continue
-            if rx_message.header.get('name') != 'cancel_read_async':
-                continue
-            self.handle(rx_message)
-        print('server async cancelled')
-    def cancel_async(self):
-        if not self.server.rtl_sdr.read_async_canceling:
-            self.server.rtl_sdr.cancel_read_async()
-        print('server cancelling async')
-        e = getattr(self, '_async_cancel', None)
-        if e is None:
-            return
-        e.set()
 
 class RtlSdrTcpClient(RtlSdrTcpBase):
     '''Client object that connects to a remote server.
@@ -506,78 +444,10 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         self._communicate_method('set_direct_sampling', value)
     def read_samples(self, num_samples=RtlSdr.DEFAULT_READ_SIZE):
         return self._communicate_method('read_samples', num_samples)
-    def read_samples_async(self, callback, num_samples=RtlSdr.DEFAULT_READ_SIZE, context=None):
-        self._real_callback_samples = callback
-        self._build_socket()
-        self._keep_alive = True
-        self.wait_for_async(num_samples)
-    def _callback_samples(self, iq, context):
-        self._real_callback_samples(iq, context)
-    def wait_for_async(self, num_samples):
-        t = getattr(self, '_async_thread', None)
-        if t is not None:
-            t.stop()
-        msg = ClientMessage(type='method', name='read_samples_async', data=num_samples)
-        self._communicate(msg)
-        t = self._async_thread = AsyncClientThread(self)
-        t.start()
-        t.running.wait()
-
-    def cancel_read_async(self):
-        print 'client cancel_read_async called'
-        t = getattr(self, '_async_thread', None)
-        if t is not None:
-            t.stop()
-        self._async_thread = None
-        self._keep_alive = False
-        self._close_socket()
-        self._communicate_method('cancel_read_async')
     center_freq = fc = property(get_center_freq, set_center_freq)
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
     gain = property(get_gain, set_gain)
     freq_correction = property(get_freq_correction, set_freq_correction)
-
-class AsyncClientThread(threading.Thread):
-    def __init__(self, client):
-        super(AsyncClientThread, self).__init__()
-        self.client = client
-        self.running = threading.Event()
-        self.stopped = threading.Event()
-    def run(self):
-        client = self.client
-        print 'client async thread start'
-        self.running.set()
-        while self.running.is_set():
-            self.running.wait(.1)
-            if not self.running.is_set():
-                break
-            sock = client._socket
-            if sock is None:
-                print 'no socket'
-                continue
-            try:
-                rx_message = ServerMessage.from_remote(sock)
-            except ValueError:
-                continue
-            except (CommunicationError, socket.error):
-                #client.cancel_read_async()
-                break
-            #print rx_message.header
-            if rx_message.header.get('request', {}).get('name') == '_callback_samples':
-                client._callback_samples(rx_message.data, None)
-        recv = True
-        if client._socket is not None:
-            while recv:
-                recv = client._socket.recv(MAX_BUFFER_SIZE)
-            client._keep_alive = False
-            client._close_socket()
-        self.stopped.set()
-        print 'client async thread stopped'
-    def stop(self):
-        print 'stopping client async thread'
-        self.running.clear()
-        self.stopped.wait()
-
 
 def run_server():
     '''Convenience function to run the server from the command line
@@ -642,26 +512,6 @@ def test():
     finally:
         server.close()
     print('Complete')
-
-def test_async(num_seconds):
-    import time
-    def test_callback(iq, context):
-        print '%s samples received' % (len(iq))
-    server = RtlSdrTcpServer()
-    server.run()
-    client = RtlSdrTcpClient()
-    start_time = time.time()
-    now = start_time
-    try:
-        client.read_samples_async(test_callback)
-        while now < start_time + num_seconds:
-            time.sleep(1.)
-            now = time.time()
-            print('%s seconds left' % (start_time + num_seconds - now))
-        client.cancel_read_async()
-    finally:
-        server.close()
-
 
 if __name__ == '__main__':
     run_server()
