@@ -83,36 +83,39 @@ def test_callback(buffer, rtlsdr_obj):
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, np.ndarray):
+        if np is None:
+            if isinstance(obj, complex):
+                return dict(__complex__=[obj.real, obj.imag])
+        elif isinstance(obj, np.ndarray):
             data_b64 = base64.b64encode(obj.dumps())
             return dict(__ndarray__=data_b64)
         return json.JSONEncoder.default(self, obj)
 
 def json_numpy_obj_hook(dct):
-    if isinstance(dct, dict) and '__ndarray__' in dct:
-        data = base64.b64decode(dct['__ndarray__'])
-        return np.loads(data)
+    if isinstance(dct, dict):
+        if '__ndarray__' in dct:
+            data = base64.b64decode(dct['__ndarray__'])
+            return np.loads(data)
+        elif '__complex__' in dct:
+            data = dct['__complex__']
+            return complex(*data)
     return dct
 
 class NumpyJson(object):
     def dumps(self, *args, **kwargs):
-        if np is not None:
-            kwargs.setdefault('cls', NumpyEncoder)
+        kwargs.setdefault('cls', NumpyEncoder)
         return json.dumps(*args, **kwargs)
 
     def loads(self, *args, **kwargs):
-        if np is not None:
-            kwargs.setdefault('object_hook', json_numpy_obj_hook)
+        kwargs.setdefault('object_hook', json_numpy_obj_hook)
         return json.loads(*args, **kwargs)
 
     def dump(self, *args, **kwargs):
-        if np is not None:
-            kwargs.setdefault('cls', NumpyEncoder)
+        kwargs.setdefault('cls', NumpyEncoder)
         return json.dump(*args, **kwargs)
 
     def load(self, *args, **kwargs):
-        if np is not None:
-            kwargs.setdefault('object_hook', json_numpy_obj_hook)
+        kwargs.setdefault('object_hook', json_numpy_obj_hook)
         return json.load(*args, **kwargs)
 
 numpyjson = NumpyJson()
