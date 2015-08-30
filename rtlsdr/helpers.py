@@ -81,7 +81,11 @@ def test_callback(buffer, rtlsdr_obj):
 
 ## From http://stackoverflow.com/questions/27909658/
 
+
 class NumpyEncoder(json.JSONEncoder):
+    """JSONEncoder subclass to support serialization of numpy arrays.
+    Also handles complex numbers.
+    """
     def default(self, obj):
         if np is None:
             if isinstance(obj, complex):
@@ -91,7 +95,11 @@ class NumpyEncoder(json.JSONEncoder):
             return dict(__ndarray__=data_b64)
         return json.JSONEncoder.default(self, obj)
 
+
 def json_numpy_obj_hook(dct):
+    """Hook to deserialize numpy arrays and complex numbers formatted
+    by NumpyEncoder.
+    """
     if isinstance(dct, dict):
         if '__ndarray__' in dct:
             data = base64.b64decode(dct['__ndarray__'])
@@ -101,7 +109,11 @@ def json_numpy_obj_hook(dct):
             return complex(*data)
     return dct
 
+
 class NumpyJson(object):
+    """Convenience class to emulate the builtin json module adding
+    a JSONEncoder and object hook to support numpy arrays and complex numbers.
+    """
     def dumps(self, *args, **kwargs):
         kwargs.setdefault('cls', NumpyEncoder)
         return json.dumps(*args, **kwargs)
@@ -120,6 +132,7 @@ class NumpyJson(object):
 
 numpyjson = NumpyJson()
 ##
+
 
 def main():
     from rtlsdr import RtlSdr
