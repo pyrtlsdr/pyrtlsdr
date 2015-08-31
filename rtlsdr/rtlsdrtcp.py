@@ -80,6 +80,10 @@ class RtlSdrTcpServer(RtlSdrTcpBase):
             return
         self.server_thread.start()
         self.server_thread.running.wait()
+        e = self.server_thread.exception
+        if e is not None:
+            print(self.server_thread.exception_tb)
+            raise e
         if self.server_thread.stopped.is_set():
             self.server_thread = None
             self.close()
@@ -125,14 +129,16 @@ class ServerThread(threading.Thread):
         self.rtl_sdr = rtl_sdr
         self.running = threading.Event()
         self.stopped = threading.Event()
+        self.exception = None
 
     def run(self):
         try:
             self.server = Server(self.rtl_sdr)
-        except socket.error:
+        except Exception as e:
+            self.exception = e
+            self.exception_tb = traceback.format_exc()
             self.running.set()
             self.stopped.set()
-            traceback.print_exc()
             return
         rtl_sdr = self.rtl_sdr
         rtl_sdr.device_ready = True
