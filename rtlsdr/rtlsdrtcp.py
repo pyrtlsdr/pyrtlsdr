@@ -1,7 +1,6 @@
 import sys
 import time
 import threading
-import base64
 import select
 import socket
 import struct
@@ -115,7 +114,6 @@ class RtlSdrTcpServer(RtlSdrTcpBase):
         fmt_str = '%dB' % (num_bytes)
         buffer = super(RtlSdrTcpServer, self).read_bytes(num_bytes)
         s = struct.pack(fmt_str, *buffer)
-        s = base64.b64encode(s)
         return {'struct_fmt':fmt_str, 'data':s}
 
     def read_samples(self, num_samples=RtlSdr.DEFAULT_READ_SIZE):
@@ -199,11 +197,9 @@ class MessageBase(object):
     """
 
     def __init__(self, **kwargs):
-        self.data_len = None
         self.timestamp = kwargs.get('timestamp')
         self.header = self.get_header(**kwargs)
         self.data = self.get_data(**kwargs)
-        self.data_is_complex = False
 
     @staticmethod
     def _send(sock, data):
@@ -239,7 +235,7 @@ class MessageBase(object):
         return d
 
     def get_data(self, **kwargs):
-        return kwargs.get('data')
+        return kwargs.get('data', kwargs.get('header', {}).get('data'))
 
     def send_message(self, sock):
         header, data = self._serialize()
@@ -253,23 +249,13 @@ class MessageBase(object):
         return AckMessage.from_remote(sock)
 
     def _serialize(self):
-        if not self.data_is_complex:
-            d = self.header.copy()
-            d['data'] = self.data
-            return numpyjson.dumps(d), None
-        data = self._serialize_data()
-        if data is not None:
-            self.data_len = len(data)
-        header = self._serialize_header()
-        return header, data
+        struct_fmt = self.header.get('struct_fmt')
+        if struct_fmt is not None:
+            return numpyjson.dumps(self.header), self.data
+        data = self.header.copy()
+        data.setdefault('data', self.data)
+        return numpyjson.dumps(data), None
 
-    def _serialize_header(self):
-        header = self.header
-        header['data_len'] = self.data_len
-        return numpyjson.dumps(self.header)
-
-    def _serialize_data(self):
-        return numpyjson.dumps(self.data)
 
 
 class AckMessage(MessageBase):
@@ -284,16 +270,6 @@ class AckMessage(MessageBase):
 
 
 class ServerMessage(MessageBase):
-    def __init__(self, **kwargs):
-        super(ServerMessage, self).__init__(**kwargs)
-        is_complex = False
-        if self.data is not None:
-            if np is not None and isinstance(self.data, np.ndarray):
-                is_complex = True
-            elif isinstance(self.data, list) and len(self.data):
-                if isinstance(self.data[0], complex):
-                    is_complex = True
-        self.data_is_complex = is_complex
 
     @classmethod
     def from_remote(cls, sock):
@@ -307,9 +283,10 @@ class ServerMessage(MessageBase):
         """
         header = cls._recv(sock)
         kwargs = numpyjson.loads(header)
-        data_len = kwargs.get('data_len')
-        data = kwargs.get('data')
-        if data_len is None or data is not None:
+        struct_fmt = kwargs.get('struct_fmt')
+        if struct_fmt is not None:
+            data_len = struct.calcsize(struct_fmt)
+        else:
             return cls(**kwargs)
         ack_msg = AckMessage()
         ack_msg.send_message(sock)
@@ -321,7 +298,7 @@ class ServerMessage(MessageBase):
             else:
                 recv += _recv
             data_len -= len(_recv)
-        kwargs['data'] = numpyjson.loads(recv)
+        kwargs['data'] = struct.unpack(struct_fmt, recv)
         return cls(**kwargs)
 
     def send_message(self, sock):
@@ -334,11 +311,16 @@ class ServerMessage(MessageBase):
         header, data = self._serialize()
 
         self._send(sock, header)
-        if data is not None:
+        if isinstance(self.data, dict):
+            struct_fmt = self.data.get('struct_fmt')
+        else:
+            struct_fmt = None
+        if struct_fmt is not None:
+            data = self.data['data']
+            data_len = struct.calcsize(struct_fmt)
             ack = self.get_ack_response(sock)
             if not ack.header.get('ok'):
                 raise CommunicationError('No ACK received')
-            data_len = self.data_len
             while data_len > 0:
                 sent = self._send(sock, data)
                 data_len -= sent
@@ -352,6 +334,12 @@ class ServerMessage(MessageBase):
             d['request'] = client_message.header
         else:
             d['request'] = kwargs.get('request')
+        return d
+
+    def get_data(self, **kwargs):
+        d = super(ServerMessage, self).get_data(**kwargs)
+        if isinstance(d, dict) and 'struct_fmt' in d:
+            self.header['struct_fmt'] = d['struct_fmt']
         return d
 
     def get_response_class(self):
@@ -535,9 +523,7 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         self._communicate_method('set_direct_sampling', value)
 
     def read_samples(self, num_samples=RtlSdr.DEFAULT_READ_SIZE):
-        d = self._communicate_method('read_samples', num_samples)
-        s = base64.b64decode(d['data'])
-        raw_data = struct.unpack(d['struct_fmt'], s)
+        raw_data = self._communicate_method('read_samples', num_samples)
         iq = self.packed_bytes_to_iq(raw_data)
         return iq
 
