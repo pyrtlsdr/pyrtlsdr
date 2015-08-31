@@ -7,6 +7,7 @@ import struct
 import errno
 import argparse
 import traceback
+import json
 
 PY2 = sys.version_info[0] == 2
 if PY2:
@@ -15,16 +16,9 @@ else:
     from socketserver import TCPServer, BaseRequestHandler
 
 try:
-    import numpy as np
-except ImportError:
-    np = None
-
-try:
     from rtlsdr import RtlSdr
-    from helpers import numpyjson
 except ImportError:
     from .rtlsdr import RtlSdr
-    from .helpers import numpyjson
 
 MAX_BUFFER_SIZE = 4096
 
@@ -221,7 +215,7 @@ class MessageBase(object):
         message that was sent by the other end.
         """
         header = cls._recv(sock)
-        kwargs = numpyjson.loads(header)
+        kwargs = json.loads(header)
         if kwargs.get('ACK'):
             cls = AckMessage
         return cls(**kwargs)
@@ -251,10 +245,10 @@ class MessageBase(object):
     def _serialize(self):
         struct_fmt = self.header.get('struct_fmt')
         if struct_fmt is not None:
-            return numpyjson.dumps(self.header), self.data
+            return json.dumps(self.header), self.data
         data = self.header.copy()
         data.setdefault('data', self.data)
-        return numpyjson.dumps(data), None
+        return json.dumps(data), None
 
 
 
@@ -282,7 +276,7 @@ class ServerMessage(MessageBase):
 
         """
         header = cls._recv(sock)
-        kwargs = numpyjson.loads(header)
+        kwargs = json.loads(header)
         struct_fmt = kwargs.get('struct_fmt')
         if struct_fmt is not None:
             data_len = struct.calcsize(struct_fmt)
