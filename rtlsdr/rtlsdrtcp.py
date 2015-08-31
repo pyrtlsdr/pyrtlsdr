@@ -5,6 +5,7 @@ import base64
 import select
 import socket
 import struct
+import errno
 import argparse
 import traceback
 
@@ -576,9 +577,19 @@ def run_server():
 
 def test():
     import time
-    server = RtlSdrTcpServer()
-    server.run()
-    client = RtlSdrTcpClient()
+    port = 1235
+    while True:
+        try:
+            server = RtlSdrTcpServer(port=port)
+            server.run()
+        except socket.error as e:
+            if e.errno != errno.EADDRINUSE:
+                raise
+            server = None
+            port += 1
+        if server is not None:
+            break
+    client = RtlSdrTcpClient(port=port)
     test_props = [
         ['sample_rate', 2e6],
         ['center_freq', 6e6],
