@@ -105,16 +105,19 @@ class RtlSdrTcpServer(RtlSdrTcpBase):
         super(RtlSdrTcpServer, self).close()
 
     def read_bytes(self, num_bytes=RtlSdr.DEFAULT_READ_SIZE):
+        """Return a packed string of bytes read along with the struct_fmt.
+        """
         fmt_str = '%dB' % (num_bytes)
         buffer = super(RtlSdrTcpServer, self).read_bytes(num_bytes)
         s = struct.pack(fmt_str, *buffer)
         return {'struct_fmt':fmt_str, 'data':s}
 
     def read_samples(self, num_samples=RtlSdr.DEFAULT_READ_SIZE):
+        """This overrides the base implementation so that the raw data is sent.
+        It will be unpacked to I/Q samples on the client side.
+        """
         num_samples = 2*num_samples
         return self.read_bytes(num_samples)
-
-
 
 class ServerThread(threading.Thread):
     def __init__(self, rtl_sdr):
