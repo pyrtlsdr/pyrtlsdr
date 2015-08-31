@@ -1,8 +1,10 @@
 import sys
 import time
 import threading
+import base64
 import select
 import socket
+import struct
 import argparse
 import traceback
 
@@ -104,6 +106,18 @@ class RtlSdrTcpServer(RtlSdrTcpBase):
             self.server_thread = None
         super(RtlSdrTcpServer, self).close()
 
+    def read_bytes(self, num_bytes=RtlSdr.DEFAULT_READ_SIZE):
+        fmt_str = '%dB' % (num_bytes)
+        buffer = super(RtlSdrTcpServer, self).read_bytes(num_bytes)
+        s = struct.pack(fmt_str, *buffer)
+        s = base64.b64encode(s)
+        return {'struct_fmt':fmt_str, 'data':s}
+
+    def read_samples(self, num_samples=RtlSdr.DEFAULT_READ_SIZE):
+        num_samples = 2*num_samples
+        return self.read_bytes(num_samples)
+
+
 
 class ServerThread(threading.Thread):
     def __init__(self, rtl_sdr):
@@ -157,6 +171,7 @@ API_METHODS = (
     'get_gains',
     'get_tuner_type',
     'set_direct_sampling',
+    'read_bytes',
     'read_samples',
 )
 API_DESCRIPTORS = {
@@ -513,7 +528,12 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         self._communicate_method('set_direct_sampling', value)
 
     def read_samples(self, num_samples=RtlSdr.DEFAULT_READ_SIZE):
-        return self._communicate_method('read_samples', num_samples)
+        d = self._communicate_method('read_samples', num_samples)
+        s = base64.b64decode(d['data'])
+        raw_data = struct.unpack(d['struct_fmt'], s)
+        iq = self.packed_bytes_to_iq(raw_data)
+        return iq
+
     center_freq = fc = property(get_center_freq, set_center_freq)
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
     gain = property(get_gain, set_gain)
