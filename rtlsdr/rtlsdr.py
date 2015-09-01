@@ -15,10 +15,12 @@
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from __future__ import division
+from __future__ import division, print_function
 from ctypes import *
-from librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
-from itertools import izip
+try:                from  librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
+except ImportError: from .librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
+try:                from itertools import izip
+except ImportError: izip = zip
 
 # see if NumPy is available
 has_numpy = True
@@ -141,7 +143,7 @@ class BaseRtlSdr(object):
             self.close()
             raise IOError('Error code %d when getting freq. offset in ppm.'\
                           % (result))
-        return
+        return result
 
     def set_sample_rate(self, rate):
         ''' Set sample rate of tuner (in Hz).
@@ -352,7 +354,7 @@ class BaseRtlSdr(object):
 
 # This adds async read support to base class BaseRtlSdr (don't use that one)
 class RtlSdr(BaseRtlSdr):
-    DEFAULT_ASYNC_BUF_NUMBER = 32
+    DEFAULT_ASYNC_BUF_NUMBER = 0 # librtlsdr will use the default (15)
     DEFAULT_READ_SIZE = 1024
 
     read_async_canceling = False
@@ -434,8 +436,8 @@ class RtlSdr(BaseRtlSdr):
 
 
 def test_callback(buffer, rtlsdr_obj):
-    print '  in callback'
-    print '  signal mean:', sum(buffer)/len(buffer)
+    print('  in callback')
+    print('  signal mean:', sum(buffer)/len(buffer))
 
     # note we may get additional callbacks even after calling this
     rtlsdr_obj.cancel_read_async()
@@ -444,19 +446,19 @@ def test_callback(buffer, rtlsdr_obj):
 def main():
     sdr = RtlSdr()
 
-    print 'Configuring SDR...'
+    print('Configuring SDR...')
     sdr.rs = 2.4e6
     sdr.fc = 70e6
     sdr.gain = 4
-    print '  sample rate: %0.6f MHz' % (sdr.rs/1e6)
-    print '  center frequency %0.6f MHz' % (sdr.fc/1e6)
-    print '  gain: %d dB' % sdr.gain
+    print('  sample rate: %0.6f MHz' % (sdr.rs/1e6))
+    print('  center frequency %0.6f MHz' % (sdr.fc/1e6))
+    print('  gain: %d dB' % sdr.gain)
 
-    print 'Reading samples...'
+    print('Reading samples...')
     samples = sdr.read_samples(1024)
-    print '  signal mean:', sum(samples)/len(samples)
+    print('  signal mean:', sum(samples)/len(samples))
 
-    print 'Testing callback...'
+    print('Testing callback...')
     sdr.read_samples_async(test_callback)
 
     sdr.close()

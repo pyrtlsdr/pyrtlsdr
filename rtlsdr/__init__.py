@@ -15,8 +15,11 @@
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from librtlsdr import librtlsdr
-from rtlsdr import RtlSdr
-from helpers import limit_calls, limit_time
+try:                from  librtlsdr import librtlsdr
+except ImportError: from .librtlsdr import librtlsdr
+try:                from  rtlsdr import RtlSdr
+except ImportError: from .rtlsdr import RtlSdr
+try:                from  helpers import limit_calls, limit_time
+except ImportError: from .helpers import limit_calls, limit_time
 
 __all__  = ['librtlsdr', 'RtlSdr', 'limit_calls', 'limit_time']

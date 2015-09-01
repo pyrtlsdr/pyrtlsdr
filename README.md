@@ -1,7 +1,7 @@
 # Description
 
 pyrtlsdr is a simple Python interface to devices supported by the RTL-SDR project, which turns certain USB DVB-T dongles
-employing the Realtek RTL2832U chipset into low-cost, general purpose software-defined radio receivers. It wraps all the
+employing the Realtek RTL2832U chipset into low-cost, general purpose software-defined radio receivers. It wraps many of the
 functions in the [librtlsdr library](http://sdr.osmocom.org/trac/wiki/rtl-sdr) (including asynchronous read support),
 and also provides a more Pythonic API.
 
@@ -28,7 +28,7 @@ sdr.center_freq = 70e6     # Hz
 sdr.freq_correction = 60   # PPM
 sdr.gain = 'auto'
 
-print sdr.read_samples(512)
+print(sdr.read_samples(512))
 ```
 
 Plotting the PSD with matplotlib:
@@ -61,7 +61,7 @@ See the files 'demo_waterfall.py' and 'test.py' for more examples.
 # Dependencies
 
 * Windows/Linux/OSX
-* Python 2.7.x
+* Python 2.7.x/3.3+
 * librtlsdr (builds dated after 5/5/12)
 * **Optional**: NumPy (wraps samples in a more convenient form)
 
@@ -77,10 +77,12 @@ function you need to add support for, and please send a pull request if you'd li
 
 * Some operating systems (Linux, OS X) seem to result in libusb buffer issues when performing small reads. Try reading 1024
 (or higher powers of two) samples at a time if you have problems.
-* If you're having librtlsdr import errors in Windows, make sure all the DLL files are in your system path, or the same folder
+
+* If you're having librtlsdr import errors:
+  * **Windows**: Make sure all the DLL files are in your system path, or the same folder
 as this README file. Also make sure you have all of *their* dependencies (e.g. the Visual Studio runtime files). If rtl_sdr.exe
-works, then you should be okay.
-* In Windows, you can't mix the 64 bit version of Python with 32 bit builds of librtlsdr.
+works, then you should be okay. Also note that you can't mix the 64 bit version of Python with 32 bit builds of librtlsdr, and vice versa.
+  * **Linux**: Make sure your LD_LIBRARY_PATH environment variable contains the directory where the librtlsdr.so.0 library is located. You can do this in a shell with (for example): `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib`. See [here](https://github.com/roger-/pyrtlsdr/issues/7) for more details.
 
 # License
 
