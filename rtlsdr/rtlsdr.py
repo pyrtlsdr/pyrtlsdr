@@ -212,11 +212,6 @@ class BaseRtlSdr(object):
     def get_gain(self):
         ''' Get gain of tuner (in dB). '''
 
-        result = librtlsdr.rtlsdr_get_tuner_gain(self.dev_p)
-        if result == 0:
-            self.close()
-            raise IOError('Error when getting gain')
-
         return result/10
 
     def get_gains(self):
