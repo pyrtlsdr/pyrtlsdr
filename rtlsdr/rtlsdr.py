@@ -46,6 +46,9 @@ class BaseRtlSdr(object):
     device_opened = False
 
     def __init__(self, device_index=0, test_mode_enabled=False):
+        self.open(device_index, test_mode_enabled)
+
+    def open(self, device_index=0, test_mode_enabled=False):
         ''' Initialize RtlSdr object.
         The test_mode_enabled parameter can be used to enable a special test mode, which will return the value of an
         internal RTL2832 8-bit counter with calls to read_bytes()
@@ -73,10 +76,12 @@ class BaseRtlSdr(object):
             raise IOError('Error code %d when resetting buffer (device index = %d)'\
                           % (result, device_index))
 
+        self.device_opened = True
+        self.init_device_values()
+
+    def init_device_values(self):
         self.gain_values = self.get_gains()
         self.valid_gains_db = [val/10 for val in self.gain_values]
-
-        self.device_opened = True
 
         # set default state
         self.set_sample_rate(self.DEFAULT_RS)
