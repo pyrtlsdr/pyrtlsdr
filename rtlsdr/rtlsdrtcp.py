@@ -457,7 +457,7 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         s = getattr(self, '_socket', None)
         if s is None:
             return
-        print 'client closing socket'
+        print('client closing socket')
         s.close()
         self._socket = None
 
