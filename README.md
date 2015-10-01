@@ -79,7 +79,7 @@ function you need to add support for, and please send a pull request if you'd li
 (or higher powers of two) samples at a time if you have problems.
 
 * If you're having librtlsdr import errors:
-  * **Windows**: Make sure all the DLL files are in your system path, or the same folder
+  * **Windows**: Make sure all the librtlsdr DLL files (rtlsdr.dll and libusb-1.0.dll) are in your system path, or the same folder
 as this README file. Also make sure you have all of *their* dependencies (e.g. the Visual Studio runtime files). If rtl_sdr.exe
 works, then you should be okay. Also note that you can't mix the 64 bit version of Python with 32 bit builds of librtlsdr, and vice versa.
   * **Linux**: Make sure your LD_LIBRARY_PATH environment variable contains the directory where the librtlsdr.so.0 library is located. You can do this in a shell with (for example): `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib`. See [here](https://github.com/roger-/pyrtlsdr/issues/7) for more details.
