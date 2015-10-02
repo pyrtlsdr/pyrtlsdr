@@ -58,6 +58,32 @@ Resulting plot [here](http://i.imgur.com/hFhg8.png).
 
 See the files 'demo_waterfall.py' and 'test.py' for more examples.
 
+## Experimental features
+
+Two new submodules are available for testing: **rtlsdraio**, which adds native Python 3 asynchronous support (asyncio module), and **rtlsdrtcp** which adds a TCP server/client for accessing a device over the network. See the respective modules in the rtlsdr folder for more details and feel free to test and report any bugs!
+
+####rtlsdraio
+Note that the rtlsdraio module is automatically imported and adds `stream()` and `stop()` methods to the normal `RtlSdr` class. It also requires the new `async`/`await` syntax introduced in Python 3.5+. 
+
+The syntax is basically:
+
+```python
+async def streaming():
+ sdr = RtlSdr()
+ 
+ async for samples in sdr.stream():
+  # do something with samples
+  # ...
+  
+  # to stop streaming:
+  sdr.stop()
+  
+ # done
+ sdr.close()
+ 
+asyncio.get_event_loop().run_until_complete(streaming())
+```
+
 # Dependencies
 
 * Windows/Linux/OSX
