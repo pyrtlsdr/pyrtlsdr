@@ -23,6 +23,10 @@ try:                from rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
 except ImportError: from .rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
 try:                from  helpers import limit_calls, limit_time
 except ImportError: from .helpers import limit_calls, limit_time
+try:                from  rtlsdraio import RtlSdrAio as RtlSdr
+except ImportError: from .rtlsdraio import RtlSdrAio as RtlSdr
+except ImportError: pass
+
 
 __all__  = ['librtlsdr', 'RtlSdr', 'RtlSdrTcpServer', 'RtlSdrTcpClient',
             'limit_calls', 'limit_time']
