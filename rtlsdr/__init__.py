@@ -14,6 +14,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+
+PY2 = sys.version_info[0] == 2
 
 try:                from  librtlsdr import librtlsdr
 except ImportError: from .librtlsdr import librtlsdr
@@ -23,9 +26,10 @@ try:                from rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
 except ImportError: from .rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
 try:                from  helpers import limit_calls, limit_time
 except ImportError: from .helpers import limit_calls, limit_time
-try:                from  rtlsdraio import RtlSdrAio as RtlSdr
-except ImportError: from .rtlsdraio import RtlSdrAio as RtlSdr
-except ImportError: pass
+if not PY2:
+    try:                from  rtlsdraio import RtlSdrAio as RtlSdr
+    except ImportError: from .rtlsdraio import RtlSdrAio as RtlSdr
+    except ImportError: pass
 
 
 __all__  = ['librtlsdr', 'RtlSdr', 'RtlSdrTcpServer', 'RtlSdrTcpClient',
