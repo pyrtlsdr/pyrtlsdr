@@ -16,7 +16,9 @@
 
 import sys
 
-PY2 = sys.version_info[0] == 2
+ASYNC_AVAILABLE = sys.version_info.major >= 3
+if sys.version_info.major == 3:
+    ASYNC_AVAILABLE = sys.version_info.minor >= 5
 
 try:                from  librtlsdr import librtlsdr
 except ImportError: from .librtlsdr import librtlsdr
@@ -26,7 +28,7 @@ try:                from rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
 except ImportError: from .rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
 try:                from  helpers import limit_calls, limit_time
 except ImportError: from .helpers import limit_calls, limit_time
-if not PY2:
+if ASYNC_AVAILABLE:
     try:                from  rtlsdraio import RtlSdrAio as RtlSdr
     except ImportError: from .rtlsdraio import RtlSdrAio as RtlSdr
     except ImportError: pass
