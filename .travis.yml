@@ -3,9 +3,11 @@ python:
   - "2.7"
   - "3.4"
   - "3.5"
-install:
+before_install:
   - wget https://github.com/steve-m/librtlsdr/archive/v0.5.3.tar.gz
-  - tar xvzf librtlsdr-0.5.3.tar.gz
-  - cd rtl-sdr && autoreconf -i && make && sudo make install && sudo ldconfig
+  - tar xvzf v0.5.3.tar.gz
+  - cd librtlsdr-0.5.3 && autoreconf -i && make && sudo make install && sudo ldconfig
+install:
+  - python setup.py -q
 script:
   - py.test test.py
