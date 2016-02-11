@@ -11,6 +11,6 @@ before_install:
   - cd librtlsdr-0.5.3 && mkdir build && cd build && cmake ../ && make && sudo make install && sudo ldconfig
   - cd ../..
 install:
-  - python setup.py install
+  - pip install -e .
 script:
   - py.test test.py
