@@ -13,4 +13,4 @@ before_install:
 install:
   - pip install -e .
 script:
-  - py.test test.py
+  - python test.py
