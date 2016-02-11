@@ -9,6 +9,7 @@ before_install:
   - wget https://github.com/steve-m/librtlsdr/archive/v0.5.3.tar.gz
   - tar xvzf v0.5.3.tar.gz
   - cd librtlsdr-0.5.3 && mkdir build && cd build && cmake ../ && make && sudo make install && sudo ldconfig
+  - cd ../..
 install:
   - python setup.py -q
 script:
