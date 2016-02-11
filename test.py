@@ -20,11 +20,11 @@ from __future__ import print_function
 from rtlsdr import *
 
 @limit_calls(2)
-def test_callback(samples, rtlsdr_obj):
+def my_callback(samples, rtlsdr_obj):
     print('  in callback')
     print('  signal mean:', sum(samples)/len(samples))
 
-def main():
+def test():
     sdr = RtlSdr()
 
     print('Configuring SDR...')
@@ -40,7 +40,7 @@ def main():
     print('  signal mean:', sum(samples)/len(samples))
 
     print('Testing callback...')
-    sdr.read_samples_async(test_callback, 256*1024)
+    sdr.read_samples_async(my_callback, 256*1024)
 
     try:
         import pylab as mpl
@@ -58,4 +58,4 @@ def main():
     sdr.close()
 
 if __name__ == '__main__':
-    main()
+    test()
