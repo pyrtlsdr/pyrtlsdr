@@ -16,14 +16,24 @@
 
 
 import os
+import sys
 import re
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except ImportError:
     from distutils.core import setup
+    find_packages = None
 
 PACKAGE_NAME = 'pyrtlsdr'
 VERSION = '0.1.1'
+
+if find_packages is not None:
+    if sys.version_info.major <= 3 and sys.version_info.minor < 5:
+        PACKAGES = find_packages(exclude=['rtlsdraio.py'])
+    else:
+        PACKAGES = find_packages()
+else:
+    PACKAGES = ['rtlsdr']
 
 #HERE = os.path.abspath(os.path.dirname(__file__))
 #README = open(os.path.join(HERE, 'README.md')).read()
@@ -46,4 +56,4 @@ setup(
                  'Topic :: Utilities'],
     license='GPLv3',
     keywords='radio librtlsdr rtlsdr sdr',
-    packages=['rtlsdr'])
+    packages=PACKAGES)
