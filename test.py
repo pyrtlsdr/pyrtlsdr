@@ -24,8 +24,9 @@ def my_callback(samples, rtlsdr_obj):
     print('  in callback')
     print('  signal mean:', sum(samples)/len(samples))
 
-def test():
-    sdr = RtlSdr()
+def test(sdr=None):
+    if sdr is None:
+        sdr = RtlSdr()
 
     print('Configuring SDR...')
     sdr.rs = 2.4e6
