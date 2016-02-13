@@ -46,7 +46,7 @@ class DummyRtlSdr(RtlSdr):
         pass
     def set_direct_sampling(self, direct):
         pass
-    def read_bytes(self, num_samples=DEFAULT_READ_SIZE):
+    def read_bytes(self, num_bytes=RtlSdr.DEFAULT_READ_SIZE):
         num_bytes = int(num_bytes)
         return [random.randint(0, 255) for i in range(num_bytes)]
     center_freq = fc = property(get_center_freq, set_center_freq)
@@ -54,7 +54,7 @@ class DummyRtlSdr(RtlSdr):
     gain = property(get_gain, set_gain)
     freq_correction = property(get_freq_correction, set_freq_correction)
 
-    def read_bytes_async(self, callback, num_bytes=DEFAULT_READ_SIZE, context=None):
+    def read_bytes_async(self, callback, num_bytes=RtlSdr.DEFAULT_READ_SIZE, context=None):
         num_bytes = int(num_bytes)
         self._callback_bytes = callback
         if not context:
@@ -68,7 +68,7 @@ class DummyRtlSdr(RtlSdr):
         if self.read_async_canceling:
             return
         self._callback_bytes(bytes_read, self)
-    def read_samples_async(self, callback, num_samples=DEFAULT_READ_SIZE, context=None):
+    def read_samples_async(self, callback, num_samples=RtlSdr.DEFAULT_READ_SIZE, context=None):
         num_bytes = 2*num_samples
         self._callback_samples = callback
         self.read_bytes_async(self._samples_converter_callback, num_bytes, context)
@@ -83,7 +83,7 @@ class DummyAsyncSdr(object):
     """
     def __init__(self, rtlsdr_obj, num_bytes):
         self.rtlsdr_obj = rtlsdr_obj
-        self.num_bytes
+        self.num_bytes = num_bytes
         num_samples = num_bytes / 2
 
         # Guess how long it SHOULD take to read based off of the sample rate
