@@ -13,6 +13,4 @@ before_install:
 install:
   - pip install -e .
 script:
-  - python dumbtest.py
-after_script:
-  - python showsomethings.py
+  - python testdummyrtlsdr.py
