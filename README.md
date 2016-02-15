@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/nocarryr/pyrtlsdr.svg?branch=master)](https://travis-ci.org/nocarryr/pyrtlsdr)
+
 # Description
 
 pyrtlsdr is a simple Python interface to devices supported by the RTL-SDR project, which turns certain USB DVB-T dongles
