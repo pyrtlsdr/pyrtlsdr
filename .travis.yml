@@ -13,4 +13,4 @@ before_install:
 install:
   - pip install -e .
 script:
-  - python testdummyrtlsdr.py
+  - python test.py
