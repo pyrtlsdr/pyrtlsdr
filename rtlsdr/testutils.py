@@ -2,6 +2,7 @@ import time
 import random
 
 from rtlsdr import RtlSdr
+from helpers import limit_calls
 
 class DummyRtlSdr(RtlSdr):
     """Subclass of :class:`rtlsdr.RtlSdr` to emulate a real device.
@@ -145,9 +146,28 @@ def build_test_sdr(sdr_cls, *args, **kwargs):
 
     return sdr
 
+def async_read_test(sdr, read_size=1024, num_callbacks=2, bytes_mode=False):
+    @limit_calls(num_callbacks)
+    def read_callback(data, rtlsdr_obj):
+        if bytes_mode:
+            s = 'read %s bytes'
+        else:
+            s = 'read %s samples'
+        print(s % len(data))
+        assert len(data) == read_size
+    print('testing async read')
+    if bytes_mode:
+        sdr.read_bytes_async(read_callback, read_size)
+    else:
+        sdr.read_samples_async(read_callback, read_size)
+
+def async_bytes_test(sdr, read_size=1024, num_callbacks=2):
+    _async_read_test(sdr, read_size, num_callbacks, bytes_mode=True)
+
 
 def test_dummy_rtlsdr():
-    build_test_sdr(DummyRtlSdr)
+    sdr = build_test_sdr(DummyRtlSdr)
+    async_read_test(sdr)
 
 
 if __name__ == '__main__':
