@@ -96,3 +96,59 @@ class DummyAsyncSdr(object):
             bytes_read = sdr.read_bytes(self.num_bytes)
             sdr._bytes_converter_callback(bytes_read)
             time.sleep(self.timeout)
+
+
+
+def check_close(num_digits, *args):
+    """Checks whether given numbers are equal when rounded to `num_digits`
+    """
+    div = 10. ** (num_digits - 1)
+    last_n = None
+    for n in args:
+        n /= div
+        if last_n is None:
+            last_n = n
+            continue
+        if round(n) != round(last_n):
+            return False
+        last_n = n
+    return True
+
+def build_test_sdr(sdr_cls, *args, **kwargs):
+    """Functionality checks common to all tests
+    Instanciates the given subclass of :class:`rtlsdr.RtlSdr`,
+    checks get/set methods for sample_rate, center_freq and gain,
+    then reads 1024 samples.
+
+    Returns the instance for further tests.
+    """
+    print('Testing %r' % (sdr_cls))
+    sdr = sdr_cls(*args, **kwargs)
+
+    prev_rs = sdr.rs
+    sdr.rs = prev_rs + 1e6
+    assert check_close(7, prev_rs + 1e6, sdr.rs)
+    print('sample_rate: %s' % (sdr.rs))
+
+    prev_fc = sdr.fc
+    sdr.fc = prev_fc + 1e6
+    assert check_close(7, prev_fc + 1e6, sdr.fc)
+    print('center_freq: %s' % (sdr.fc))
+
+    sdr.gain = 10
+    assert check_close(2, 10, sdr.gain)
+    print('gain: %s' % (sdr.gain))
+
+    samples = sdr.read_samples(1024)
+    assert len(samples) == 1024
+    print('read %s samples' % (len(samples)))
+
+    return sdr
+
+
+def test_dummy_rtlsdr():
+    build_test_sdr(DummyRtlSdr)
+
+
+if __name__ == '__main__':
+    test_dummy_rtlsdr()
