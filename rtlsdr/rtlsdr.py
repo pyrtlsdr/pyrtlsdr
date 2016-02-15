@@ -440,15 +440,15 @@ class RtlSdr(BaseRtlSdr):
         self.read_async_canceling = True
 
 
-def test_callback(buffer, rtlsdr_obj):
-    print('  in callback')
-    print('  signal mean:', sum(buffer)/len(buffer))
-
-    # note we may get additional callbacks even after calling this
-    rtlsdr_obj.cancel_read_async()
-
-
 def main():
+
+    def read_callback(buffer, rtlsdr_obj):
+        print('  in callback')
+        print('  signal mean:', sum(buffer)/len(buffer))
+
+        # note we may get additional callbacks even after calling this
+        rtlsdr_obj.cancel_read_async()
+
     sdr = RtlSdr()
 
     print('Configuring SDR...')
@@ -464,7 +464,7 @@ def main():
     print('  signal mean:', sum(samples)/len(samples))
 
     print('Testing callback...')
-    sdr.read_samples_async(test_callback)
+    sdr.read_samples_async(read_callback)
 
     sdr.close()
 

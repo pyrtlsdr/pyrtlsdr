@@ -67,14 +67,14 @@ def limit_calls(max_calls):
     return decorator
 
 
-@limit_time(0.01)
-@limit_calls(20)
-def test_callback(buffer, rtlsdr_obj):
-    print('In callback')
-    print('   signal mean:', sum(buffer)/len(buffer))
-
-
 def main():
+
+    @limit_time(0.01)
+    @limit_calls(20)
+    def read_callback(buffer, rtlsdr_obj):
+        print('In callback')
+        print('   signal mean:', sum(buffer)/len(buffer))
+
     from rtlsdr import RtlSdr
 
     sdr = RtlSdr()
@@ -88,7 +88,7 @@ def main():
     print('   gain: %d dB' % sdr.gain)
 
     print('Testing callback...')
-    sdr.read_samples_async(test_callback)
+    sdr.read_samples_async(read_callback)
 
 
 if __name__ == '__main__':
