@@ -3,7 +3,10 @@ import time
 import random
 
 from rtlsdr import RtlSdr
-from helpers import limit_calls
+try:
+    from helpers import limit_calls
+except ImportError:
+    from .helpers import limit_calls
 
 def is_travisci():
     return os.environ.get('CI') == 'true' and os.environ.get('TRAVIS') == 'true'
