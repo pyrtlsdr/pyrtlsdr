@@ -1,8 +1,12 @@
+import os
 import time
 import random
 
 from rtlsdr import RtlSdr
 from helpers import limit_calls
+
+def is_travisci():
+    return os.environ.get('CI') == 'true' and os.environ.get('TRAVIS') == 'true'
 
 class DummyRtlSdr(RtlSdr):
     """Subclass of :class:`rtlsdr.RtlSdr` to emulate a real device.
