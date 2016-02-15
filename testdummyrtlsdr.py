@@ -1,4 +1,4 @@
-from tests.dummyrtlsdr import DummyRtlSdr
+from rtlsdr.testutils import DummyRtlSdr
 from test import test
 
 
