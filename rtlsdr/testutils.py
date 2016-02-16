@@ -135,6 +135,10 @@ def build_test_sdr(sdr_cls, *args, **kwargs):
     Returns the instance for further tests.
     """
     print('Testing %r' % (sdr_cls))
+    if is_travisci() and not issubclass(sdr_cls, DummyRtlSdr):
+        sdr_cls = DummyRtlSdr
+        print('Travis CI detected.  Using dummy class.')
+
     sdr = sdr_cls(*args, **kwargs)
 
     prev_rs = sdr.rs
