@@ -17,10 +17,16 @@
 
 from ctypes import *
 from ctypes.util import find_library
+import os
 
 def load_librtlsdr():
+    
+    # make sure that .DLL dependencies are accessible
+    curr_path = os.path.dirname(__file__)
+    os.environ['PATH']  += os.pathsep + curr_path
+    
     driver_files = ['rtlsdr.dll', 'librtlsdr.so']
-    driver_files += ['..//rtlsdr.dll', '..//librtlsdr.so']
+    driver_files += [curr_path + os.path.sep + 'rtlsdr.dll', curr_path + os.path.sep + 'librtlsdr.so']
     driver_files += ['rtlsdr//rtlsdr.dll', 'rtlsdr//librtlsdr.so']
     driver_files += [find_library('rtlsdr'), find_library('librtlsdr')]
 

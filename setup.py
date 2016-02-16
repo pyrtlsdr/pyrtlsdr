@@ -18,6 +18,9 @@
 import os
 import sys
 import re
+import pre_install
+import platform
+
 try:
     from setuptools import setup, find_packages
 except ImportError:
@@ -38,6 +41,14 @@ else:
 #HERE = os.path.abspath(os.path.dirname(__file__))
 #README = open(os.path.join(HERE, 'README.md')).read()
 
+# PRE INSTALLATION SCRIPT
+print('Running pre-installation script...')
+try:
+    DATA_FILES = pre_install.get_data_files()
+except Exception as e:
+    DATA_FILES = None
+    print('Dependency extraction failed. Please copy required files manually.')
+
 setup(
     name=PACKAGE_NAME,
     version=VERSION,
@@ -56,4 +67,9 @@ setup(
                  'Topic :: Utilities'],
     license='GPLv3',
     keywords='radio librtlsdr rtlsdr sdr',
-    packages=PACKAGES)
+    packages=PACKAGES,
+    data_files = DATA_FILES,
+    )
+
+if platform.system() == 'Windows':
+    win_setup(cleanup=True)
