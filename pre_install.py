@@ -1,4 +1,4 @@
-﻿# Post install script to get dependencies
+﻿# Pre-install script to get dependencies
 
 import os
 import sys
