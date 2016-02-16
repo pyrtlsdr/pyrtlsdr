@@ -210,7 +210,7 @@ class MessageBase(object):
 
     @staticmethod
     def _send(sock, data):
-        if not PY2:
+        if not PY2 and isinstance(data, str):
             data = data.encode()
         r, w, e = select.select([], [sock], [], .5)
         if sock not in w:
