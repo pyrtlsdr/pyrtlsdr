@@ -15,7 +15,7 @@ pyrtlsdr can be installed by downloading the source files and running `python se
 ###Windows
 Clone this repository. Depending on python version download and copy files in either `x32` or `x64` subdirectories 
 of [this zip file](http://sdr.osmocom.org/trac/attachment/wiki/rtl-sdr/RelWithDebInfo.zip) into the package directory
- directory of pyrtlsdr (e.g. location_to_clone\pyrtlsdr\rtlsdr).  
+ of pyrtlsdr (e.g. location_to_clone\pyrtlsdr\rtlsdr).  
   
 ###Linux
 Clone this repository. Install `rtl-sdr`:  
