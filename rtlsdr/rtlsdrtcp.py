@@ -250,6 +250,7 @@ class MessageBase(object):
 
     def send_message(self, sock):
         header, data = self._serialize()
+        print('%s sending %s' % (self.__class__.__name__, header))
         self._send(sock, header)
 
     def get_response(self, sock):
@@ -293,6 +294,7 @@ class ServerMessage(MessageBase):
 
         """
         header = cls._recv(sock)
+        print('%s recv %s' % (self.__class__.__name__, header))
         kwargs = json.loads(header)
         struct_fmt = kwargs.get('struct_fmt')
         if struct_fmt is not None:
@@ -378,6 +380,7 @@ class RequestHandler(BaseRequestHandler):
         self.server.handlers.add(self)
 
     def handle(self, rx_message=None):
+        print('server handling request')
         if rx_message is None:
             rx_message = ClientMessage.from_remote(self.request)
         msg_type = rx_message.header.get('type')
@@ -596,7 +599,7 @@ def test():
         ['freq_correction', 20]
     ]
     print('client built')
-    if is_travisci():
+    if False:#is_travisci():
         # Temporarily disable tests in Travis CI until failures can be determined.
         # Possible causes: socket-related? max-fds? memory limits?
         server.close()
