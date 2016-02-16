@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/nocarryr/pyrtlsdr.svg?branch=master)](https://travis-ci.org/nocarryr/pyrtlsdr)
+[![Build Status](https://travis-ci.org/nocarryr/pyrtlsdr.svg?branch=ci-testing)](https://travis-ci.org/nocarryr/pyrtlsdr)
 
 # Description
 
