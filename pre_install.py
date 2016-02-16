@@ -45,6 +45,7 @@ def win_setup(cleanup=False):
     
     if cleanup:
         shutil.rmtree(TEMP_DIR)
+        return
     
     print('Downloading dependencies...')
     response = url.urlretrieve(WIN_ZIP_URL, TEMP_FILE)

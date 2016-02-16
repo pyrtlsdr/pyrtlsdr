@@ -72,4 +72,4 @@ setup(
     )
 
 if platform.system() == 'Windows':
-    win_setup(cleanup=True)
+    pre_install.win_setup(cleanup=True)
