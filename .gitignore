@@ -151,6 +151,8 @@ sdist
 develop-eggs
 .installed.cfg
 venv/
+pyrtlsdr_temp/
+.gitignore~
 
 # Installer logs
 pip-log.txt
