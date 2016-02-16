@@ -254,7 +254,6 @@ class MessageBase(object):
 
     def send_message(self, sock):
         header, data = self._serialize()
-        print('%s sending %s' % (self.__class__.__name__, header))
         self._send(sock, header)
 
     def get_response(self, sock):
@@ -300,7 +299,6 @@ class ServerMessage(MessageBase):
         header = cls._recv(sock)
         if not PY2:
             header = header.decode()
-        print('%s recv %s' % (cls.__name__, header))
         kwargs = json.loads(header)
         struct_fmt = kwargs.get('struct_fmt')
         if struct_fmt is not None:
@@ -386,7 +384,6 @@ class RequestHandler(BaseRequestHandler):
         self.server.handlers.add(self)
 
     def handle(self, rx_message=None):
-        print('server handling request')
         if rx_message is None:
             rx_message = ClientMessage.from_remote(self.request)
         msg_type = rx_message.header.get('type')
@@ -584,7 +581,6 @@ def run_server():
 def test():
     import time
     port = 1235
-    print('building server')
     while True:
         try:
             server = RtlSdrTcpServer(port=port)
@@ -596,7 +592,6 @@ def test():
             port += 1
         if server is not None:
             break
-    print('server built')
     client = RtlSdrTcpClient(port=port)
     test_props = [
         ['sample_rate', 2e6],
@@ -604,12 +599,6 @@ def test():
         ['gain', 10.],
         ['freq_correction', 20]
     ]
-    print('client built')
-    if False:#is_travisci():
-        # Temporarily disable tests in Travis CI until failures can be determined.
-        # Possible causes: socket-related? max-fds? memory limits?
-        server.close()
-        return
     try:
         gains = client.get_gains()
         gains = [gain / 10. for gain in gains]
