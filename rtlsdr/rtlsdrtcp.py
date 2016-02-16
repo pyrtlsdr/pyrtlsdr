@@ -210,6 +210,8 @@ class MessageBase(object):
 
     @staticmethod
     def _send(sock, data):
+        if not PY2:
+            data = data.encode()
         r, w, e = select.select([], [sock], [], .5)
         if sock not in w:
             raise CommunicationError('socket %r not ready for write' % (sock))
