@@ -294,7 +294,7 @@ class ServerMessage(MessageBase):
 
         """
         header = cls._recv(sock)
-        print('%s recv %s' % (self.__class__.__name__, header))
+        print('%s recv %s' % (cls.__name__, header))
         kwargs = json.loads(header)
         struct_fmt = kwargs.get('struct_fmt')
         if struct_fmt is not None:
