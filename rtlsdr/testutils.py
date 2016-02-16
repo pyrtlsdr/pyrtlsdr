@@ -2,10 +2,11 @@ import os
 import time
 import random
 
-from rtlsdr import RtlSdr
 try:
+    from rtlsdr import RtlSdr
     from helpers import limit_calls
 except ImportError:
+    from .rtlsdr import RtlSdr
     from .helpers import limit_calls
 
 def is_travisci():
