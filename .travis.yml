@@ -6,10 +6,9 @@ python:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq libusb-1.0-0-dev
-  - wget https://github.com/steve-m/librtlsdr/archive/v0.5.3.tar.gz
-  - tar xvzf v0.5.3.tar.gz
-  - cd librtlsdr-0.5.3 && mkdir build && cd build && cmake ../ && make && sudo make install && sudo ldconfig
-  - cd ../..
+  - cd build-ext
+  - ./install-librtlsdr.sh
+  - cd ..
 install:
   - pip install -e .
 script:
