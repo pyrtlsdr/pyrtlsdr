@@ -570,6 +570,7 @@ def run_server():
 def test():
     import time
     port = 1235
+    print('building server')
     while True:
         try:
             server = RtlSdrTcpServer(port=port)
@@ -581,6 +582,7 @@ def test():
             port += 1
         if server is not None:
             break
+    print('server built')
     client = RtlSdrTcpClient(port=port)
     test_props = [
         ['sample_rate', 2e6],
@@ -588,6 +590,7 @@ def test():
         ['gain', 10.],
         ['freq_correction', 20]
     ]
+    print('client built')
     try:
         gains = client.get_gains()
         gains = [gain / 10. for gain in gains]
