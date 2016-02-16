@@ -594,6 +594,7 @@ def test():
     if is_travisci():
         # Temporarily disable tests in Travis CI until failures can be determined.
         # Possible causes: socket-related? max-fds? memory limits?
+        server.close()
         return
     try:
         gains = client.get_gains()
