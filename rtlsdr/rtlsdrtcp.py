@@ -30,6 +30,7 @@ else:
     RtlSdr = _RtlSdr
 
 MAX_BUFFER_SIZE = 4096
+RECEIVE_TIMEOUT = 20
 
 
 class CommunicationError(Exception):
@@ -216,7 +217,11 @@ class MessageBase(object):
 
     @staticmethod
     def _recv(sock):
-        r, w, e = select.select([sock], [], [])
+        start_ts = time.time()
+        r, w, e = select.select([sock], [], [], RECEIVE_TIMEOUT)
+        if not len(r):
+            now = time.time()
+            raise CommunicationError('No response from peer after %s seconds' % (now - start_ts))
         if sock not in r:
             raise CommunicationError('socket %r not ready for read' % (sock))
         return sock.recv(MAX_BUFFER_SIZE)
