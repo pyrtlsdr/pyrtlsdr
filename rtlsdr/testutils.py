@@ -23,6 +23,7 @@ class DummyRtlSdr(RtlSdr):
         self._sample_rate = self.DEFAULT_RS
         self._gain = 0.
         self._gains = list(range(0, 300, 25))
+        super(DummyRtlSdr, self).__init__(device_index, test_mode_enabled)
     def open(self, device_index=0, test_mode_enabled=False):
         self.device_opened = True
         self.init_device_values()
@@ -54,6 +55,8 @@ class DummyRtlSdr(RtlSdr):
         pass
     def set_direct_sampling(self, direct):
         pass
+    def get_tuner_type(self):
+        return 'dummy'
     def read_bytes(self, num_bytes=RtlSdr.DEFAULT_READ_SIZE):
         num_bytes = int(num_bytes)
         return [random.randint(0, 255) for i in range(num_bytes)]
