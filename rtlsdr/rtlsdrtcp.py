@@ -226,10 +226,7 @@ class MessageBase(object):
             raise CommunicationError('No response from peer after %s seconds' % (now - start_ts))
         if sock not in r:
             raise CommunicationError('socket %r not ready for read' % (sock))
-        data = sock.recv(MAX_BUFFER_SIZE)
-        if not PY2:
-            data = data.decode()
-        return data
+        return sock.recv(MAX_BUFFER_SIZE)
 
     @classmethod
     def from_remote(cls, sock):
@@ -237,6 +234,8 @@ class MessageBase(object):
         message that was sent by the other end.
         """
         header = cls._recv(sock)
+        if not PY2:
+            header = header.decode()
         kwargs = json.loads(header)
         if kwargs.get('ACK'):
             cls = AckMessage
@@ -299,6 +298,8 @@ class ServerMessage(MessageBase):
 
         """
         header = cls._recv(sock)
+        if not PY2:
+            header = header.decode()
         print('%s recv %s' % (cls.__name__, header))
         kwargs = json.loads(header)
         struct_fmt = kwargs.get('struct_fmt')
