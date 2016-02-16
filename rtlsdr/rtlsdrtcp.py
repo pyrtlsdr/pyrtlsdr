@@ -226,7 +226,10 @@ class MessageBase(object):
             raise CommunicationError('No response from peer after %s seconds' % (now - start_ts))
         if sock not in r:
             raise CommunicationError('socket %r not ready for read' % (sock))
-        return sock.recv(MAX_BUFFER_SIZE)
+        data = sock.recv(MAX_BUFFER_SIZE)
+        if not PY2:
+            data = data.decode()
+        return data
 
     @classmethod
     def from_remote(cls, sock):
