@@ -8,7 +8,7 @@ and also provides a more Pythonic API.
 # Usage
 
 ##Installation
-
+  
 `pyrtlsdr` can be installed by downloading the source files and running 
 ```
 $ python setup.py install
