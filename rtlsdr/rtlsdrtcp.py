@@ -159,6 +159,8 @@ class ServerThread(threading.Thread):
         running = getattr(self, 'running', None)
         if running is None or not running.is_set():
             return
+        if not hasattr(self, 'server'):
+            return
         self.server.shutdown()
         self.server.server_close()
         self.stopped.wait()
