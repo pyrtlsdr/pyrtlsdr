@@ -156,6 +156,9 @@ class ServerThread(threading.Thread):
         self.stopped.set()
 
     def stop(self):
+        running = getattr(self, 'running', None)
+        if running is None or not running.is_set():
+            return
         self.server.shutdown()
         self.server.server_close()
         self.stopped.wait()
@@ -171,6 +174,8 @@ class Server(TCPServer):
         self.handlers = set()
 
     def server_close(self):
+        if not hasattr(self, 'handlers'):
+            return
         for h in self.handlers:
             h.close()
 
