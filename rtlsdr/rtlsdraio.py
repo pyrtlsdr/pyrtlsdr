@@ -104,7 +104,7 @@ class RtlSdrAio(RtlSdr):
 async def main():
     import math
 
-    sdr = RtlSdr()
+    sdr = RtlSdrAio()
 
     print('Configuring SDR...')
     sdr.rs = 2.4e6
