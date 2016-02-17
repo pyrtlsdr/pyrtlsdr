@@ -42,13 +42,24 @@ else:
 #README = open(os.path.join(HERE, 'README.md')).read()
 
 # PRE INSTALLATION SCRIPT
-print('Running pre-installation script...')
-try:
-    DATA_FILES = pre_install.get_data_files()
-except Exception as e:
-    DATA_FILES = None
-    print('Dependency extraction failed. Please copy required files manually.')
+if '--simple-install' in sys.argv:
+    SIMPLE_INSTALL = True
+    del sys.argv[sys.argv.index('--simple-install')]       # remove argument so not to disrupt setup()
+else: 
+    SIMPLE_INSTALL = False
 
+
+if SIMPLE_INSTALL:
+    print('Running pre-installation script...')
+    try:
+        DATA_FILES = pre_install.get_data_files()
+    except Exception as e:
+        DATA_FILES = None
+        print('Dependency extraction failed. Please copy required files manually.')
+else:
+    DATA_FILES = None
+
+# MAIN SETUP
 setup(
     name=PACKAGE_NAME,
     version=VERSION,
@@ -71,5 +82,6 @@ setup(
     data_files = DATA_FILES,
     )
 
-if platform.system() == 'Windows':
+# PRE-INSTALLATION CELANUP
+if SIMPLE_INSTALL and platform.system() == 'Windows':
     pre_install.win_setup(cleanup=True)
