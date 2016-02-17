@@ -9,21 +9,18 @@ and also provides a more Pythonic API.
 
 ##Installation
 
-pyrtlsdr can be installed by downloading the source files and running `python setup.py install`.
-
-##Manual Installation
-###Windows
-Clone this repository. Depending on python version download and copy files in either `x32` or `x64` subdirectories 
-of [this zip file](http://sdr.osmocom.org/trac/attachment/wiki/rtl-sdr/RelWithDebInfo.zip) into the package directory
- of pyrtlsdr (e.g. location_to_clone\pyrtlsdr\rtlsdr).  
+`pyrtlsdr` can be installed by downloading the source files and running 
+```
+$ python setup.py install
+```
+This will install the python wrapper around `librtlsdr`. You will need to build `librtlsdr` from source yourself.  
   
-###Linux
-Clone this repository. Install `rtl-sdr`:  
+A simpler installation can be done by passing the argument `--simple-install`. This downloads/installs `librtlsdr` libraries and 
+`rtl-sdr` executables in the package installation directory. However, the installed libraries may not be fully up to date.
 ```
-$ sudo apt-get install rtl-sdr
+$ python setup.py install --simple-install
 ```
-
-
+  
 All functions in librtlsdr are accessible via librtlsdr.py and a Pythonic interface is available in rtlsdr.py (recommended).
 Some documentation can be found in docstrings in the latter file.
 
