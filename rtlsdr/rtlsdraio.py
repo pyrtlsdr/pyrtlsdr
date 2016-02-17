@@ -132,7 +132,7 @@ async def main():
 
         i += 1
 
-        if i > 100:
+        if i > 20:
             sdr.stop()
             break
 
