@@ -136,5 +136,10 @@ async def do_nothing():
         await asyncio.sleep(0.1)
         print('#')
 
-if __name__ == '__main__':
+
+def test():
+    loop = asyncio.get_event_loop()
     loop.run_until_complete(asyncio.wait([main(), do_nothing()]))
+
+if __name__ == '__main__':
+    test()
