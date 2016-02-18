@@ -28,7 +28,7 @@ def load_librtlsdr():
         os.environ['PATH']  += os.pathsep + curr_path
     
     driver_files = ['rtlsdr.dll', 'librtlsdr.so']
-    driver_files += [curr_path + os.path.sep + 'rtlsdr.dll', curr_path + os.path.sep + 'librtlsdr.so']
+    driver_files += ['..//rtlsdr.dll', '..//librtlsdr.so']
     driver_files += ['rtlsdr//rtlsdr.dll', 'rtlsdr//librtlsdr.so']
     driver_files += [find_library('rtlsdr'), find_library('librtlsdr')]
 
