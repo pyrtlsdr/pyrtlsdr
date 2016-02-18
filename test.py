@@ -18,14 +18,18 @@
 from __future__ import division
 from __future__ import print_function
 from rtlsdr import *
+from rtlsdr.testutils import (
+    is_travisci, DummyRtlSdr, build_test_sdr, async_read_test
+)
 
-@limit_calls(2)
-def test_callback(samples, rtlsdr_obj):
-    print('  in callback')
-    print('  signal mean:', sum(samples)/len(samples))
 
-def main():
-    sdr = RtlSdr()
+def test(sdr=None):
+    if sdr is None:
+        if is_travisci():
+            sdr_cls = DummyRtlSdr
+        else:
+            sdr_cls = RtlSdr
+    sdr = build_test_sdr(sdr_cls)
 
     print('Configuring SDR...')
     sdr.rs = 2.4e6
@@ -40,7 +44,7 @@ def main():
     print('  signal mean:', sum(samples)/len(samples))
 
     print('Testing callback...')
-    sdr.read_samples_async(test_callback, 256*1024)
+    async_read_test(sdr, 256*1024)
 
     try:
         import pylab as mpl
@@ -58,4 +62,4 @@ def main():
     sdr.close()
 
 if __name__ == '__main__':
-    main()
+    test()

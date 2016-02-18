@@ -1,7 +1,16 @@
 import logging
 import asyncio
-try:                from rtlsdr import RtlSdr
-except ImportError: from .rtlsdr import RtlSdr
+try:
+    from rtlsdr import RtlSdr as _RtlSdr
+    from testutils import is_travisci, DummyRtlSdr
+except ImportError:
+    from .rtlsdr import RtlSdr as _RtlSdr
+    from .testutils import is_travisci, DummyRtlSdr
+
+if is_travisci():
+    RtlSdr = DummyRtlSdr
+else:
+    RtlSdr = _RtlSdr
 
 
 log = logging.getLogger(__name__)
@@ -104,7 +113,7 @@ class RtlSdrAio(RtlSdr):
 async def main():
     import math
 
-    sdr = RtlSdr()
+    sdr = RtlSdrAio()
 
     print('Configuring SDR...')
     sdr.rs = 2.4e6
@@ -123,7 +132,7 @@ async def main():
 
         i += 1
 
-        if i > 100:
+        if i > 20:
             sdr.stop()
             break
 
@@ -136,5 +145,10 @@ async def do_nothing():
         await asyncio.sleep(0.1)
         print('#')
 
-if __name__ == '__main__':
+
+def test():
+    loop = asyncio.get_event_loop()
     loop.run_until_complete(asyncio.wait([main(), do_nothing()]))
+
+if __name__ == '__main__':
+    test()

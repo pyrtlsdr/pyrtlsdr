@@ -18,11 +18,19 @@ else:
     from socketserver import TCPServer, BaseRequestHandler
 
 try:
-    from rtlsdr import RtlSdr
+    from rtlsdr import RtlSdr as _RtlSdr
+    from testutils import is_travisci, DummyRtlSdr
 except ImportError:
-    from .rtlsdr import RtlSdr
+    from .rtlsdr import RtlSdr as _RtlSdr
+    from .testutils import is_travisci, DummyRtlSdr
+
+if is_travisci():
+    RtlSdr = DummyRtlSdr
+else:
+    RtlSdr = _RtlSdr
 
 MAX_BUFFER_SIZE = 4096
+RECEIVE_TIMEOUT = 20
 
 
 class CommunicationError(Exception):
@@ -148,6 +156,11 @@ class ServerThread(threading.Thread):
         self.stopped.set()
 
     def stop(self):
+        running = getattr(self, 'running', None)
+        if running is None or not running.is_set():
+            return
+        if not hasattr(self, 'server'):
+            return
         self.server.shutdown()
         self.server.server_close()
         self.stopped.wait()
@@ -163,6 +176,8 @@ class Server(TCPServer):
         self.handlers = set()
 
     def server_close(self):
+        if not hasattr(self, 'handlers'):
+            return
         for h in self.handlers:
             h.close()
 
@@ -202,6 +217,8 @@ class MessageBase(object):
 
     @staticmethod
     def _send(sock, data):
+        if not PY2 and isinstance(data, str):
+            data = data.encode()
         r, w, e = select.select([], [sock], [], .5)
         if sock not in w:
             raise CommunicationError('socket %r not ready for write' % (sock))
@@ -209,7 +226,11 @@ class MessageBase(object):
 
     @staticmethod
     def _recv(sock):
-        r, w, e = select.select([sock], [], [])
+        start_ts = time.time()
+        r, w, e = select.select([sock], [], [], RECEIVE_TIMEOUT)
+        if not len(r):
+            now = time.time()
+            raise CommunicationError('No response from peer after %s seconds' % (now - start_ts))
         if sock not in r:
             raise CommunicationError('socket %r not ready for read' % (sock))
         return sock.recv(MAX_BUFFER_SIZE)
@@ -220,6 +241,8 @@ class MessageBase(object):
         message that was sent by the other end.
         """
         header = cls._recv(sock)
+        if not PY2:
+            header = header.decode()
         kwargs = json.loads(header)
         if kwargs.get('ACK'):
             cls = AckMessage
@@ -281,6 +304,8 @@ class ServerMessage(MessageBase):
 
         """
         header = cls._recv(sock)
+        if not PY2:
+            header = header.decode()
         kwargs = json.loads(header)
         struct_fmt = kwargs.get('struct_fmt')
         if struct_fmt is not None:
