@@ -19,21 +19,41 @@ import os
 import sys
 import re
 try:
-    from setuptools import setup, find_packages
+    from setuptools import setup
+    from setuptools.command.install_lib import install_lib as _install_lib
+    from setuptools.command.build_py import build_py as _build_py
 except ImportError:
     from distutils.core import setup
-    find_packages = None
+    from distutils.command.install_lib import install_lib as _install_lib
+    from distutils.command.build_py import build_py as _build_py
 
 PACKAGE_NAME = 'pyrtlsdr'
 VERSION = '0.1.1'
 
-if find_packages is not None:
-    if sys.version_info.major <= 3 and sys.version_info.minor < 5:
-        PACKAGES = find_packages(exclude=['rtlsdraio.py'])
-    else:
-        PACKAGES = find_packages()
-else:
-    PACKAGES = ['rtlsdr']
+ASYNC_AVAILABLE = sys.version_info.major >= 3
+if sys.version_info.major == 3:
+    ASYNC_AVAILABLE = sys.version_info.minor >= 5
+
+class install_lib(_install_lib):
+    def byte_compile(self, files):
+        if not ASYNC_AVAILABLE:
+            files = [f for f in files if 'rtlsdraio.py' not in f]
+        _install_lib.byte_compile(self, files)
+
+class build_py(_build_py):
+    def _filter_modules(self, modules):
+        if ASYNC_AVAILABLE:
+            return modules
+        return [m for m in modules if 'rtlsdraio' not in m]
+    def find_package_modules(self, package, package_dir):
+        modules = _build_py.find_package_modules(self, package, package_dir)
+        return self._filter_modules(modules)
+    def find_modules(self):
+        modules = _build_py.find_modules(self)
+        return self._filter_modules(modules)
+    def find_all_modules(self):
+        modules = _build_py.find_all_modules(self)
+        return self._filter_modules(modules)
 
 #HERE = os.path.abspath(os.path.dirname(__file__))
 #README = open(os.path.join(HERE, 'README.md')).read()
@@ -56,4 +76,8 @@ setup(
                  'Topic :: Utilities'],
     license='GPLv3',
     keywords='radio librtlsdr rtlsdr sdr',
-    packages=PACKAGES)
+    cmdclass={
+        'install_lib':install_lib,
+        'build_py':build_py,
+    },
+    packages=['rtlsdr'])
