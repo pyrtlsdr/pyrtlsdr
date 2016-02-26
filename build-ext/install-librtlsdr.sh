@@ -23,5 +23,6 @@ tar xvzf $TAR_FILE
 cd "librtlsdr-$RELEASE"
 mkdir build
 cd build
-cmake ../
+cmake -DCMAKE_INSTALL_PREFIX=$HOME/.local -DLIB_INSTALL_DIR=$HOME/.local/ ../
 make
+make install
