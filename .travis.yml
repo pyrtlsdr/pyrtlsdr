@@ -11,6 +11,7 @@ before_install:
   - cd build-ext
   - ./install-librtlsdr.sh
   - cd ..
+  - export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
 install:
   - pip install -e .
 script:
