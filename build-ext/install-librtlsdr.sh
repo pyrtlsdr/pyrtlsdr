@@ -23,6 +23,12 @@ tar xvzf $TAR_FILE
 cd "librtlsdr-$RELEASE"
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=$HOME/.local -DLIB_INSTALL_DIR=$HOME/.local/ ../
-make
-make install
+if [ "$TRAVIS" = "true"]; then
+  cmake -DCMAKE_INSTALL_PREFIX=$HOME/.local -DLIB_INSTALL_DIR=$HOME/.local/ ../
+  make
+  make install
+else
+  cmake ../
+  make
+  sudo make install
+fi
