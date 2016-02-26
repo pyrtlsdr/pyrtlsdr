@@ -1,6 +1,6 @@
 import sys
 
-collect_ignore = ['setup.py']
+collect_ignore = ['setup.py', 'demo_waterfall.py']
 
 ASYNC_AVAILABLE = sys.version_info.major >= 3
 if sys.version_info.major == 3:

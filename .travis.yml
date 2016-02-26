@@ -3,12 +3,15 @@ python:
   - "2.7"
   - "3.4"
   - "3.5"
+addons:
+  apt:
+    packages:
+      - libusb-1.0-0-dev
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq libusb-1.0-0-dev
   - cd build-ext
   - ./install-librtlsdr.sh
   - cd ..
+  - export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
 install:
   - pip install -e .
 script:
