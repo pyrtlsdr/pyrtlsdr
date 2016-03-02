@@ -7,6 +7,7 @@ addons:
   apt:
     packages:
       - libusb-1.0-0-dev
+      - pandoc
 before_install:
   - cd tools/travis
   - ./install-librtlsdr.sh
