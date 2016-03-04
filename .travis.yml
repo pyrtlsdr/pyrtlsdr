@@ -1,22 +1,22 @@
 language: python
 python:
-- '2.7'
-- '3.4'
-- '3.5'
+  - "2.7"
+  - "3.4"
+  - "3.5"
 addons:
   apt:
     packages:
-    - libusb-1.0-0-dev
-    - pandoc
+      - libusb-1.0-0-dev
+      - pandoc
 before_install:
-- cd tools/travis
-- ./install-librtlsdr.sh
-- cd ../..
-- export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
+  - cd tools/travis
+  - ./install-librtlsdr.sh
+  - cd ../..
+  - export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
 install:
-- pip install -e .
+  - pip install -e .
 script:
-- py.test
+  - py.test
 deploy:
   provider: pypi
   distributions: "sdist bdist_wheel"
