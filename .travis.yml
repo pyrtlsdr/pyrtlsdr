@@ -21,6 +21,8 @@ deploy:
   provider: pypi
   distributions: "sdist bdist_wheel"
   server: https://testpypi.python.org/pypi
+  on:
+    all_branches: true
   user: nocarryr
   password:
     secure: kCxhL2uWivhdGDqumIDsLRo8cNZrY2qpuNV9A5H2icXb9IPe3DcCc7m6c7bWusVUcPvDaKvgkksV0N5hJqvG64Pk5VXNBeXk1EaEGDDkokLQ+OXjxL+W6IoA8Hro9UI0WitQmICL2JY9ksO2hGaOOmnJ7QgCgjdw1nbQOnrc+lKBqTidsp2EB0U6zDMmRIUyM+KOr5jHz6pd2biG3l67ytxHVIZwBVm2wL5tI8JSeLv5pNhN/Uv3LqNkl541hTSoIjGvsgsrQbH9UVRc/ygtHtoV6dXlrnAnLxwMeAdVuDE2rI5Y9mSWv1LbuHizio4lWynbhz8VfYFTpcVdzHa4J8Xqi3c6PCJvYxhotTiKSNDrqqs8iR10/I00n+4ktWq3Bncl/6s9jLO89DBl5sZ+FKtK91ESK3Kygo52p2slWh+bgSm105OhYK14EJHaF7DhpeqIyRcdU1OwwVgzA6znXe8km1diESOYq6ZmpPek+d/SpXEfkQwoPnzwqbWbIk6rO5hmw24r8Q+NyVKjsfCCF0Nn+mN+RsHXwjyCSymF49HVW1CuXbkqtUPy6m5A70Um+9F9LtR49MmiOT3jPAm2TBN/v5AIv3aMtJBxSVcRQjVs94SCgKjD3fDtbhNA/Y+DnaxcQYvuKKObxUe/3z1ehvF10UF9AawBIRTGh4LcF60=
