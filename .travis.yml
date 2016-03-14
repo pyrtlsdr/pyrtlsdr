@@ -7,12 +7,21 @@ addons:
   apt:
     packages:
       - libusb-1.0-0-dev
+      - pandoc
 before_install:
-  - cd build-ext
+  - cd tools/travis
   - ./install-librtlsdr.sh
-  - cd ..
+  - cd ../..
   - export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
 install:
   - pip install -e .
 script:
   - py.test
+deploy:
+  provider: pypi
+  distributions: "sdist bdist_wheel"
+  on:
+    tags: true
+  user: nocarryr
+  password:
+    secure: RcBdaM0TZm4VAgh20QSn70bpyA0UAoIeRY+f8mcKXQkXfD9nJyc8xqJvj5Lu55cDfuK1H9+yXHNaqfiv0Ef33TciYPbCvORFqYfvlPJ0uFU/XzIb0GXS89vrshzex0cwkR0yKeadBTfa+L3CvTEO8gH/ilpJK50fzsWjj+Ap2VRh1RLPxQr7raiCR+fKXZe+0+XbfM76T7YWmar0IuIYLsgE87u9BSf7G98XyEtbWpbNYey2EJgP4lwHRDkXsEpB2OV82ew8RVIblNrJiaF5zx+RNZUJOfe25LEmptF3tX0BddFUOUaTxpZSdAhs/kPiziUIlbg92Z6kcotvCu9Eue7W3YflAB8ZEEsHrTm8Xq5vHSmMf4FXdIsB2wup2jMPrXAiDljarrn08nJdpGimG6ViKQg+6+SCvoGtPHb+Qh823Qh60qhku5zpYJSFPPSXbyshY7IVFPZLWJWEu3yhphcec2byZHdmJZF0ciR/TGXkQddKd5nKCfz7fs3xFmFvFI+BEtq8wZtHTemBnsUyu4pMDVb4/c3qebMgWfYW/34llDw96dmZ+YyNVEWyqN1gg4xplsudhwaizW/qL7LX4OcfYKbYB/ZTKx9Xans9lD2o4B3mDWJpA8K2nOvDfCKZjG05nGyOpYY/NPOvupxofr8iYGP7iLA+A2pzCHGSXhY=
