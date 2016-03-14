@@ -26,7 +26,7 @@ except ImportError:
     from distutils.command.install_lib import install_lib as _install_lib
 
 PACKAGE_NAME = 'pyrtlsdr'
-VERSION = '0.1.2'
+VERSION = '0.2.1'
 
 ASYNC_AVAILABLE = sys.version_info.major >= 3
 if sys.version_info.major == 3:
