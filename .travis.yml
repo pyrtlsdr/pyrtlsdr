@@ -14,6 +14,7 @@ before_install:
   - cd ../..
   - export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
 install:
+  - pip install pytest-cov coveralls
   - pip install -e .
 script:
   - py.test --cov-config .coveragerc --cov=rtlsdr
