@@ -30,7 +30,7 @@ except ImportError:
     bdist_wheel = None
 
 PACKAGE_NAME = 'pyrtlsdr'
-VERSION = '0.2.1'
+VERSION = '0.2.2'
 
 ASYNC_AVAILABLE = sys.version_info.major >= 3
 if sys.version_info.major == 3:
