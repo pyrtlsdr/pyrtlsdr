@@ -1,4 +1,6 @@
 language: python
+sudo: required
+dist: trusty
 python:
   - "2.7"
   - "3.4"
@@ -19,6 +21,7 @@ script:
   - py.test
 deploy:
   provider: pypi
+  server: https://testpypi.python.org/pypi
   distributions: "sdist bdist_wheel"
   on:
     tags: true
