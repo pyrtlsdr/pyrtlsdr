@@ -12,7 +12,11 @@ if not ASYNC_AVAILABLE:
 
 @pytest.fixture
 def sdr_cls():
-    from rtlsdr import RtlSdr
+    from rtlsdr.testutils import is_travisci
+    if is_travisci():
+        from rtlsdr.testutils import DummyRtlSdr as RtlSdr
+    else:
+        from rtlsdr import RtlSdr
     return RtlSdr
 
 @pytest.fixture
