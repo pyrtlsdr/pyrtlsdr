@@ -545,6 +545,9 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         iq = self.packed_bytes_to_iq(raw_data)
         return iq
 
+    def read_bytes_async(self, *args):
+        raise NotImplementedError('Async read not available in TCP mode')
+
     center_freq = fc = property(get_center_freq, set_center_freq)
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
     gain = property(get_gain, set_gain)
