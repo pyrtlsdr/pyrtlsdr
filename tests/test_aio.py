@@ -3,8 +3,10 @@ import asyncio
 def test(rtlsdraio):
     async def main():
         import math
+        from utils import generic_test
 
         sdr = rtlsdraio.RtlSdrAio()
+        generic_test(sdr)
 
         print('Configuring SDR...')
         sdr.rs = 2.4e6
