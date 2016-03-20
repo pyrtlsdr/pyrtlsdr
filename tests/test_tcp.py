@@ -1,10 +1,11 @@
 import time
 import socket
+import errno
+
+import pytest
 
 def test(rtlsdrtcp):
     from utils import generic_test
-    print(rtlsdrtcp.RtlSdr)
-    #assert rtlsdrtcp.RtlSdrTcpBase.__bases__[0] is rtlsdrtcp.RtlSdr
     port = 1235
     while True:
         try:
@@ -20,6 +21,8 @@ def test(rtlsdrtcp):
             break
     client = rtlsdrtcp.RtlSdrTcpClient(port=port)
     try:
-        generic_test(client)
+        generic_test(client, test_async=False)
+        with pytest.raises(NotImplementedError):
+            generic_test(client, test_async=True)
     finally:
         server.close()
