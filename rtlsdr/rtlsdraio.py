@@ -1,16 +1,9 @@
 import logging
 import asyncio
 try:
-    from rtlsdr import RtlSdr as _RtlSdr
-    from testutils import is_travisci, DummyRtlSdr
+    from rtlsdr import RtlSdr
 except ImportError:
     from .rtlsdr import RtlSdr as _RtlSdr
-    from .testutils import is_travisci, DummyRtlSdr
-
-if is_travisci():
-    RtlSdr = DummyRtlSdr
-else:
-    RtlSdr = _RtlSdr
 
 
 log = logging.getLogger(__name__)

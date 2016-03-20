@@ -18,16 +18,10 @@ else:
     from socketserver import TCPServer, BaseRequestHandler
 
 try:
-    from rtlsdr import RtlSdr as _RtlSdr
-    from testutils import is_travisci, DummyRtlSdr
+    from rtlsdr import RtlSdr
 except ImportError:
-    from .rtlsdr import RtlSdr as _RtlSdr
-    from .testutils import is_travisci, DummyRtlSdr
+    from .rtlsdr import RtlSdr
 
-if is_travisci():
-    RtlSdr = DummyRtlSdr
-else:
-    RtlSdr = _RtlSdr
 
 MAX_BUFFER_SIZE = 4096
 RECEIVE_TIMEOUT = 20
