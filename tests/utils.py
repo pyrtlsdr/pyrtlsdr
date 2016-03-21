@@ -2,6 +2,12 @@ import os
 import time
 import random
 
+try:
+    import numpy as np
+except ImportError:
+    np = None
+
+from conftest import is_travisci
 
 def iter_test_samples(num_samples=None):
     count = 0
@@ -32,6 +38,19 @@ def iter_test_bytes(num_bytes=None):
                 if count >= num_bytes:
                     raise StopIteration()
 
+def check_generated_data(samples, direct_sampling=0):
+    if not is_travisci():
+        return
+    test_len = 256 * (len(samples) // 256)
+    samples = samples[:test_len]
+    if np is not None:
+        a = np.fromiter((complex(i, q) for i, q in iter_test_samples(test_len)), dtype='complex')
+        a /= (255/2)
+        a -= (1 + 1j)
+        assert np.array_equal(samples, a)
+    else:
+        a = [complex(i/(255/2) - 1, q/(255/2) - 1) for i, q in iter_test_samples(test_len)]
+        assert samples == a
 
 def check_close(num_digits, *args):
     """Checks whether given numbers are equal when rounded to `num_digits`
@@ -75,6 +94,7 @@ def generic_test(sdr, test_async=True):
 
     samples = sdr.read_samples(1024)
     assert len(samples) == 1024
+    check_generated_data(samples)
     print('read %s samples' % (len(samples)))
 
     if test_async:
@@ -91,6 +111,7 @@ def async_read_test(sdr, read_size=1024, num_callbacks=2, bytes_mode=False):
             s = 'read %s samples'
         print(s % len(data))
         assert len(data) == read_size
+        check_generated_data(data)
     print('testing async read')
     if bytes_mode:
         sdr.read_bytes_async(read_callback, read_size)
