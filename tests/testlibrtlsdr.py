@@ -1,6 +1,7 @@
 import time
-import random
 from ctypes import *
+
+from utils import iter_test_bytes
 
 class p_rtlsdr_dev(object):
     def __init__(self, *args):
@@ -67,8 +68,9 @@ class LibRtlSdr(object):
         if buf is None:
             array_type = (c_ubyte*data_len)
             buf = array_type()
+        iq = iter_test_bytes()
         for i in range(data_len):
-            buf[i] = random.randint(0, 255)
+            buf[i] = next(iq)
         return buf
     def rtlsdr_read_async(self, dev_p, callback, context, buf_num, num_bytes):
         self.async_callback = callback

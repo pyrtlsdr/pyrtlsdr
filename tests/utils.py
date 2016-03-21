@@ -2,6 +2,37 @@ import os
 import time
 import random
 
+
+def iter_test_samples(num_samples=None):
+    count = 0
+    while True:
+        for i, q in zip(range(256), range(255, -1, -1)):
+            yield i, q
+            if num_samples is not None:
+                count += 1
+                if count >= num_samples:
+                    raise StopIteration()
+
+def iter_test_bytes(num_bytes=None):
+    count = 0
+    if num_bytes is not None:
+        num_samples = num_bytes // 2
+    else:
+        num_samples = None
+    while True:
+        for i, q in iter_test_samples(num_samples):
+            yield i
+            if num_bytes is not None:
+                count += 1
+                if count >= num_bytes:
+                    raise StopIteration()
+            yield q
+            if num_bytes is not None:
+                count += 1
+                if count >= num_bytes:
+                    raise StopIteration()
+
+
 def check_close(num_digits, *args):
     """Checks whether given numbers are equal when rounded to `num_digits`
     """
