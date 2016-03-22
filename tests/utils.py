@@ -49,6 +49,8 @@ def check_generated_data(samples, direct_sampling=0):
             a = [i for i, q in iter_test_samples(test_len)]
         elif direct_sampling == 2:
             a = [q for i, q in iter_test_samples(test_len)]
+        if isinstance(samples, tuple):
+            samples = list(samples)
         assert a == samples
         return
     if np is not None:
