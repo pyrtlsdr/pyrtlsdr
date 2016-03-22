@@ -1,7 +1,7 @@
 import time
 from ctypes import *
 
-from utils import iter_test_bytes
+from utils import iter_test_bytes, iter_test_samples
 
 class p_rtlsdr_dev(object):
     def __init__(self, *args):
@@ -68,9 +68,21 @@ class LibRtlSdr(object):
         if buf is None:
             array_type = (c_ubyte*data_len)
             buf = array_type()
-        iq = iter_test_bytes()
-        for i in range(data_len):
-            buf[i] = next(iq)
+        direct_sampling = self.direct_sampling
+        if direct_sampling == 0:
+            iq = iter_test_bytes()
+            for i in range(data_len):
+                buf[i] = next(iq)
+        else:
+            iq = iter_test_samples()
+            buf_index = 0
+            for x in range(data_len):
+                i, q = next(iq)
+                if direct_sampling == 1:
+                    buf[x] = i
+                elif direct_sampling == 2:
+                    buf[x] = q
+                buf_index += 1
         return buf
     def rtlsdr_read_async(self, dev_p, callback, context, buf_num, num_bytes):
         self.async_callback = callback

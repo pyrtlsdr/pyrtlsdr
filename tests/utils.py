@@ -44,6 +44,13 @@ def check_generated_data(samples, direct_sampling=0):
         return
     test_len = 256 * (len(samples) // 256)
     samples = samples[:test_len]
+    if direct_sampling != 0:
+        if direct_sampling == 1:
+            a = [i for i, q in iter_test_samples(test_len)]
+        elif direct_sampling == 2:
+            a = [q for i, q in iter_test_samples(test_len)]
+        assert a == samples
+        return
     if np is not None:
         a = np.fromiter((complex(i, q) for i, q in iter_test_samples(test_len)), dtype='complex')
         a /= (255/2)
@@ -97,6 +104,16 @@ def generic_test(sdr, test_async=True):
     assert len(samples) == 1024
     check_generated_data(samples)
     print('read %s samples' % (len(samples)))
+
+    sdr.set_direct_sampling(1)
+    samples = sdr.read_bytes(1024)
+    check_generated_data(samples, 1)
+
+    sdr.set_direct_sampling(2)
+    samples = sdr.read_bytes(1024)
+    check_generated_data(samples, 2)
+
+    sdr.set_direct_sampling(0)
 
     if test_async:
         async_read_test(sdr)
