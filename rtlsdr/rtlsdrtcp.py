@@ -540,6 +540,9 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
     def set_direct_sampling(self, value):
         self._communicate_method('set_direct_sampling', value)
 
+    def read_bytes(self, num_bytes=RtlSdr.DEFAULT_READ_SIZE):
+        return self._communicate_method('read_bytes', num_bytes)
+
     def read_samples(self, num_samples=RtlSdr.DEFAULT_READ_SIZE):
         raw_data = self._communicate_method('read_samples', num_samples)
         iq = self.packed_bytes_to_iq(raw_data)
