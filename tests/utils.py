@@ -107,11 +107,11 @@ def generic_test(sdr, test_async=True):
     check_generated_data(samples)
     print('read %s samples' % (len(samples)))
 
-    sdr.set_direct_sampling(1)
+    sdr.set_direct_sampling('i')
     samples = sdr.read_bytes(1024)
     check_generated_data(samples, 1)
 
-    sdr.set_direct_sampling(2)
+    sdr.set_direct_sampling('q')
     samples = sdr.read_bytes(1024)
     check_generated_data(samples, 2)
 
