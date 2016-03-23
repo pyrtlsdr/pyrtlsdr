@@ -23,7 +23,7 @@ try:                from itertools import izip
 except ImportError: izip = zip
 import sys
 
-if sys.version_info.minor >= 3:
+if sys.version_info.major >= 3:
     basestring = str
 
 # see if NumPy is available
