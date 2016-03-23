@@ -21,6 +21,10 @@ try:                from  librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_
 except ImportError: from .librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
 try:                from itertools import izip
 except ImportError: izip = zip
+import sys
+
+if sys.version_info.minor >= 3:
+    basestring = str
 
 # see if NumPy is available
 has_numpy = True
@@ -187,7 +191,7 @@ class BaseRtlSdr(object):
         gain used is rounded to the nearest value supported by the device (see the
         values in RtlSdr.valid_gains_db).
         '''
-        if isinstance(gain, str) and gain == 'auto':
+        if isinstance(gain, basestring) and gain == 'auto':
             # disable manual gain -> enable AGC
             self.set_manual_gain_enabled(False)
 
@@ -266,7 +270,7 @@ class BaseRtlSdr(object):
         '''
 
         # convert parameter
-        if isinstance(direct, str):
+        if isinstance(direct, basestring):
             if direct.lower() == 'i':
                 direct = 1
             elif direct.lower() == 'q':
