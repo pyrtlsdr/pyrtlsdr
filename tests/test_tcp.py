@@ -21,8 +21,8 @@ def test(rtlsdrtcp):
             break
     client = rtlsdrtcp.RtlSdrTcpClient(port=port)
     try:
-        generic_test(client, test_async=False)
+        generic_test(client, test_async=False, test_exceptions=False)
         with pytest.raises(NotImplementedError):
-            generic_test(client, test_async=True)
+            generic_test(client, test_async=True, test_exceptions=False)
     finally:
         server.close()

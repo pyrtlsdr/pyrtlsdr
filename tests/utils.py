@@ -8,6 +8,8 @@ try:
 except ImportError:
     np = None
 
+import pytest
+
 from conftest import is_travisci
 
 def iter_test_samples(num_samples=None):
@@ -78,7 +80,7 @@ def check_close(num_digits, *args):
     return True
 
 
-def generic_test(sdr, test_async=True):
+def generic_test(sdr, test_async=True, test_exceptions=True):
     """Functionality checks common to all tests
     Instanciates the given subclass of :class:`rtlsdr.RtlSdr`,
     checks get/set methods for sample_rate, center_freq and gain,
@@ -114,6 +116,10 @@ def generic_test(sdr, test_async=True):
     sdr.set_direct_sampling('q')
     samples = sdr.read_bytes(1024)
     check_generated_data(samples, 2)
+
+    if test_exceptions:
+        with pytest.raises(SyntaxError):
+            sdr.set_direct_sampling('foo')
 
     sdr.set_direct_sampling(0)
 
