@@ -19,3 +19,4 @@ def test(sdr_cls):
 
     print('Testing callback...')
     sdr.read_samples_async(read_callback)
+    sdr.close()
