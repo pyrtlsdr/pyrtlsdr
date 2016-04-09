@@ -1,16 +1,9 @@
 import logging
 import asyncio
 try:
-    from rtlsdr import RtlSdr as _RtlSdr
-    from testutils import is_travisci, DummyRtlSdr
+    from rtlsdr import RtlSdr
 except ImportError:
     from .rtlsdr import RtlSdr as _RtlSdr
-    from .testutils import is_travisci, DummyRtlSdr
-
-if is_travisci():
-    RtlSdr = DummyRtlSdr
-else:
-    RtlSdr = _RtlSdr
 
 
 log = logging.getLogger(__name__)
@@ -108,47 +101,3 @@ class RtlSdrAio(RtlSdr):
     def stop(self):
         ''' Stop async stream. '''
         self.async_iter.stop()
-
-
-async def main():
-    import math
-
-    sdr = RtlSdrAio()
-
-    print('Configuring SDR...')
-    sdr.rs = 2.4e6
-    sdr.fc = 100e6
-    sdr.gain = 10
-    print('  sample rate: %0.6f MHz' % (sdr.rs/1e6))
-    print('  center frequency %0.6f MHz' % (sdr.fc/1e6))
-    print('  gain: %d dB' % sdr.gain)
-
-    print('Streaming samples...')
-
-    i = 0
-    async for samples in sdr.stream():
-        power = sum(abs(s)**2 for s in samples) / len(samples)
-        print('Relative power:', 10*math.log10(power), 'dB')
-
-        i += 1
-
-        if i > 20:
-            sdr.stop()
-            break
-
-    print('Done')
-
-    sdr.close()
-
-async def do_nothing():
-    for i in range(50):
-        await asyncio.sleep(0.1)
-        print('#')
-
-
-def test():
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(asyncio.wait([main(), do_nothing()]))
-
-if __name__ == '__main__':
-    test()

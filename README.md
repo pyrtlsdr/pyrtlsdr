@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/roger-/pyrtlsdr.svg?branch=master)](https://travis-ci.org/roger-/pyrtlsdr)
+[![Build Status](https://travis-ci.org/roger-/pyrtlsdr.svg?branch=master)](https://travis-ci.org/roger-/pyrtlsdr)[![Coverage Status](https://coveralls.io/repos/github/roger-/pyrtlsdr/badge.svg?branch=master)](https://coveralls.io/github/roger-/pyrtlsdr?branch=master)
 
 # Description
 

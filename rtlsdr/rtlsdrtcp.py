@@ -18,16 +18,10 @@ else:
     from socketserver import TCPServer, BaseRequestHandler
 
 try:
-    from rtlsdr import RtlSdr as _RtlSdr
-    from testutils import is_travisci, DummyRtlSdr
+    from rtlsdr import RtlSdr
 except ImportError:
-    from .rtlsdr import RtlSdr as _RtlSdr
-    from .testutils import is_travisci, DummyRtlSdr
+    from .rtlsdr import RtlSdr
 
-if is_travisci():
-    RtlSdr = DummyRtlSdr
-else:
-    RtlSdr = _RtlSdr
 
 MAX_BUFFER_SIZE = 4096
 RECEIVE_TIMEOUT = 20
@@ -546,10 +540,16 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
     def set_direct_sampling(self, value):
         self._communicate_method('set_direct_sampling', value)
 
+    def read_bytes(self, num_bytes=RtlSdr.DEFAULT_READ_SIZE):
+        return self._communicate_method('read_bytes', num_bytes)
+
     def read_samples(self, num_samples=RtlSdr.DEFAULT_READ_SIZE):
         raw_data = self._communicate_method('read_samples', num_samples)
         iq = self.packed_bytes_to_iq(raw_data)
         return iq
+
+    def read_bytes_async(self, *args):
+        raise NotImplementedError('Async read not available in TCP mode')
 
     center_freq = fc = property(get_center_freq, set_center_freq)
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
@@ -583,54 +583,6 @@ def run_server():
     o = vars(args)
     server = RtlSdrTcpServer(**o)
     server.run_forever()
-
-
-def test():
-    import time
-    port = 1235
-    while True:
-        try:
-            server = RtlSdrTcpServer(port=port)
-            server.run()
-        except socket.error as e:
-            if e.errno != errno.EADDRINUSE:
-                raise
-            server = None
-            port += 1
-        if server is not None:
-            break
-    client = RtlSdrTcpClient(port=port)
-    test_props = [
-        ['sample_rate', 2e6],
-        ['center_freq', 6e6],
-        ['gain', 10.],
-        ['freq_correction', 20]
-    ]
-    try:
-        gains = client.get_gains()
-        gains = [gain / 10. for gain in gains]
-        print('gains: ', gains)
-        for prop_name, set_value in test_props:
-            if prop_name != 'gain':
-                value = getattr(client, prop_name)
-                print('%s initial value: %s' % (prop_name, value))
-            else:
-                set_value = gains[1]
-            setattr(client, prop_name, set_value)
-            value = getattr(client, prop_name)
-            print('%s set to %s, real value: %s' % (prop_name, set_value, value))
-            assert int(value) == int(set_value)
-            time.sleep(.2)
-        tuner_type = client.get_tuner_type()
-        print('tuner_type: ', tuner_type)
-        for num_samples in [1024, 4096, 16384, 65536, 131072]:
-            print('Reading %s samples...' % (num_samples))
-            samples = client.read_samples(num_samples)
-            print('%s samples received' % (len(samples)))
-            assert len(samples) == num_samples
-    finally:
-        server.close()
-    print('Complete')
 
 if __name__ == '__main__':
     run_server()
