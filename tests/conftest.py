@@ -32,7 +32,7 @@ def use_numpy(request, monkeypatch):
 
 @pytest.fixture
 def sdr_cls():
-    from rtlsdr import RtlSdr
+    from rtlsdr.rtlsdr import RtlSdr
     return RtlSdr
 
 @pytest.fixture
