@@ -4,7 +4,7 @@ import errno
 
 import pytest
 
-def test(rtlsdrtcp):
+def test(rtlsdrtcp, use_numpy):
     from utils import generic_test
     port = 1235
     while True:
@@ -21,8 +21,8 @@ def test(rtlsdrtcp):
             break
     client = rtlsdrtcp.RtlSdrTcpClient(port=port)
     try:
-        generic_test(client, test_async=False, test_exceptions=False)
+        generic_test(client, test_async=False, test_exceptions=False, use_numpy=use_numpy)
         with pytest.raises(NotImplementedError):
-            generic_test(client, test_async=True, test_exceptions=False)
+            generic_test(client, test_async=True, test_exceptions=False, use_numpy=use_numpy)
     finally:
         server.close()

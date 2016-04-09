@@ -24,6 +24,12 @@ def librtlsdr_override(monkeypatch):
         override = getattr(testlibrtlsdr, attr)
         monkeypatch.setattr(lib_attr, override)
 
+@pytest.fixture(params=[True, False])
+def use_numpy(request, monkeypatch):
+    if not request.param:
+        monkeypatch.setattr('rtlsdr.rtlsdr.has_numpy', False)
+    return request.param
+
 @pytest.fixture
 def sdr_cls():
     from rtlsdr import RtlSdr

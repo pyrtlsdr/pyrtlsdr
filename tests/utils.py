@@ -41,7 +41,7 @@ def iter_test_bytes(num_bytes=None):
                 if count >= num_bytes:
                     raise StopIteration()
 
-def check_generated_data(samples, direct_sampling=0):
+def check_generated_data(samples, direct_sampling=0, use_numpy=True):
     if not is_travisci():
         return
     test_len = 256 * (len(samples) // 256)
@@ -55,7 +55,7 @@ def check_generated_data(samples, direct_sampling=0):
             samples = list(samples)
         assert a == samples
         return
-    if np is not None:
+    if use_numpy and np is not None:
         a = np.fromiter((complex(i, q) for i, q in iter_test_samples(test_len)), dtype='complex')
         a /= (255/2)
         a -= (1 + 1j)
@@ -80,7 +80,7 @@ def check_close(num_digits, *args):
     return True
 
 
-def generic_test(sdr, test_async=True, test_exceptions=True):
+def generic_test(sdr, test_async=True, test_exceptions=True, use_numpy=True):
     """Functionality checks common to all tests
     Instanciates the given subclass of :class:`rtlsdr.RtlSdr`,
     checks get/set methods for sample_rate, center_freq and gain,
@@ -106,16 +106,16 @@ def generic_test(sdr, test_async=True, test_exceptions=True):
 
     samples = sdr.read_samples(1024)
     assert len(samples) == 1024
-    check_generated_data(samples)
+    check_generated_data(samples, use_numpy=use_numpy)
     print('read %s samples' % (len(samples)))
 
     sdr.set_direct_sampling('i')
     samples = sdr.read_bytes(1024)
-    check_generated_data(samples, 1)
+    check_generated_data(samples, 1, use_numpy=use_numpy)
 
     sdr.set_direct_sampling('q')
     samples = sdr.read_bytes(1024)
-    check_generated_data(samples, 2)
+    check_generated_data(samples, 2, use_numpy=use_numpy)
 
     if test_exceptions:
         with pytest.raises(SyntaxError):
@@ -124,10 +124,10 @@ def generic_test(sdr, test_async=True, test_exceptions=True):
     sdr.set_direct_sampling(0)
 
     if test_async:
-        async_read_test(sdr)
+        async_read_test(sdr, use_numpy=use_numpy)
 
 
-def async_read_test(sdr, read_size=1024, num_callbacks=2, bytes_mode=False):
+def async_read_test(sdr, read_size=1024, num_callbacks=2, bytes_mode=False, use_numpy=True):
     from rtlsdr.helpers import limit_calls
     @limit_calls(num_callbacks)
     def read_callback(data, rtlsdr_obj):
@@ -137,7 +137,7 @@ def async_read_test(sdr, read_size=1024, num_callbacks=2, bytes_mode=False):
             s = 'read %s samples'
         print(s % len(data))
         assert len(data) == read_size
-        check_generated_data(data)
+        check_generated_data(data, use_numpy=use_numpy)
     print('testing async read')
     if bytes_mode:
         sdr.read_bytes_async(read_callback, read_size)
