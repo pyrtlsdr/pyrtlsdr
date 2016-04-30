@@ -1,5 +1,9 @@
 import logging
-import asyncio
+try:
+    import asyncio
+    AIO_AVAILABLE = True
+except ImportError:
+    AIO_AVAILABLE = False
 try:
     from rtlsdr import RtlSdr
 except ImportError:
@@ -8,6 +12,7 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 
+_CLASS_TEMPLATE = """
 class AsyncCallbackIter:
     '''
     Convert a callback-based legacy async function into one supporting asyncio
@@ -71,7 +76,18 @@ class AsyncCallbackIter:
 
         # slight hack for rtlsdr to ignore context object
         return val[0]
+"""
 
+
+if AIO_AVAILABLE:
+    try:
+        exec('async def test_for_async(): pass')
+        exec('def test_unpack_operators(a, *, b): pass')
+    except SyntaxError:
+        AIO_AVAILABLE = False
+
+if AIO_AVAILABLE:
+    exec(_CLASS_TEMPLATE, globals(), locals())
 
 class RtlSdrAio(RtlSdr):
     DEFAULT_READ_SIZE = 128*1024
