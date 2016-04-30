@@ -24,9 +24,10 @@ after_success:
   - coveralls
 deploy:
   provider: pypi
+  server: https://testpypi.python.org/pypi
   distributions: "sdist bdist_wheel"
   on:
-    tags: true
+    all_branches: true
   user: nocarryr
   password:
     secure: oHq8f+ktVrpciBPqWGoLFcLb/44DcYhj0Jtm6Shexo8q7vUim3Tc3qaDcxw1VjQdwBxvSDgN9alI46NAxl49b0IAMvdtlzsy4I7NnqxRGFIcn34VN9hkEDtbs2HBLYLJbAZKP0J2VqzugmwomVGnks+xKom9z81mJpudb3lB17ukT+SmD3hck+9QuBCJYOqCUoRzuIfvSBXCsLZi2asW61SbPl9DJE6En1UYDeWRBL3YhY1khs8d+eWKrEz1/8rcZv3qC/PzSRuaNK1AIDAYHb6c0Z1shs6XnglP+W7vUcojc1sGiMhVVhDwv8w2TQkaFRSAwvByxuVtRdR3e2MQr/fZjxj71QcsmYFM8FRV9CRGhKCOuwlY8XYF0aznZJ2JvD/wdsY8Vq/1TpBktqI1k01ZSwEMmlw0GOyTlfc/K2PMZeVITvNqs1kGKZeVBDTmaRN+j6Xe126TIN1Hduof2V00cWtemF/TC1ajJ3B8R2BX71vrmDO6/AIzyxn17TTDtWs1E/tn7K5MhQs995OO2S+M273tO7buM3e5JLUQan6P5lqL6R6ZQER4sq5ghHZqwSUXtbu+ZYg6s1Yb1WXN5lhMgMaRAO+yYKje07yEu8zmpIbeQ5zpzebz/Q8BvpRj8h0bh4bS4IwkAhJsfaQjZavn6maTuw1VMGeC1gYYTVA=
