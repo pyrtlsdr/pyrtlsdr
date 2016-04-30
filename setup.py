@@ -24,7 +24,7 @@ except ImportError:
     from distutils.core import setup
 
 PACKAGE_NAME = 'pyrtlsdr'
-VERSION = '0.2.2'
+VERSION = '0.2.3'
 
 #HERE = os.path.abspath(os.path.dirname(__file__))
 #README = open(os.path.join(HERE, 'README.md')).read()
