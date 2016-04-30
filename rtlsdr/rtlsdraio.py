@@ -81,9 +81,13 @@ class AsyncCallbackIter:
 
 if AIO_AVAILABLE:
     try:
-        exec(_CLASS_TEMPLATE, globals(), locals())
+        exec('async def test_for_async(): pass')
+        exec('def test_unpack_operators(a, *, b): pass')
     except SyntaxError:
         AIO_AVAILABLE = False
+
+if AIO_AVAILABLE:
+    exec(_CLASS_TEMPLATE, globals(), locals())
 
 class RtlSdrAio(RtlSdr):
     DEFAULT_READ_SIZE = 128*1024
