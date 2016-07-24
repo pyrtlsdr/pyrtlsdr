@@ -11,6 +11,8 @@ if PY2:
 else:
     from socketserver import TCPServer, BaseRequestHandler
 
+from rtlsdr import RtlSdr
+
 from .base import (
     CommunicationError,
     RtlSdrTcpBase,
@@ -22,10 +24,17 @@ from .base import (
     API_DESCRIPTORS,
 )
 
-class RtlSdrTcpServer(RtlSdrTcpBase):
+class RtlSdrTcpServer(RtlSdr, RtlSdrTcpBase):
 
     """Server that connects to a physical dongle to allow client connections.
     """
+
+    def __init__(self, device_index=0, test_mode_enabled=False,
+                 hostname='127.0.0.1', port=None):
+
+        RtlSdrTcpBase.__init__(self, device_index, test_mode_enabled,
+                               hostname, port)
+        RtlSdr.__init__(self, device_index, test_mode_enabled)
 
     def open(self, device_index=0, test_mode_enabled=False):
         if not self.device_ready:

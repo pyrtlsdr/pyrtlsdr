@@ -20,6 +20,12 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
 
     """
 
+    def __init__(self, device_index=0, test_mode_enabled=False,
+                 hostname='127.0.0.1', port=None):
+        super(RtlSdrTcpClient, self).__init__(device_index, test_mode_enabled,
+                                              hostname, port)
+        self.open()
+
     def open(self, *args):
         self._socket = None
         self._keep_alive = False
@@ -113,6 +119,9 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         raw_data = self._communicate_method('read_samples', num_samples)
         iq = self.packed_bytes_to_iq(raw_data)
         return iq
+
+    def read_samples_async(self, *args):
+        raise NotImplementedError('Async read not available in TCP mode')
 
     def read_bytes_async(self, *args):
         raise NotImplementedError('Async read not available in TCP mode')

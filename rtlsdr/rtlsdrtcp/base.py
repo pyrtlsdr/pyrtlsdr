@@ -7,7 +7,6 @@ import errno
 import traceback
 import json
 
-from rtlsdr import RtlSdr
 
 PY2 = sys.version_info[0] == 2
 
@@ -28,7 +27,7 @@ class CommunicationError(Exception):
         return s
 
 
-class RtlSdrTcpBase(RtlSdr):
+class RtlSdrTcpBase(object):
     # Use port 1235 as default since rtl_tcp uses 1234
     DEFAULT_PORT = 1235
 
@@ -42,7 +41,6 @@ class RtlSdrTcpBase(RtlSdr):
             self.port = self.DEFAULT_PORT
         self.device_ready = False
         self.server_thread = None
-        super(RtlSdrTcpBase, self).__init__(device_index, test_mode_enabled)
 
 
 API_METHODS = (
