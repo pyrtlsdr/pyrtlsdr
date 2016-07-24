@@ -1,3 +1,4 @@
+from __future__ import division
 import sys
 import time
 import select
@@ -7,6 +8,16 @@ import errno
 import traceback
 import json
 
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
+
+has_numpy = True
+try:
+    import numpy as np
+except ImportError:
+    has_numpy = False
 
 PY2 = sys.version_info[0] == 2
 
@@ -41,6 +52,22 @@ class RtlSdrTcpBase(object):
             self.port = self.DEFAULT_PORT
         self.device_ready = False
         self.server_thread = None
+
+    def packed_bytes_to_iq(self, bytes):
+        ''' Convenience function to unpack array of bytes to Python list/array
+        of complex numbers and normalize range. Called automatically by read_samples()
+        '''
+        if has_numpy:
+            # use NumPy array
+            iq = np.empty(len(bytes)//2, 'complex')
+            iq.real, iq.imag = bytes[::2], bytes[1::2]
+            iq /= (255/2)
+            iq -= (1 + 1j)
+        else:
+            # use normal list
+            iq = [complex(i/(255/2) - 1, q/(255/2) - 1) for i, q in izip(bytes[::2], bytes[1::2])]
+
+        return iq
 
 
 API_METHODS = (

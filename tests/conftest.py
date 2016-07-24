@@ -28,6 +28,7 @@ def librtlsdr_override(monkeypatch):
 def use_numpy(request, monkeypatch):
     if not request.param:
         monkeypatch.setattr('rtlsdr.rtlsdr.has_numpy', False)
+        monkeypatch.setattr('rtlsdr.rtlsdrtcp.base.has_numpy', False)
     return request.param
 
 @pytest.fixture
