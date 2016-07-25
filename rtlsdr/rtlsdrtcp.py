@@ -17,10 +17,7 @@ if PY2:
 else:
     from socketserver import TCPServer, BaseRequestHandler
 
-try:
-    from rtlsdr import RtlSdr
-except ImportError:
-    from .rtlsdr import RtlSdr
+from .rtlsdr import RtlSdr
 
 
 MAX_BUFFER_SIZE = 4096
