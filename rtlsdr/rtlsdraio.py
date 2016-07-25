@@ -4,10 +4,7 @@ try:
     AIO_AVAILABLE = True
 except ImportError:
     AIO_AVAILABLE = False
-try:
-    from rtlsdr import RtlSdr
-except ImportError:
-    from .rtlsdr import RtlSdr as _RtlSdr
+from .rtlsdr import RtlSdr
 
 
 log = logging.getLogger(__name__)
