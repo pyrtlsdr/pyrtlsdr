@@ -3,6 +3,10 @@ import os
 
 import pytest
 
+def pytest_addoption(parser):
+    parser.addoption('--no-overrides', action='store_true',
+        help='Run tests that do not override (monkeypatch) librtlsdr')
+
 collect_ignore = ['setup.py', 'demo_waterfall.py']
 
 ASYNC_AVAILABLE = sys.version_info.major >= 3

@@ -1,5 +1,10 @@
 import pytest
 
+no_overrides = pytest.mark.skipif(
+    not pytest.config.getoption('--no-overrides'),
+    reason='need --no-overrides to run'
+)
+
 @pytest.fixture(params=[True, False])
 def librtlsdr_missing(request, monkeypatch):
     class FakeCDLL(object):
@@ -9,6 +14,7 @@ def librtlsdr_missing(request, monkeypatch):
         monkeypatch.setattr('ctypes.CDLL', FakeCDLL)
     return request.param
 
+@no_overrides
 def test_dll_loader(librtlsdr_missing):
     if librtlsdr_missing:
         with pytest.raises(ImportError):
