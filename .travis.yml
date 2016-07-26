@@ -20,7 +20,7 @@ install:
   - pip install -U pytest pytest-cov coveralls
   - pip install -e .
 script:
-  - py.test --cov-config .coveragerc --cov=rtlsdr --ignore tests/no_override_*
+  - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --ignore tests/no_override_*
   - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --pyargs tests/no_override_*
 after_success:
   - coveralls
