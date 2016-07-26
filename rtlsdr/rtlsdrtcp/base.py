@@ -197,6 +197,7 @@ class ServerMessage(MessageBase):
         kwargs = json.loads(header)
         struct_fmt = kwargs.get('struct_fmt')
         if struct_fmt is not None:
+            struct_fmt = str(struct_fmt)
             data_len = struct.calcsize(struct_fmt)
         else:
             return cls(**kwargs)
@@ -228,6 +229,7 @@ class ServerMessage(MessageBase):
         else:
             struct_fmt = None
         if struct_fmt is not None:
+            struct_fmt = str(struct_fmt)
             data = self.data['data']
             data_len = struct.calcsize(struct_fmt)
             ack = self.get_ack_response(sock)
