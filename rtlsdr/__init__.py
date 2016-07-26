@@ -14,13 +14,25 @@
 #    You should have received a copy of the GNU General Public License
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 
+RTLSDR_CLIENT_MODE = False
+if os.environ.get('RTLSDR_CLIENT_MODE', '').lower() in ['true', '1', 'yes']:
+    RTLSDR_CLIENT_MODE = True
 
-from .librtlsdr import librtlsdr
-from .rtlsdr import RtlSdr
-from .rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
-from .helpers import limit_calls, limit_time
-from .rtlsdraio import RtlSdrAio, AIO_AVAILABLE
+if RTLSDR_CLIENT_MODE:
+    from .rtlsdrtcp.client import RtlSdrTcpClient
+    librtlsdr = None
+    RtlSdr = None
+    RtlSdrTcpServer = None
+    RtlSdrAio = None
+    AIO_AVAILABLE = False
+else:
+    from .librtlsdr import librtlsdr
+    from .rtlsdr import RtlSdr
+    from .rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
+    from .helpers import limit_calls, limit_time
+    from .rtlsdraio import RtlSdrAio, AIO_AVAILABLE
 
 if AIO_AVAILABLE:
     RtlSdr = RtlSdrAio
