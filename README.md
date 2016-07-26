@@ -86,6 +86,24 @@ async def streaming():
 asyncio.get_event_loop().run_until_complete(streaming())
 ```
 
+####rtlsdrtcp
+The `RtlSdrTcpServer` class is meant to be connected physically to an SDR dongle and communicate with an instance of `RtlSdrTcpClient`. The client is intended to function as closely as possible to the base RtlSdr class (as if it had a physical dongle attatched to it).
+
+Both of these classes have the same arguments as the base `RtlSdr` class with the addition of `hostname` and `port`:
+```python
+server = RtlSdrTcpServer(hostname='192.168.1.100', port=12345)
+server.run_forever()
+# Will listen for clients until Ctrl-C is pressed
+```
+```python
+# On another machine (typically)
+client = RtlSdrTcpClient(hostname='192.168.1.100', port=12345)
+client.center_freq = 2e6
+data = client.read_samples()
+```
+On platforms where the `librtlsdr` library cannot be installed/compiled, it is possible to import the `RtlSdrTcpClient` only by setting the environment variable `"RTLSDR_CLIENT_MODE"` to `"true"`. If this is set, no other modules will be available.
+
+
 # Dependencies
 
 * Windows/Linux/OSX
