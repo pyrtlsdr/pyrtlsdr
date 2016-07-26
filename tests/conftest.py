@@ -15,7 +15,13 @@ def is_travisci():
     return all([os.environ.get(key) == 'true' for key in ['CI', 'TRAVIS']])
 
 @pytest.fixture(autouse=True)
-def librtlsdr_override(monkeypatch):
+def librtlsdr_override(request, monkeypatch):
+    if isinstance(request.node, pytest.Function):
+        # no_override tests will not monkeypatch the wrapper library
+        module = request.node.parent
+        if 'no_override_' in module.name:
+            print('skipping module {}'.format(module))
+            return
     if not is_travisci():
         return
     import testlibrtlsdr
