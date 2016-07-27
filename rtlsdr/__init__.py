@@ -15,12 +15,31 @@
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import warnings
 
 RTLSDR_CLIENT_MODE = False
 if os.environ.get('RTLSDR_CLIENT_MODE', '').lower() in ['true', '1', 'yes']:
     RTLSDR_CLIENT_MODE = True
 
+class ClientModeWarning(UserWarning):
+    def __init__(self):
+        msg = '\n'.join([
+            'Running in "client-only" mode: {varname}="{val}"',
+            'Only Tcp communication will be available (RtlSdrTcpClient)',
+            'If this is was not intended, set "{varname}" to "false" or remove it',
+        ]).format(varname='$RTLSDR_CLIENT_MODE', val=os.environ['RTLSDR_CLIENT_MODE'])
+        super(ClientModeWarning, self).__init__(msg)
+
+def warn_client_mode():
+    def formatwarning(message, category, filename, lineno, line=None):
+        return '{}: {}: \n{}\n'.format(filename, category.__name__, message)
+    orig_fmt = warnings.formatwarning
+    warnings.formatwarning = formatwarning
+    warnings.warn(ClientModeWarning())
+    warnings.formatwarning = orig_fmt
+
 if RTLSDR_CLIENT_MODE:
+    warn_client_mode()
     from .rtlsdrtcp.client import RtlSdrTcpClient
     librtlsdr = None
     RtlSdr = None

@@ -11,6 +11,9 @@ def client_mode(monkeypatch):
 
 @no_overrides
 def test_client_mode(client_mode):
-    import rtlsdr
+    with pytest.warns(None) as record:
+        import rtlsdr
+    assert len(record) == 1
+    assert isinstance(record[0].message, rtlsdr.ClientModeWarning)
     assert rtlsdr.RtlSdr is None
     assert rtlsdr.RtlSdrTcpClient is not None
