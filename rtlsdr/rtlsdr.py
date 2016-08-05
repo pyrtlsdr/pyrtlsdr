@@ -195,7 +195,6 @@ class BaseRtlSdr(object):
             self.close()
             raise IOError('Error code %d when setting tuner bandwidth to %d Hz'\
                           % (result, bw))
-        self._bandwidth = bw
 
         return
 
@@ -204,7 +203,16 @@ class BaseRtlSdr(object):
         This value is stored locally and may not reflect the real tuner bandwidth
         '''
 
-        return getattr(self, '_bandwidth', None)
+        bw = uint32_t(0)
+        applied_bw = uint32_t(0)
+        apply_bw = c_int(0)
+        result = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth(
+            self.dev_p, bw, applied_bw, apply_bw)
+
+        if result != 0:
+            raise IOError('Error code %d when getting tuner bandwidth' % (result))
+
+        return applied_bw
 
     def set_gain(self, gain):
         ''' Set gain of tuner.
