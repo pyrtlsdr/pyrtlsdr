@@ -204,8 +204,8 @@ class BaseRtlSdr(object):
         This value is stored locally and may not reflect the real tuner bandwidth
         '''
 
-        bw = uint32_t(0)
-        applied_bw = uint32_t(0)
+        bw = c_uint32(0)
+        applied_bw = c_uint32(0)
         apply_bw = c_int(0)
         try:
             result = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth(
