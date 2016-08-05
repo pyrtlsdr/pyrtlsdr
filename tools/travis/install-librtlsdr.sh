@@ -2,10 +2,10 @@
 # Linux script to build and install librtlsdr
 # Based on steps found at sdr.osmocom.org/trac/wiki/rtl-sdr
 
-DEFAULT_RELEASE="0.5.3"
+DEFAULT_RELEASE="development"
 RELEASE=${1:-$DEFAULT_RELEASE}
-TAR_FILE="v$RELEASE.tar.gz"
-PKG_URL="https://github.com/steve-m/librtlsdr/archive/$TAR_FILE"
+TAR_FILE="$RELEASE.tar.gz"
+PKG_URL="https://github.com/librtlsdr/librtlsdr/archive/$TAR_FILE"
 
 if [ "$TRAVIS" = "true" ]; then
   set -ex
