@@ -19,12 +19,13 @@ from __future__ import division
 from __future__ import print_function
 from rtlsdr import *
 
-@limit_calls(2)
-def test_callback(samples, rtlsdr_obj):
-    print('  in callback')
-    print('  signal mean:', sum(samples)/len(samples))
-
 def main():
+
+    @limit_calls(2)
+    def test_callback(samples, rtlsdr_obj):
+        print('  in callback')
+        print('  signal mean:', sum(samples)/len(samples))
+
     sdr = RtlSdr()
 
     print('Configuring SDR...')

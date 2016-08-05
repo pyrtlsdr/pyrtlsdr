@@ -16,6 +16,7 @@
 
 
 import os
+import sys
 import re
 try:
     from setuptools import setup
@@ -23,7 +24,7 @@ except ImportError:
     from distutils.core import setup
 
 PACKAGE_NAME = 'pyrtlsdr'
-VERSION = '0.1.1'
+VERSION = '0.2.3'
 
 #HERE = os.path.abspath(os.path.dirname(__file__))
 #README = open(os.path.join(HERE, 'README.md')).read()
@@ -35,15 +36,20 @@ setup(
     url='https://github.com/roger-/pyrtlsdr',
     download_url='https://github.com/roger-/pyrtlsdr',
     description=('A Python wrapper for librtlsdr (a driver for Realtek RTL2832U based SDR\'s)'),
-    #long_description=README,
+    long_description_markdown_filename='README.md',
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Console',
                  'Intended Audience :: Developers',
                  'License :: OSI Approved :: GNU General Public License (GPL)',
                  'Natural Language :: English',
                  'Operating System :: OS Independent',
+                 'Programming Language :: Python :: 2',
                  'Programming Language :: Python :: 2.7',
+                 'Programming Language :: Python :: 3',
+                 'Programming Language :: Python :: 3.4',
+                 'Programming Language :: Python :: 3.5',
                  'Topic :: Utilities'],
     license='GPLv3',
     keywords='radio librtlsdr rtlsdr sdr',
+    setup_requires=['setuptools-markdown'],
     packages=['rtlsdr'])

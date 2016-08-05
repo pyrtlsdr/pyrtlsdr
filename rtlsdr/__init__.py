@@ -15,11 +15,16 @@
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
 
-try:                from  librtlsdr import librtlsdr
-except ImportError: from .librtlsdr import librtlsdr
-try:                from  rtlsdr import RtlSdr
-except ImportError: from .rtlsdr import RtlSdr
-try:                from  helpers import limit_calls, limit_time
-except ImportError: from .helpers import limit_calls, limit_time
 
-__all__  = ['librtlsdr', 'RtlSdr', 'limit_calls', 'limit_time']
+from .librtlsdr import librtlsdr
+from .rtlsdr import RtlSdr
+from .rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
+from .helpers import limit_calls, limit_time
+from .rtlsdraio import RtlSdrAio, AIO_AVAILABLE
+
+if AIO_AVAILABLE:
+    RtlSdr = RtlSdrAio
+
+
+__all__  = ['librtlsdr', 'RtlSdr', 'RtlSdrTcpServer', 'RtlSdrTcpClient',
+            'limit_calls', 'limit_time']

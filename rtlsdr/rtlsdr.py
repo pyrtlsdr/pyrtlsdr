@@ -17,10 +17,13 @@
 
 from __future__ import division, print_function
 from ctypes import *
-try:                from  librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
-except ImportError: from .librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
+from .librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
 try:                from itertools import izip
 except ImportError: izip = zip
+import sys
+
+if sys.version_info.major >= 3:
+    basestring = str
 
 # see if NumPy is available
 has_numpy = True
@@ -46,6 +49,9 @@ class BaseRtlSdr(object):
     device_opened = False
 
     def __init__(self, device_index=0, test_mode_enabled=False):
+        self.open(device_index, test_mode_enabled)
+
+    def open(self, device_index=0, test_mode_enabled=False):
         ''' Initialize RtlSdr object.
         The test_mode_enabled parameter can be used to enable a special test mode, which will return the value of an
         internal RTL2832 8-bit counter with calls to read_bytes()
@@ -73,10 +79,12 @@ class BaseRtlSdr(object):
             raise IOError('Error code %d when resetting buffer (device index = %d)'\
                           % (result, device_index))
 
+        self.device_opened = True
+        self.init_device_values()
+
+    def init_device_values(self):
         self.gain_values = self.get_gains()
         self.valid_gains_db = [val/10 for val in self.gain_values]
-
-        self.device_opened = True
 
         # set default state
         self.set_sample_rate(self.DEFAULT_RS)
@@ -143,7 +151,7 @@ class BaseRtlSdr(object):
             self.close()
             raise IOError('Error code %d when getting freq. offset in ppm.'\
                           % (result))
-        return
+        return result
 
     def set_sample_rate(self, rate):
         ''' Set sample rate of tuner (in Hz).
@@ -204,7 +212,7 @@ class BaseRtlSdr(object):
         gain used is rounded to the nearest value supported by the device (see the
         values in RtlSdr.valid_gains_db).
         '''
-        if isinstance(gain, str) and gain == 'auto':
+        if isinstance(gain, basestring) and gain == 'auto':
             # disable manual gain -> enable AGC
             self.set_manual_gain_enabled(False)
 
@@ -230,7 +238,7 @@ class BaseRtlSdr(object):
         ''' Get gain of tuner (in dB). '''
 
         result = librtlsdr.rtlsdr_get_tuner_gain(self.dev_p)
-        if result == 0:
+        if 0 and result == 0:
             self.close()
             raise IOError('Error when getting gain')
 
@@ -283,7 +291,7 @@ class BaseRtlSdr(object):
         '''
 
         # convert parameter
-        if isinstance(direct, str):
+        if isinstance(direct, basestring):
             if direct.lower() == 'i':
                 direct = 1
             elif direct.lower() == 'q':
@@ -456,36 +464,3 @@ class RtlSdr(BaseRtlSdr):
                           % (result))
 
         self.read_async_canceling = True
-
-
-def test_callback(buffer, rtlsdr_obj):
-    print('  in callback')
-    print('  signal mean:', sum(buffer)/len(buffer))
-
-    # note we may get additional callbacks even after calling this
-    rtlsdr_obj.cancel_read_async()
-
-
-def main():
-    sdr = RtlSdr()
-
-    print('Configuring SDR...')
-    sdr.rs = 2.4e6
-    sdr.fc = 70e6
-    sdr.gain = 4
-    print('  sample rate: %0.6f MHz' % (sdr.rs/1e6))
-    print('  center frequency %0.6f MHz' % (sdr.fc/1e6))
-    print('  gain: %d dB' % sdr.gain)
-
-    print('Reading samples...')
-    samples = sdr.read_samples(1024)
-    print('  signal mean:', sum(samples)/len(samples))
-
-    print('Testing callback...')
-    sdr.read_samples_async(test_callback)
-
-    sdr.close()
-
-
-if __name__ == '__main__':
-    main()
