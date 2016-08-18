@@ -101,7 +101,11 @@ client = RtlSdrTcpClient(hostname='192.168.1.100', port=12345)
 client.center_freq = 2e6
 data = client.read_samples()
 ```
+
+##### TCP Client Mode
 On platforms where the `librtlsdr` library cannot be installed/compiled, it is possible to import the `RtlSdrTcpClient` only by setting the environment variable `"RTLSDR_CLIENT_MODE"` to `"true"`. If this is set, no other modules will be available.
+
+*Feature added in v0.2.4*
 
 
 # Dependencies
