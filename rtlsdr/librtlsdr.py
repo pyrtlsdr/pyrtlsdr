@@ -131,8 +131,9 @@ f.restype, f.argtypes = c_uint, [p_rtlsdr_dev]
 try:
     f = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth
     f.restype, f.argtypes = c_uint, [p_rtlsdr_dev, c_uint32, c_uint32, c_int]
+    tuner_bandwidth_supported = True
 except AttributeError:
-    pass
+    tuner_bandwidth_supported = False
 
 # int rtlsdr_set_tuner_bandwidth(rtlsdr_dev_t *dev, uint32_t bw);
 f = librtlsdr.rtlsdr_set_tuner_bandwidth

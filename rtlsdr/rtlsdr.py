@@ -17,7 +17,12 @@
 
 from __future__ import division, print_function
 from ctypes import *
-from .librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
+from .librtlsdr import (
+    librtlsdr,
+    p_rtlsdr_dev,
+    rtlsdr_read_async_cb_t,
+    tuner_bandwidth_supported,
+)
 try:                from itertools import izip
 except ImportError: izip = zip
 import sys
@@ -207,10 +212,10 @@ class BaseRtlSdr(object):
         bw = c_uint32(0)
         applied_bw = c_uint32(0)
         apply_bw = c_int(0)
-        try:
+        if tuner_bandwidth_supported:
             result = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth(
                 self.dev_p, bw, applied_bw, apply_bw)
-        except AttributeError:
+        else:
             result = 0
             applied_bw = getattr(self, '_bandwidth', 0)
 
