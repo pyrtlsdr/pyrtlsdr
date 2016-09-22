@@ -3,6 +3,10 @@ import os
 
 import pytest
 
+def pytest_addoption(parser):
+    parser.addoption('--no-overrides', action='store_true',
+        help='Run tests that do not override (monkeypatch) librtlsdr')
+
 collect_ignore = ['setup.py', 'demo_waterfall.py']
 
 ASYNC_AVAILABLE = sys.version_info.major >= 3
@@ -15,7 +19,13 @@ def is_travisci():
     return all([os.environ.get(key) == 'true' for key in ['CI', 'TRAVIS']])
 
 @pytest.fixture(autouse=True)
-def librtlsdr_override(monkeypatch):
+def librtlsdr_override(request, monkeypatch):
+    if isinstance(request.node, pytest.Function):
+        # no_override tests will not monkeypatch the wrapper library
+        module = request.node.parent
+        if 'no_override_' in module.name:
+            print('skipping module {}'.format(module))
+            return
     if not is_travisci():
         return
     import testlibrtlsdr
@@ -28,6 +38,7 @@ def librtlsdr_override(monkeypatch):
 def use_numpy(request, monkeypatch):
     if not request.param:
         monkeypatch.setattr('rtlsdr.rtlsdr.has_numpy', False)
+        monkeypatch.setattr('rtlsdr.rtlsdrtcp.base.has_numpy', False)
     return request.param
 
 @pytest.fixture

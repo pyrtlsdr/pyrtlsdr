@@ -18,13 +18,10 @@
 import os
 import sys
 import re
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'pyrtlsdr'
-VERSION = '0.2.3'
+VERSION = '0.2.4'
 
 #HERE = os.path.abspath(os.path.dirname(__file__))
 #README = open(os.path.join(HERE, 'README.md')).read()
@@ -52,4 +49,4 @@ setup(
     license='GPLv3',
     keywords='radio librtlsdr rtlsdr sdr',
     setup_requires=['setuptools-markdown'],
-    packages=['rtlsdr'])
+    packages=find_packages(exclude=['tests*']))
