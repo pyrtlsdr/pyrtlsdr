@@ -193,15 +193,22 @@ class BaseRtlSdr(object):
         '''Set tuner bandwidth (in Hz).
         Set to 0 (default) for automatic bandwidth selection. '''
 
-        bw = int(bw)
+        if tuner_bandwidth_supported:
+            apply_bw = c_int(1)
+            applied_bw = c_uint32(bw)
+            bw = c_uint32(bw)
+            result = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth(
+                self.dev_p, bw, applied_bw, apply_bw)
+        else:
+            bw = int(bw)
+            result = librtlsdr.rtlsdr_set_tuner_bandwidth(self.dev_p, bw)
+            self._bandwidth = bw
 
-        result = librtlsdr.rtlsdr_set_tuner_bandwidth(self.dev_p, bw)
         if result != 0:
             self.close()
             raise IOError('Error code %d when setting tuner bandwidth to %d Hz'\
                           % (result, bw))
 
-        self._bandwidth = bw
         return
 
     def get_bandwidth(self):
