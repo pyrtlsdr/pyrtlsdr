@@ -18,8 +18,13 @@ if not ASYNC_AVAILABLE:
 def is_travisci():
     return all([os.environ.get(key) == 'true' for key in ['CI', 'TRAVIS']])
 
+@pytest.fixture(params=[True, False])
+def tuner_bandwidth_supported(request, monkeypatch):
+    monkeypatch.setattr('rtlsdr.rtlsdr.tuner_bandwidth_supported', request.param)
+    return request.param
+
 @pytest.fixture(autouse=True)
-def librtlsdr_override(request, monkeypatch):
+def librtlsdr_override(request, monkeypatch, tuner_bandwidth_supported):
     if isinstance(request.node, pytest.Function):
         # no_override tests will not monkeypatch the wrapper library
         module = request.node.parent
