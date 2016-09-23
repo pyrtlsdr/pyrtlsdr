@@ -222,7 +222,7 @@ class BaseRtlSdr(object):
         if result != 0:
             raise IOError('Error code %d when getting tuner bandwidth' % (result))
 
-        return applied_bw
+        return applied_bw.value
 
     def set_gain(self, gain):
         ''' Set gain of tuner.
