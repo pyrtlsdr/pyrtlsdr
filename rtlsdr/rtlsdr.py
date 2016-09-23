@@ -193,6 +193,7 @@ class BaseRtlSdr(object):
         '''Set tuner bandwidth (in Hz).
         Set to 0 (default) for automatic bandwidth selection. '''
 
+        bw = int(bw)
         if tuner_bandwidth_supported:
             apply_bw = c_int(1)
             applied_bw = c_uint32(bw)
