@@ -43,7 +43,7 @@ class AsyncCallbackIter:
             return
         asyncio.run_coroutine_threadsafe(self.add_to_queue(*args), self.loop)
 
-    def start(self):
+    async def start(self):
         assert(not self.running)
 
         # start legacy async function
@@ -51,19 +51,25 @@ class AsyncCallbackIter:
         asyncio.ensure_future(future, loop=self.loop)
         self.running = True
 
-    def stop(self):
+    async def stop(self):
         assert(self.running)
 
-        # send a signal to stop
-        self.queue.put_nowait((StopAsyncIteration(),))
         self.running = False
 
+        # send a signal to stop
+        iter_stopped = False
+        while not iter_stopped:
+            try:
+                self.queue.put_nowait((StopAsyncIteration(),))
+                iter_stopped = True
+            except asyncio.QueueFull:
+                try:
+                    self.queue.task_done()
+                except ValueError:
+                    pass
         if self.func_stop:
             # stop legacy async function
-            future = self.loop.run_in_executor(None, self.func_stop)
-            asyncio.ensure_future(future, loop=self.loop)
-
-            #self.func_stop()
+            await self.loop.run_in_executor(None, self.func_stop)
 
     async def __aiter__(self):
         return self
@@ -113,10 +119,10 @@ class RtlSdrAio(RtlSdr):
         self.async_iter = AsyncCallbackIter(func_start=lambda cb: func_start(cb, num_samples_or_bytes),
                                             func_stop=self.cancel_read_async,
                                             loop=loop)
-        self.async_iter.start()
+        asyncio.ensure_future(self.async_iter.start(), loop=loop)
 
         return self.async_iter
 
     def stop(self):
         ''' Stop async stream. '''
-        self.async_iter.stop()
+        return asyncio.ensure_future(self.async_iter.stop(), loop=self.async_iter.loop)
