@@ -15,8 +15,10 @@ before_install:
   - ./install-librtlsdr.sh
   - cd ../..
   - export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
-  - pyenv install 3.5.2
-  - export PYENV_VERSION=3.5.2
+  - if [ "$TRAVIS_PYTHON_VERSION" == "3.5" ]; then
+        pyenv install 3.5.2
+        export PYENV_VERSION=3.5.2
+    fi
 install:
   - pip install -U pip setuptools wheel
   - pip install -U pytest pytest-cov coveralls
