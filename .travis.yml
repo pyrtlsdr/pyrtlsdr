@@ -18,6 +18,9 @@ before_install:
   - if [ "$TRAVIS_PYTHON_VERSION" == "3.5" ]; then
         pyenv install 3.5.2;
         pyenv shell 3.5.2;
+        pyenv-virtualenv virtualenv352;
+        source virtualenv352/bin/activate;
+        python --version;
     fi
 install:
   - pip install -U pip setuptools wheel
