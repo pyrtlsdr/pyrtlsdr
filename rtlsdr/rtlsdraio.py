@@ -49,6 +49,7 @@ class AsyncCallbackIter:
         # start legacy async function
         future = self.loop.run_in_executor(None, self.func_start, self._callback)
         asyncio.ensure_future(future, loop=self.loop)
+        self.executor_task = future
         self.running = True
 
     async def stop(self):
@@ -70,6 +71,7 @@ class AsyncCallbackIter:
         if self.func_stop:
             # stop legacy async function
             await self.loop.run_in_executor(None, self.func_stop)
+        await self.executor_task
 
     async def __aiter__(self):
         return self
