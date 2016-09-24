@@ -17,7 +17,6 @@ before_install:
   - export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
   - if [ "$TRAVIS_PYTHON_VERSION" == "3.5" ]; then
         git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv;
-        exec "$SHELL";
         pyenv install 3.5.2;
         pyenv shell 3.5.2;
         pyenv-virtualenv virtualenv352;
