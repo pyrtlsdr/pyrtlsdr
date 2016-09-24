@@ -26,7 +26,7 @@ def test(rtlsdraio):
             i += 1
 
             if i > 20:
-                sdr.stop()
+                await sdr.stop()
                 break
 
         print('Done')
