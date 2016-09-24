@@ -32,11 +32,16 @@ class AsyncCallbackIter:
 
         self.running = False
 
-    def _callback(self, *args):
-        if self.running and not self.queue.full():
-            self.loop.call_soon_threadsafe(self.queue.put_nowait, args)
-        else:
+    async def add_to_queue(self, *args):
+        try:
+            self.queue.put_nowait(args)
+        except asyncio.QueueFull:
             log.info('extra callback data lost')
+
+    def _callback(self, *args):
+        if not self.running:
+            return
+        asyncio.run_coroutine_threadsafe(self.add_to_queue(*args), self.loop)
 
     def start(self):
         assert(not self.running)
@@ -65,6 +70,7 @@ class AsyncCallbackIter:
 
     async def __anext__(self):
         val = await self.queue.get()
+        self.queue.task_done()
 
         if isinstance(val[0], StopAsyncIteration):
             raise StopAsyncIteration
