@@ -16,8 +16,8 @@ before_install:
   - cd ../..
   - export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
   - if [ "$TRAVIS_PYTHON_VERSION" == "3.5" ]; then
-        pyenv install 3.5.2
-        pyenv shell 3.5.2
+        pyenv install 3.5.2;
+        pyenv shell 3.5.2;
     fi
 install:
   - pip install -U pip setuptools wheel
