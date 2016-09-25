@@ -21,7 +21,7 @@ before_install:
         git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv;
         pyenv install 3.5.2;
         pyenv shell 3.5.2;
-        pyenv-virtualenv virtualenv352;
+        ~/.pyenv/plugins/pyenv-virtualenv/bin/pyenv-virtualenv virtualenv352;
         source virtualenv352/bin/activate;
         python --version;
     fi
