@@ -20,8 +20,10 @@ before_install:
         export PATH="$PYENV_ROOT/bin:$PATH";
         git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv;
         pyenv install 3.5.2;
+        pyenv rehash;
         pyenv shell 3.5.2;
-        ~/.pyenv/plugins/pyenv-virtualenv/bin/pyenv-virtualenv virtualenv352;
+        pyenv versions;
+        ~/.pyenv/plugins/pyenv-virtualenv/bin/pyenv-virtualenv virtualenv352 3.5.2;
         source virtualenv352/bin/activate;
         python --version;
     fi
