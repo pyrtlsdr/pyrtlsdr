@@ -23,7 +23,7 @@ before_install:
         pyenv rehash;
         pyenv shell 3.5.2;
         pyenv versions;
-        ~/.pyenv/plugins/pyenv-virtualenv/bin/pyenv-virtualenv virtualenv352 3.5.2;
+        ~/.pyenv/plugins/pyenv-virtualenv/bin/pyenv-virtualenv 3.5.2 virtualenv352;
         source virtualenv352/bin/activate;
         python --version;
     fi
