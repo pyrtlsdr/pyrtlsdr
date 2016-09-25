@@ -18,12 +18,11 @@ before_install:
   - if [ "$TRAVIS_PYTHON_VERSION" == "3.5" ]; then
         export PYENV_ROOT="$HOME/.pyenv";
         export PATH="$PYENV_ROOT/bin:$PATH";
-        git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv;
         pyenv install 3.5.2;
         pyenv rehash;
         pyenv shell 3.5.2;
         pyenv versions;
-        ~/.pyenv/plugins/pyenv-virtualenv/bin/pyenv-virtualenv 3.5.2 virtualenv352;
+        ~/.pyenv/versions/3.5.2/bin/python virtualenv virtualenv352;
         source virtualenv352/bin/activate;
         python --version;
     fi
