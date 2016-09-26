@@ -1,10 +1,11 @@
 import asyncio
+import pytest
 
 def test(rtlsdraio):
-    async def main():
-        import math
-        from utils import generic_test
+    import math
+    from utils import generic_test
 
+    async def main():
         sdr = rtlsdraio.RtlSdrAio()
         generic_test(sdr)
 
@@ -16,27 +17,39 @@ def test(rtlsdraio):
         print('  center frequency %0.6f MHz' % (sdr.fc/1e6))
         print('  gain: %d dB' % sdr.gain)
 
+
         print('Streaming samples...')
+        await process_samples(sdr, 'samples')
+        await sdr.stop()
+
+        print('Streaming bytes...')
+        await process_samples(sdr, 'bytes')
+        await sdr.stop()
+
+        # make sure our format parameter checks work
+        with pytest.raises(ValueError):
+            await process_samples(sdr, 'foo')
+
+        print('Done')
+
+        sdr.close()
+
+
+    async def process_samples(sdr, fmt):
+        async def packed_bytes_to_iq(samples):
+            return sdr.packed_bytes_to_iq(samples)
 
         i = 0
-        async for samples in sdr.stream():
+        async for samples in sdr.stream(format=fmt):
+            if fmt == 'bytes':
+                samples = await packed_bytes_to_iq(samples)
             power = sum(abs(s)**2 for s in samples) / len(samples)
             print('Relative power:', 10*math.log10(power), 'dB')
 
             i += 1
 
             if i > 20:
-                sdr.stop()
                 break
 
-        print('Done')
-
-        sdr.close()
-
-    async def do_nothing():
-        for i in range(50):
-            await asyncio.sleep(0.1)
-            print('#')
-
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(asyncio.wait([main(), do_nothing()]))
+    loop.run_until_complete(main())

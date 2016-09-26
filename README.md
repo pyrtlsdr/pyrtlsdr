@@ -78,7 +78,7 @@ async def streaming():
   # ...
   
   # to stop streaming:
-  sdr.stop()
+  await sdr.stop()
   
  # done
  sdr.close()
