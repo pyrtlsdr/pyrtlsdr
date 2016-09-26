@@ -1,10 +1,10 @@
 import asyncio
 
 def test(rtlsdraio):
-    async def main():
-        import math
-        from utils import generic_test
+    import math
+    from utils import generic_test
 
+    async def main():
         sdr = rtlsdraio.RtlSdrAio()
         generic_test(sdr)
 
@@ -18,6 +18,15 @@ def test(rtlsdraio):
 
         print('Streaming samples...')
 
+        await process_samples(sdr)
+
+        await sdr.stop()
+
+        print('Done')
+
+        sdr.close()
+
+    async def process_samples(sdr):
         i = 0
         async for samples in sdr.stream():
             power = sum(abs(s)**2 for s in samples) / len(samples)
@@ -26,17 +35,7 @@ def test(rtlsdraio):
             i += 1
 
             if i > 20:
-                await sdr.stop()
                 break
 
-        print('Done')
-
-        sdr.close()
-
-    async def do_nothing():
-        for i in range(50):
-            await asyncio.sleep(0.1)
-            print('#')
-
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(asyncio.wait([main(), do_nothing()]))
+    loop.run_until_complete(main())
