@@ -214,7 +214,7 @@ class BaseRtlSdr(object):
         return
 
     def get_bandwidth(self):
-        '''Get bandwith value (in Hz)
+        '''Get bandwidth value (in Hz)
         This value is stored locally and may not reflect the real tuner bandwidth
         '''
 
