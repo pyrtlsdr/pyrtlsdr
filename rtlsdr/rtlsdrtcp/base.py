@@ -73,6 +73,7 @@ class RtlSdrTcpBase(object):
 API_METHODS = (
     'get_center_freq', 'set_center_freq',
     'get_sample_rate', 'set_sample_rate',
+    'get_bandwidth', 'set_bandwidth',
     'get_gain', 'set_gain',
     'get_freq_correction', 'set_freq_correction',
     'get_gains',
@@ -84,6 +85,7 @@ API_METHODS = (
 API_DESCRIPTORS = {
     'center_freq', 'fc',
     'sample_rate', 'rs',
+    'bandwidth',
     'gain',
     'freq_correction',
 }

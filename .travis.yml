@@ -17,11 +17,11 @@ before_install:
   - export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
 install:
   - pip install -U pip setuptools wheel
-  - pip install -U pytest pytest-cov coveralls
+  - pip install -U pytest pytest-xdist pytest-cov coveralls
   - pip install -e .
 script:
   - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr
-  - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override*
+  - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
 after_success:
   - coveralls
 deploy:

@@ -17,7 +17,12 @@
 
 from __future__ import division, print_function
 from ctypes import *
-from .librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
+from .librtlsdr import (
+    librtlsdr,
+    p_rtlsdr_dev,
+    rtlsdr_read_async_cb_t,
+    tuner_bandwidth_supported,
+)
 try:                from itertools import izip
 except ImportError: izip = zip
 import sys
@@ -183,6 +188,37 @@ class BaseRtlSdr(object):
         real_rate = (self.CRYSTAL_FREQ * pow(2, 22)) / rsamp_ratio;
 
         return real_rate
+
+    def set_bandwidth(self, bw):
+        '''Set tuner bandwidth (in Hz).
+        Set to 0 (default) for automatic bandwidth selection. '''
+
+        bw = int(bw)
+        if tuner_bandwidth_supported:
+            apply_bw = c_int(1)
+            applied_bw = c_uint32(bw)
+            bw = c_uint32(bw)
+            result = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth(
+                self.dev_p, bw, byref(applied_bw), apply_bw)
+            self._bandwidth = applied_bw.value
+        else:
+            bw = int(bw)
+            result = librtlsdr.rtlsdr_set_tuner_bandwidth(self.dev_p, bw)
+            self._bandwidth = bw
+
+        if result != 0:
+            self.close()
+            raise IOError('Error code %d when setting tuner bandwidth to %d Hz'\
+                          % (result, bw))
+
+        return
+
+    def get_bandwidth(self):
+        '''Get bandwidth value (in Hz)
+        This value is stored locally and may not reflect the real tuner bandwidth
+        '''
+
+        return getattr(self, '_bandwidth', 0)
 
     def set_gain(self, gain):
         ''' Set gain of tuner.
@@ -358,6 +394,7 @@ class BaseRtlSdr(object):
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
     gain = property(get_gain, set_gain)
     freq_correction = property(get_freq_correction, set_freq_correction)
+    bandwidth = property(get_bandwidth, set_bandwidth)
 
 
 # This adds async read support to base class BaseRtlSdr (don't use that one)

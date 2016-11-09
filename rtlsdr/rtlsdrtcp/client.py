@@ -91,6 +91,12 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
     def set_sample_rate(self, value):
         self._communicate_descriptor_set('rs', value)
 
+    def get_bandwidth(self):
+        return self._communicate_descriptor_get('bandwidth')
+
+    def set_bandwidth(self, value):
+        self._communicate_descriptor_set('bandwidth', value)
+
     def get_gain(self):
         return self._communicate_descriptor_get('gain')
 
@@ -128,5 +134,6 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
 
     center_freq = fc = property(get_center_freq, set_center_freq)
     sample_rate = rs = property(get_sample_rate, set_sample_rate)
+    bandwidth = property(get_bandwidth, set_bandwidth)
     gain = property(get_gain, set_gain)
     freq_correction = property(get_freq_correction, set_freq_correction)

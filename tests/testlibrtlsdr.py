@@ -13,6 +13,7 @@ class LibRtlSdr(object):
     def __init__(self):
         self.fc = 1e6
         self.rs = 2e6
+        self.bw = 2e6
         self.err_ppm = 0
         self.gain = 0
         self.gains = list(range(0, 300, 25))
@@ -37,6 +38,14 @@ class LibRtlSdr(object):
         return 0
     def rtlsdr_set_sample_rate(self, dev_p, rs):
         self.rs = rs
+        return 0
+    def rtlsdr_set_and_get_tuner_bandwidth(self, dev_p, bw, applied_bw, apply_bw):
+        if apply_bw == 0:
+            applied_bw._obj.value = self.bw
+        else:
+            self.bw = bw
+        return 0
+    def rtlsdr_set_tuner_bandwidth(self, dev_p, bw):
         return 0
     def rtlsdr_get_sample_rate(self, *args):
         return self.rs
