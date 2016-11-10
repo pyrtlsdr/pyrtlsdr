@@ -37,7 +37,7 @@ def read_rst():
     try:
         with open('README.rst', 'r') as f:
             rst = f.read()
-    except FileNotFoundError:
+    except IOError:
         rst = None
     return rst
 
