@@ -26,6 +26,26 @@ VERSION = '0.2.4'
 #HERE = os.path.abspath(os.path.dirname(__file__))
 #README = open(os.path.join(HERE, 'README.md')).read()
 
+def convert_readme():
+    import pypandoc
+    rst = pypandoc.convert_file('README.md', 'rst')
+    with open('README.rst', 'w') as f:
+        f.write(rst)
+    return rst
+
+def read_rst():
+    try:
+        with open('README.rst', 'r') as f:
+            rst = f.read()
+    except FileNotFoundError:
+        rst = None
+    return rst
+
+if {'sdist', 'bdist_wheel'} & set(sys.argv):
+    long_description = convert_readme()
+else:
+    long_description = read_rst()
+
 setup(
     name=PACKAGE_NAME,
     version=VERSION,
@@ -33,7 +53,7 @@ setup(
     url='https://github.com/roger-/pyrtlsdr',
     download_url='https://github.com/roger-/pyrtlsdr',
     description=('A Python wrapper for librtlsdr (a driver for Realtek RTL2832U based SDR\'s)'),
-    long_description_markdown_filename='README.md',
+    long_description=long_description,
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Console',
                  'Intended Audience :: Developers',
@@ -48,5 +68,5 @@ setup(
                  'Topic :: Utilities'],
     license='GPLv3',
     keywords='radio librtlsdr rtlsdr sdr',
-    setup_requires=['setuptools-markdown'],
+    setup_requires=['pypandoc'],
     packages=find_packages(exclude=['tests*']))

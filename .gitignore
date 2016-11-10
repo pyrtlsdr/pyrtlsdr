@@ -177,3 +177,5 @@ coverage.xml
 .DS_Store
 
 venv*
+
+README.rst
