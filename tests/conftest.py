@@ -18,6 +18,9 @@ if not ASYNC_AVAILABLE:
 def is_travisci():
     return all([os.environ.get(key) == 'true' for key in ['CI', 'TRAVIS']])
 
+if not is_travisci():
+    collect_ignore.append('test_basic.py::test_lib_error_codes')
+
 @pytest.fixture(params=[True, False])
 def tuner_bandwidth_supported(request, monkeypatch):
     return request.param
@@ -45,6 +48,15 @@ def use_numpy(request, monkeypatch):
         monkeypatch.setattr('rtlsdr.rtlsdr.has_numpy', False)
         monkeypatch.setattr('rtlsdr.rtlsdrtcp.base.has_numpy', False)
     return request.param
+
+@pytest.fixture
+def librtlsdr_error_checking(request, monkeypatch):
+    from rtlsdr.rtlsdr import RtlSdr, librtlsdr
+    def reset_librtlsdr():
+        librtlsdr.fail_tests = False
+        librtlsdr.fail_tests_on_open = False
+    request.addfinalizer(reset_librtlsdr)
+    return (RtlSdr, librtlsdr)
 
 @pytest.fixture
 def sdr_cls():
