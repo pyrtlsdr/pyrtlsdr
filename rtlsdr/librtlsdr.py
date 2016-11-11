@@ -79,6 +79,7 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev]
 
 # int rtlsdr_set_center_freq(rtlsdr_dev_t *dev, uint32_t freq);
 # * \return 0 on error, frequency in Hz otherwise
+# FIXME: librtlsdr does in fact return 0 on success for this
 f = librtlsdr.rtlsdr_set_center_freq
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint]
 

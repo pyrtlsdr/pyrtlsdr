@@ -113,7 +113,7 @@ class BaseRtlSdr(object):
         freq = int(freq)
 
         result = librtlsdr.rtlsdr_set_center_freq(self.dev_p, freq)
-        if result == 0:
+        if result < 0:
             self.close()
             raise IOError('Error code %d when setting center freq. to %d Hz'\
                           % (result, freq))

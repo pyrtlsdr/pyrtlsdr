@@ -36,9 +36,9 @@ class LibRtlSdr(object):
         return 0
     def rtlsdr_set_center_freq(self, dev_p, fc):
         if self.fail_tests:
-            return 0
+            return -1
         self.fc = fc
-        return fc
+        return 0
     def rtlsdr_get_center_freq(self, *args):
         if self.fail_tests:
             return 0
