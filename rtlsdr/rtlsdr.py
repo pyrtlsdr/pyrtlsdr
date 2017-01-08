@@ -74,7 +74,7 @@ class BaseRtlSdr(object):
 
         # enable test mode if necessary
         result = librtlsdr.rtlsdr_set_testmode(self.dev_p, int(test_mode_enabled))
-        if result < 0:
+        if result != 0:
             raise IOError('Error code %d when setting test mode'\
                           % (result))
 
@@ -124,7 +124,7 @@ class BaseRtlSdr(object):
         ''' Return center frequency of tuner (in Hz). '''
 
         result = librtlsdr.rtlsdr_get_center_freq(self.dev_p)
-        if result < 0:
+        if result == 0:
             self.close()
             raise IOError('Error code %d when getting center freq.'\
                           % (result))
@@ -141,7 +141,7 @@ class BaseRtlSdr(object):
         freq = int(err_ppm)
 
         result = librtlsdr.rtlsdr_set_freq_correction(self.dev_p, err_ppm)
-        if result < 0:
+        if result != 0:
             self.close()
             raise IOError('Error code %d when setting freq. offset to %d ppm'\
                           % (result, err_ppm))
@@ -176,7 +176,7 @@ class BaseRtlSdr(object):
         ''' Get sample rate of tuner (in Hz) '''
 
         result = librtlsdr.rtlsdr_get_sample_rate(self.dev_p)
-        if result < 0:
+        if result == 0:
             self.close()
             raise IOError('Error code %d when getting sample rate'\
                           % (result))
@@ -241,7 +241,7 @@ class BaseRtlSdr(object):
 
         result = librtlsdr.rtlsdr_set_tuner_gain(self.dev_p,
                                                  self.gain_values[nearest_gain_ind])
-        if result < 0:
+        if result != 0:
             self.close()
             raise IOError('Error code %d when setting gain to %d'\
                           % (result, gain))
@@ -252,6 +252,7 @@ class BaseRtlSdr(object):
         ''' Get gain of tuner (in dB). '''
 
         result = librtlsdr.rtlsdr_get_tuner_gain(self.dev_p)
+        # TODO: Determine what the real error value should be from librtlsdr
         if 0 and result == 0:
             self.close()
             raise IOError('Error when getting gain')
@@ -264,7 +265,7 @@ class BaseRtlSdr(object):
         '''
         buffer = (c_int *50)()
         result = librtlsdr.rtlsdr_get_tuner_gains(self.dev_p, buffer)
-        if result == 0:
+        if result <= 0:
             self.close()
             raise IOError('Error when getting gains')
 
@@ -280,7 +281,7 @@ class BaseRtlSdr(object):
         this directly.
         '''
         result = librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev_p, int(enabled))
-        if result < 0:
+        if result != 0:
             raise IOError('Error code %d when setting gain mode'\
                           % (result))
 
@@ -290,7 +291,7 @@ class BaseRtlSdr(object):
         ''' Enable RTL2832 AGC
         '''
         result = librtlsdr.rtlsdr_set_agc_mode(self.dev_p, int(enabled))
-        if result < 0:
+        if result != 0:
             raise IOError('Error code %d when setting AGC mode'\
                           % (result))
 
@@ -328,7 +329,7 @@ class BaseRtlSdr(object):
         ''' Get the tuner type.
         '''
         result = librtlsdr.rtlsdr_get_tuner_type(self.dev_p)
-        if result < 0:
+        if result == 0:
             raise IOError('Error code %d when getting tuner type'\
                           % (result))
 
@@ -428,7 +429,7 @@ class RtlSdr(BaseRtlSdr):
         self.read_async_canceling = False
         result = librtlsdr.rtlsdr_read_async(self.dev_p, rtlsdr_callback,\
                     context, self.DEFAULT_ASYNC_BUF_NUMBER, num_bytes)
-        if result < 0:
+        if result != 0:
             self.close()
             raise IOError('Error code %d when requesting %d bytes'\
                           % (result, num_bytes))
@@ -472,7 +473,7 @@ class RtlSdr(BaseRtlSdr):
         result = librtlsdr.rtlsdr_cancel_async(self.dev_p)
         # sometimes we get additional callbacks after canceling an async read,
         # in this case we don't raise exceptions
-        if result < 0 and not self.read_async_canceling:
+        if result != 0 and not self.read_async_canceling:
             self.close()
             raise IOError('Error code %d when canceling async read'\
                           % (result))
