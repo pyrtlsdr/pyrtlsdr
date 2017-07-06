@@ -65,10 +65,10 @@ class BaseRtlSdr(object):
     def get_device_serial_addresses():
         def get_serial(device_index):
             bfr = (c_ubyte * 256)()
-            r = librtlsdr.rtlsdr_get_device_usb_strings(i, None, None, bfr)
+            r = librtlsdr.rtlsdr_get_device_usb_strings(device_index, None, None, bfr)
             if r != 0:
                 raise IOError(
-                    'Error code %d when reading USB strings (device %d)' % (r, i)
+                    'Error code %d when reading USB strings (device %d)' % (r, device_index)
                 )
             return ''.join((chr(b) for b in bfr if b > 0))
 
