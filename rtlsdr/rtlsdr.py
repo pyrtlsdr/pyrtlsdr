@@ -53,6 +53,28 @@ class BaseRtlSdr(object):
     num_bytes_read = c_int32(0)
     device_opened = False
 
+    @staticmethod
+    def get_device_index_by_serial(serial):
+        result = librtlsdr.rtlsdr_get_index_by_serial(serial)
+        if result < 0:
+            raise IOError('Error code %d when searching device by serial' % (result))
+
+        return result
+
+    @staticmethod
+    def get_device_serial_addresses():
+        def get_serial(device_index):
+            bfr = (c_ubyte * 256)()
+            r = librtlsdr.rtlsdr_get_device_usb_strings(i, None, None, bfr)
+            if r != 0:
+                raise IOError(
+                    'Error code %d when reading USB strings (device %d)' % (r, i)
+                )
+            return ''.join((chr(b) for b in bfr if b > 0))
+
+        num_devices = librtlsdr.rtlsdr_get_device_count()
+        return [get_serial(i) for i in range(num_devices)]
+
     def __init__(self, device_index=0, test_mode_enabled=False):
         self.open(device_index, test_mode_enabled)
 
