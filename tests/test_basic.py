@@ -15,3 +15,9 @@ def test(sdr_cls, use_numpy):
     sdr = sdr_cls()
     generic_test(sdr, use_numpy=use_numpy)
     sdr.close()
+
+def test_serial_addressing(sdr_cls, use_numpy):
+    for i, serial in enumerate(sdr_cls.get_device_serial_addresses()):
+        assert sdr_cls.get_device_index_by_serial(serial) == i
+        sdr = sdr_cls(serial_number=serial)
+        sdr.close()
