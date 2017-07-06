@@ -75,14 +75,20 @@ class BaseRtlSdr(object):
         num_devices = librtlsdr.rtlsdr_get_device_count()
         return [get_serial(i) for i in range(num_devices)]
 
-    def __init__(self, device_index=0, test_mode_enabled=False):
-        self.open(device_index, test_mode_enabled)
+    def __init__(self, device_index=0, test_mode_enabled=False, serial_number=None):
+        self.open(device_index, test_mode_enabled, serial_number)
 
-    def open(self, device_index=0, test_mode_enabled=False):
+    def open(self, device_index=0, test_mode_enabled=False, serial_number=None):
         ''' Initialize RtlSdr object.
         The test_mode_enabled parameter can be used to enable a special test mode, which will return the value of an
         internal RTL2832 8-bit counter with calls to read_bytes()
+
+        If provided, serial_number parameter (str) will be used to search for the
+        device instead of the device_index.
         '''
+
+        if serial_number is not None:
+            device_index = self.get_device_index_by_serial(serial_number)
 
         # this is the pointer to the device structure used by all librtlsdr
         # functions
