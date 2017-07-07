@@ -22,8 +22,16 @@ def is_travisci():
 def tuner_bandwidth_supported(request, monkeypatch):
     return request.param
 
+@pytest.fixture(params=[True, False])
+def tuner_set_bandwidth_supported(request):
+    return request.param
+
 @pytest.fixture(autouse=True)
-def librtlsdr_override(request, monkeypatch, tuner_bandwidth_supported):
+def librtlsdr_override(request,
+                       monkeypatch,
+                       tuner_bandwidth_supported,
+                       tuner_set_bandwidth_supported):
+
     if isinstance(request.node, pytest.Function):
         # no_override tests will not monkeypatch the wrapper library
         module = request.node.parent
@@ -31,6 +39,7 @@ def librtlsdr_override(request, monkeypatch, tuner_bandwidth_supported):
             print('skipping module {}'.format(module))
             return
     monkeypatch.setattr('rtlsdr.rtlsdr.tuner_bandwidth_supported', tuner_bandwidth_supported)
+    monkeypatch.setattr('rtlsdr.rtlsdr.tuner_set_bandwidth_supported', 'tuner_set_bandwidth_supported')
     if not is_travisci():
         return
     import testlibrtlsdr

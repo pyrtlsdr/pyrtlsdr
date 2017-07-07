@@ -136,8 +136,12 @@ except AttributeError:
     tuner_bandwidth_supported = False
 
 # int rtlsdr_set_tuner_bandwidth(rtlsdr_dev_t *dev, uint32_t bw);
-f = librtlsdr.rtlsdr_set_tuner_bandwidth
-f.restype, f.argtypes = c_uint, [p_rtlsdr_dev, c_uint]
+try:
+    f = librtlsdr.rtlsdr_set_tuner_bandwidth
+    f.restype, f.argtypes = c_uint, [p_rtlsdr_dev, c_uint]
+    tuner_set_bandwidth_supported = True
+except AttributeError:
+    tuner_set_bandwidth_supported = False
 
 #/* streaming functions */
 
