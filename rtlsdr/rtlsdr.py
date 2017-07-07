@@ -22,6 +22,7 @@ from .librtlsdr import (
     p_rtlsdr_dev,
     rtlsdr_read_async_cb_t,
     tuner_bandwidth_supported,
+    tuner_set_bandwidth_supported,
 )
 try:                from itertools import izip
 except ImportError: izip = zip
@@ -201,10 +202,12 @@ class BaseRtlSdr(object):
             result = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth(
                 self.dev_p, bw, byref(applied_bw), apply_bw)
             self._bandwidth = applied_bw.value
-        else:
+        elif tuner_set_bandwidth_supported:
             bw = int(bw)
             result = librtlsdr.rtlsdr_set_tuner_bandwidth(self.dev_p, bw)
             self._bandwidth = bw
+        else:
+            raise IOError('set_tuner_bandwidth not supported in this version of librtlsdr')
 
         if result != 0:
             self.close()
