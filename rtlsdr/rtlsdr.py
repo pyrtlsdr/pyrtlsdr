@@ -28,7 +28,8 @@ try:                from itertools import izip
 except ImportError: izip = zip
 import sys
 
-if sys.version_info.major >= 3:
+PY3 = sys.version_info.major >= 3
+if PY3:
     basestring = str
 
 # see if NumPy is available
@@ -56,6 +57,9 @@ class BaseRtlSdr(object):
 
     @staticmethod
     def get_device_index_by_serial(serial):
+        if PY3 and isinstance(serial, str):
+            serial = bytes(serial, 'UTF-8')
+
         result = librtlsdr.rtlsdr_get_index_by_serial(serial)
         if result < 0:
             raise IOError('Error code %d when searching device by serial' % (result))
