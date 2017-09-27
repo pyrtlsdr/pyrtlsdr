@@ -17,7 +17,7 @@ Some documentation can be found in docstrings in the latter file.
 
 ## Examples
 
-Simple way to read and print some samples:
+#### Simple way to read and print some samples:
 
 ```python
 from rtlsdr import RtlSdr
@@ -33,7 +33,7 @@ sdr.gain = 'auto'
 print(sdr.read_samples(512))
 ```
 
-Plotting the PSD with matplotlib:
+#### Plotting the PSD with matplotlib:
 
 ```python
 from pylab import *
@@ -56,7 +56,8 @@ ylabel('Relative power (dB)')
 show()
 ```
 
-Resulting plot [here](http://i.imgur.com/hFhg8.png).
+##### Resulting Plot:
+![link](http://i.imgur.com/hFhg8.png)
 
 See the files 'demo_waterfall.py' and 'test.py' for more examples.
 
@@ -64,29 +65,33 @@ See the files 'demo_waterfall.py' and 'test.py' for more examples.
 
 Two new submodules are available for testing: **rtlsdraio**, which adds native Python 3 asynchronous support (asyncio module), and **rtlsdrtcp** which adds a TCP server/client for accessing a device over the network. See the respective modules in the rtlsdr folder for more details and feel free to test and report any bugs!
 
-####rtlsdraio
-Note that the rtlsdraio module is automatically imported and adds `stream()` and `stop()` methods to the normal `RtlSdr` class. It also requires the new `async`/`await` syntax introduced in Python 3.5+. 
+### rtlsdraio
+Note that the rtlsdraio module is automatically imported and adds `stream()` and `stop()` methods to the normal `RtlSdr` class. It also requires the new `async`/`await` syntax introduced in Python 3.5+.
 
 The syntax is basically:
 
 ```python
+import asyncio
+from rtlsdr import RtlSdr
+
 async def streaming():
- sdr = RtlSdr()
- 
- async for samples in sdr.stream():
-  # do something with samples
-  # ...
-  
-  # to stop streaming:
-  await sdr.stop()
-  
- # done
- sdr.close()
- 
-asyncio.get_event_loop().run_until_complete(streaming())
+    sdr = RtlSdr()
+
+    async for samples in sdr.stream():
+        # do something with samples
+        # ...
+
+    # to stop streaming:
+    await sdr.stop()
+
+    # done
+    sdr.close()
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(streaming())
 ```
 
-####rtlsdrtcp
+### rtlsdrtcp
 The `RtlSdrTcpServer` class is meant to be connected physically to an SDR dongle and communicate with an instance of `RtlSdrTcpClient`. The client is intended to function as closely as possible to the base RtlSdr class (as if it had a physical dongle attatched to it).
 
 Both of these classes have the same arguments as the base `RtlSdr` class with the addition of `hostname` and `port`:
@@ -102,7 +107,7 @@ client.center_freq = 2e6
 data = client.read_samples()
 ```
 
-##### TCP Client Mode
+### TCP Client Mode
 On platforms where the `librtlsdr` library cannot be installed/compiled, it is possible to import the `RtlSdrTcpClient` only by setting the environment variable `"RTLSDR_CLIENT_MODE"` to `"true"`. If this is set, no other modules will be available.
 
 *Feature added in v0.2.4*
