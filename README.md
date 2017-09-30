@@ -62,7 +62,7 @@ show()
 See the files 'demo_waterfall.py' and 'test.py' for more examples.
 
 ### Handling multiple devices:
-*(added in v2.5.x)*
+*(added in v2.5.6)*
 ```python
 from rtlsdr import RtlSdr
 
