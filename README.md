@@ -59,6 +59,7 @@ show()
 ##### Resulting Plot:
 ![link](http://i.imgur.com/hFhg8.png)
 
+See the files 'demo_waterfall.py' and 'test.py' for more examples.
 
 ### Handling multiple devices:
 (added in v2.5.x)
@@ -78,7 +79,6 @@ sdr = RtlSdr(device_index)
 sdr = RtlSdr(serial_number='00000001')
 ```
 
-See the files 'demo_waterfall.py' and 'test.py' for more examples.
 
 ## Experimental features
 
