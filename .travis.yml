@@ -28,6 +28,7 @@ deploy:
   provider: pypi
   distributions: "sdist bdist_wheel"
   on:
+    python: "3.5.2"
     tags: true
   user: nocarryr
   password:
