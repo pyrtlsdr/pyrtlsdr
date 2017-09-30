@@ -61,6 +61,30 @@ show()
 
 See the files 'demo_waterfall.py' and 'test.py' for more examples.
 
+### Handling multiple devices:
+*(added in v2.5.x)*
+```python
+from rtlsdr import RtlSdr
+
+# Get a list of detected device serial numbers (str)
+serial_numbers = RtlSdr.get_device_serial_addresses()
+
+# Find the device index for a given serial number
+device_index = RtlSdr.get_device_index_by_serial('00000001')
+
+sdr = RtlSdr(device_index)
+
+
+# Or pass the serial number directly:
+sdr = RtlSdr(serial_number='00000001')
+```
+
+#### Note
+Most devices by default have the same serial number: '0000001'. This can be set
+to a custom value by using the [rtl_eeprom][rtl_eeprom] utility packaged with `librtlsdr`.
+
+[rtl_eeprom]: http://manpages.ubuntu.com/manpages/trusty/man1/rtl_eeprom.1.html
+
 ## Experimental features
 
 Two new submodules are available for testing: **rtlsdraio**, which adds native Python 3 asynchronous support (asyncio module), and **rtlsdrtcp** which adds a TCP server/client for accessing a device over the network. See the respective modules in the rtlsdr folder for more details and feel free to test and report any bugs!

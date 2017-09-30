@@ -10,6 +10,7 @@ class p_rtlsdr_dev(object):
 class LibRtlSdr(object):
     async_callback = None
     async_generator = None
+    NUM_FAKE_DEVICES = 32
     def __init__(self):
         self.fc = 1e6
         self.rs = 2e6
@@ -20,6 +21,22 @@ class LibRtlSdr(object):
         self.gain_mode = 0
         self.agc_mode = 0
         self.direct_sampling = 0
+    def rtlsdr_get_device_count(self):
+        return self.NUM_FAKE_DEVICES
+    def rtlsdr_get_device_usb_strings(self, device_index, manufact, product, serial):
+        if device_index >= self.NUM_FAKE_DEVICES:
+            return -1
+        ser_string = '%08d' % (device_index)
+        for i, c in enumerate(ser_string):
+            serial[i] = ord(c)
+        return 0
+    def rtlsdr_get_index_by_serial(self, serial):
+        if not serial.isdigit():
+            return -1
+        i = int(serial)
+        if i >= self.NUM_FAKE_DEVICES:
+            return -3
+        return i
     def rtlsdr_open(self, *args):
         return 0
     def rtlsdr_set_testmode(self, *args):

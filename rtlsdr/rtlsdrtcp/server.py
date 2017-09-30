@@ -29,17 +29,17 @@ class RtlSdrTcpServer(RtlSdr, RtlSdrTcpBase):
     """Server that connects to a physical dongle to allow client connections.
     """
 
-    def __init__(self, device_index=0, test_mode_enabled=False,
+    def __init__(self, device_index=0, test_mode_enabled=False, serial_number=None,
                  hostname='127.0.0.1', port=None):
 
         RtlSdrTcpBase.__init__(self, device_index, test_mode_enabled,
                                hostname, port)
-        RtlSdr.__init__(self, device_index, test_mode_enabled)
+        RtlSdr.__init__(self, device_index, test_mode_enabled, serial_number)
 
-    def open(self, device_index=0, test_mode_enabled=False):
+    def open(self, device_index=0, test_mode_enabled=False, serial_number=None):
         if not self.device_ready:
             return
-        super(RtlSdrTcpServer, self).open(device_index, test_mode_enabled)
+        super(RtlSdrTcpServer, self).open(device_index, test_mode_enabled, serial_number)
 
     def run(self):
         """Runs the server thread and returns.  Use this only if you are
