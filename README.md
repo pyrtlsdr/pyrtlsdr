@@ -62,7 +62,7 @@ show()
 See the files 'demo_waterfall.py' and 'test.py' for more examples.
 
 ### Handling multiple devices:
-(added in v2.5.x)
+*(added in v2.5.x)*
 ```python
 from rtlsdr import RtlSdr
 
@@ -79,6 +79,11 @@ sdr = RtlSdr(device_index)
 sdr = RtlSdr(serial_number='00000001')
 ```
 
+#### Note
+Most devices by default have the same serial number: '0000001'. This can be set
+to a custom value by using the [rtl_eeprom][rtl_eeprom] utility packaged with `librtlsdr`.
+
+[rtl_eeprom]: http://manpages.ubuntu.com/manpages/trusty/man1/rtl_eeprom.1.html
 
 ## Experimental features
 
