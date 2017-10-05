@@ -558,8 +558,8 @@ class RtlSdr(BaseRtlSdr):
                 will be used.
 
         Notes:
-            As with :meth:`read_bytes`, the data passed to the callback may
-            by overwritten.
+            As with :meth:`~BaseRtlSdr.read_bytes`, the data passed to the
+            callback may by overwritten.
         """
         num_bytes = int(num_bytes)
 
