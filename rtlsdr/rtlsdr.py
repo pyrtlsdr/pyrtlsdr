@@ -44,13 +44,13 @@ class BaseRtlSdr(object):
     """Core interface for most API functionality
 
     Arguments:
-        device_index (Optional[int]): The device index to use if there are
+        device_index (:obj:`int`, optional): The device index to use if there are
             multiple dongles attached.  If only one is being used,
             the default value (0) will be used.
-        test_mode_enabled (Optional[bool]): If True, enables a special
+        test_mode_enabled (:obj:`bool`, optional): If True, enables a special
             test mode, which will return the value of an internal RTL2832
             8-bit counter with calls to :meth:`read_bytes`.
-        serial_number (Optional[str]): If not None, the device will be searched
+        serial_number (:obj:`str`, optional): If not None, the device will be searched
             for by the given serial_number by :meth:`get_device_index_by_serial`
             and the ``device_index`` returned will be used automatically.
 
@@ -106,7 +106,7 @@ class BaseRtlSdr(object):
         """Get serial numbers for all attached devices
 
         Returns:
-            list: A ``list`` of all detected serial numbers (``str``)
+            list(str): A ``list`` of all detected serial numbers (``str``)
 
         """
         def get_serial(device_index):
@@ -131,13 +131,13 @@ class BaseRtlSdr(object):
         from it with a call to :meth:`init_device_values`.
 
         Arguments:
-            device_index (Optional[int]): The device index to use if there are
+            device_index (:obj:`int`, optional): The device index to use if there are
                 multiple dongles attached.  If only one is being used,
                 the default value (0) will be used.
-            test_mode_enabled (Optional[bool]): If True, enables a special
+            test_mode_enabled (:obj:`bool`, optional): If True, enables a special
                 test mode, which will return the value of an internal RTL2832
                 8-bit counter with calls to :meth:`read_bytes`.
-            serial_number (Optional[str]): If not None, the device will be searched
+            serial_number (:obj:`str`, optional): If not None, the device will be searched
                 for by the given serial_number by :meth:`get_device_index_by_serial`
                 and the ``device_index`` returned will be used automatically.
 
@@ -342,7 +342,7 @@ class BaseRtlSdr(object):
         """Get all supported gain values from driver
 
         Returns:
-            list[int]: Gains in tenths of a dB
+            list(int): Gains in tenths of a dB
         """
         buffer = (c_int *50)()
         result = librtlsdr.rtlsdr_get_tuner_gains(self.dev_p, buffer)
@@ -363,7 +363,7 @@ class BaseRtlSdr(object):
             enabled (bool):
 
         Notes:
-            If enabled is False, then AGC should also be used by calling
+            If ``enabled`` is False, then AGC should also be used by calling
             :meth:`set_agc_mode`. It is recommended to use :meth:`set_gain`
             instead of calling this method directly.
         """
@@ -439,7 +439,7 @@ class BaseRtlSdr(object):
         and data may be unsafe as buffer is reused.
 
         Arguments:
-            num_bytes (Optional[int]): The number of bytes to read.
+            num_bytes (:obj:`int`, optional): The number of bytes to read.
                 Defaults to :attr:`DEFAULT_READ_SIZE`.
 
         Returns:
@@ -476,7 +476,7 @@ class BaseRtlSdr(object):
         Data is safe after this call (will not get overwritten by another one).
 
         Arguments:
-            num_samples (Optional[int]): Number of samples to read.
+            num_samples (:obj:`int`, optional): Number of samples to read.
                 Defaults to :attr:`DEFAULT_READ_SIZE`.
 
         Returns:
