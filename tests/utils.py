@@ -90,10 +90,15 @@ def generic_test(sdr, test_async=True, test_exceptions=True, use_numpy=True):
     """
     print('Testing %r' % (sdr))
 
-    prev_rs = sdr.rs
-    sdr.rs = prev_rs + 1e6
-    assert check_close(7, prev_rs + 1e6, sdr.rs)
+    sdr.rs = 2.048e6
+    assert check_close(7, 2.048e6, sdr.rs)
     print('sample_rate: %s' % (sdr.rs))
+
+    bw = sdr.rs / 2
+    print('setting bandwidth to {}'.format(bw))
+    sdr.bandwidth = bw
+    assert check_close(7, bw, sdr.bandwidth)
+    print('applied bandwidth={}'.format(sdr.bandwidth))
 
     prev_fc = sdr.fc
     sdr.fc = prev_fc + 1e6

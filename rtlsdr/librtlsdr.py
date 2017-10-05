@@ -64,6 +64,10 @@ f.restype, f.argtypes = c_int, [c_uint,
                                 POINTER(c_ubyte),
                                 POINTER(c_ubyte)]
 
+# int rtlsdr_get_index_by_serial(const char *serial);
+f = librtlsdr.rtlsdr_get_index_by_serial
+f.restype, f.argtypes = c_int, [c_char_p]
+
 # int rtlsdr_open(rtlsdr_dev_t **dev, uint32_t index);
 f = librtlsdr.rtlsdr_open
 f.restype, f.argtypes = c_int, [POINTER(p_rtlsdr_dev), c_uint]
@@ -126,6 +130,22 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint]
 # int rtlsdr_get_sample_rate(rtlsdr_dev_t *dev);
 f = librtlsdr.rtlsdr_get_sample_rate
 f.restype, f.argtypes = c_uint, [p_rtlsdr_dev]
+
+# int rtlsdr_set_and_get_tuner_bandwidth(rtlsdr_dev_t *dev, uint32_t bw, uint32_t *applied_bw, int apply_bw );
+try:
+    f = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth
+    f.restype, f.argtypes = c_uint, [p_rtlsdr_dev, c_uint32, POINTER(c_uint32), c_int]
+    tuner_bandwidth_supported = True
+except AttributeError:
+    tuner_bandwidth_supported = False
+
+# int rtlsdr_set_tuner_bandwidth(rtlsdr_dev_t *dev, uint32_t bw);
+try:
+    f = librtlsdr.rtlsdr_set_tuner_bandwidth
+    f.restype, f.argtypes = c_uint, [p_rtlsdr_dev, c_uint]
+    tuner_set_bandwidth_supported = True
+except AttributeError:
+    tuner_set_bandwidth_supported = False
 
 #/* streaming functions */
 

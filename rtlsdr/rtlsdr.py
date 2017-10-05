@@ -17,13 +17,19 @@
 
 from __future__ import division, print_function
 from ctypes import *
-try:                from  librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
-except ImportError: from .librtlsdr import librtlsdr, p_rtlsdr_dev, rtlsdr_read_async_cb_t
+from .librtlsdr import (
+    librtlsdr,
+    p_rtlsdr_dev,
+    rtlsdr_read_async_cb_t,
+    tuner_bandwidth_supported,
+    tuner_set_bandwidth_supported,
+)
 try:                from itertools import izip
 except ImportError: izip = zip
 import sys
 
-if sys.version_info.major >= 3:
+PY3 = sys.version_info.major >= 3
+if PY3:
     basestring = str
 
 # see if NumPy is available
@@ -46,23 +52,48 @@ class BaseRtlSdr(object):
             8-bit counter with calls to :meth:`read_bytes`.
     """
     # some default values for various parameters
-    DEFAULT_GAIN = 'auto'       #: Default gain
-    DEFAULT_FC = 80e6           #: Default center frequency
-    DEFAULT_RS = 1.024e6        #: Default sample rate
-    DEFAULT_READ_SIZE = 1024    #: Default read size
+    DEFAULT_GAIN = 'auto'
+    DEFAULT_FC = 80e6
+    DEFAULT_RS = 1.024e6
+    DEFAULT_READ_SIZE = 1024
 
     CRYSTAL_FREQ = 28800000
 
-    gain_values = []            #: Gain values (in tenths of a dB)
-    valid_gains_db = []         #: Gain values (in dB)
+    gain_values = []
+    valid_gains_db = []
     buffer = []
     num_bytes_read = c_int32(0)
     device_opened = False
 
-    def __init__(self, device_index=0, test_mode_enabled=False):
-        self.open(device_index, test_mode_enabled)
+    @staticmethod
+    def get_device_index_by_serial(serial):
+        if PY3 and isinstance(serial, str):
+            serial = bytes(serial, 'UTF-8')
 
-    def open(self, device_index=0, test_mode_enabled=False):
+        result = librtlsdr.rtlsdr_get_index_by_serial(serial)
+        if result < 0:
+            raise IOError('Error code %d when searching device by serial' % (result))
+
+        return result
+
+    @staticmethod
+    def get_device_serial_addresses():
+        def get_serial(device_index):
+            bfr = (c_ubyte * 256)()
+            r = librtlsdr.rtlsdr_get_device_usb_strings(device_index, None, None, bfr)
+            if r != 0:
+                raise IOError(
+                    'Error code %d when reading USB strings (device %d)' % (r, device_index)
+                )
+            return ''.join((chr(b) for b in bfr if b > 0))
+
+        num_devices = librtlsdr.rtlsdr_get_device_count()
+        return [get_serial(i) for i in range(num_devices)]
+
+    def __init__(self, device_index=0, test_mode_enabled=False, serial_number=None):
+        self.open(device_index, test_mode_enabled, serial_number)
+
+    def open(self, device_index=0, test_mode_enabled=False, serial_number=None):
         """Connect to the device through the underlying wrapper library
 
         Initializes communication with the device and retrieves information
@@ -81,6 +112,9 @@ class BaseRtlSdr(object):
         Raises:
             IOError: If communication with the device could not be established.
         """
+
+        if serial_number is not None:
+            device_index = self.get_device_index_by_serial(serial_number)
 
         # this is the pointer to the device structure used by all librtlsdr
         # functions
@@ -206,6 +240,39 @@ class BaseRtlSdr(object):
         real_rate = (self.CRYSTAL_FREQ * pow(2, 22)) / rsamp_ratio;
 
         return real_rate
+
+    def set_bandwidth(self, bw):
+        '''Set tuner bandwidth (in Hz).
+        Set to 0 (default) for automatic bandwidth selection. '''
+
+        bw = int(bw)
+        if tuner_bandwidth_supported:
+            apply_bw = c_int(1)
+            applied_bw = c_uint32(bw)
+            bw = c_uint32(bw)
+            result = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth(
+                self.dev_p, bw, byref(applied_bw), apply_bw)
+            self._bandwidth = applied_bw.value
+        elif tuner_set_bandwidth_supported:
+            bw = int(bw)
+            result = librtlsdr.rtlsdr_set_tuner_bandwidth(self.dev_p, bw)
+            self._bandwidth = bw
+        else:
+            raise IOError('set_tuner_bandwidth not supported in this version of librtlsdr')
+
+        if result != 0:
+            self.close()
+            raise IOError('Error code %d when setting tuner bandwidth to %d Hz'\
+                          % (result, bw))
+
+        return
+
+    def get_bandwidth(self):
+        '''Get bandwidth value (in Hz)
+        This value is stored locally and may not reflect the real tuner bandwidth
+        '''
+
+        return getattr(self, '_bandwidth', 0)
 
     def set_gain(self, gain):
         if isinstance(gain, basestring) and gain == 'auto':
@@ -424,6 +491,7 @@ class BaseRtlSdr(object):
         """)
     freq_correction = property(get_freq_correction, set_freq_correction,
         doc="""int: Get/Set frequency offset of the tuner (in PPM)""")
+    bandwidth = property(get_bandwidth, set_bandwidth)
 
 
 # This adds async read support to base class BaseRtlSdr (don't use that one)

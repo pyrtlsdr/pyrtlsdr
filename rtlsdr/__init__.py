@@ -14,19 +14,49 @@
 #    You should have received a copy of the GNU General Public License
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
-
-try:                from  librtlsdr import librtlsdr
-except ImportError: from .librtlsdr import librtlsdr
-try:                from  rtlsdr import RtlSdr
-except ImportError: from .rtlsdr import RtlSdr
-try:                from rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
-except ImportError: from .rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
-try:                from  helpers import limit_calls, limit_time
-except ImportError: from .helpers import limit_calls, limit_time
+import os
+import warnings
+import pkg_resources
 
 try:
-    from rtlsdraio import RtlSdrAio, AIO_AVAILABLE
-except ImportError:
+    __version__ = pkg_resources.require('pyrtlsdr')[0].version
+except: # pragma: no cover
+    __version__ = 'unknown'
+
+RTLSDR_CLIENT_MODE = False
+if os.environ.get('RTLSDR_CLIENT_MODE', '').lower() in ['true', '1', 'yes']:
+    RTLSDR_CLIENT_MODE = True
+
+class ClientModeWarning(UserWarning):
+    def __init__(self):
+        msg = '\n'.join([
+            'Running in "client-only" mode: {varname}="{val}"',
+            'Only Tcp communication will be available (RtlSdrTcpClient)',
+            'If this is was not intended, set "{varname}" to "false" or remove it',
+        ]).format(varname='$RTLSDR_CLIENT_MODE', val=os.environ['RTLSDR_CLIENT_MODE'])
+        super(ClientModeWarning, self).__init__(msg)
+
+def warn_client_mode():
+    def formatwarning(message, category, filename, lineno, line=None):
+        return '{}: {}: \n{}\n'.format(filename, category.__name__, message)
+    orig_fmt = warnings.formatwarning
+    warnings.formatwarning = formatwarning
+    warnings.warn(ClientModeWarning())
+    warnings.formatwarning = orig_fmt
+
+if RTLSDR_CLIENT_MODE:
+    warn_client_mode()
+    from .rtlsdrtcp.client import RtlSdrTcpClient
+    librtlsdr = None
+    RtlSdr = None
+    RtlSdrTcpServer = None
+    RtlSdrAio = None
+    AIO_AVAILABLE = False
+else:
+    from .librtlsdr import librtlsdr
+    from .rtlsdr import RtlSdr
+    from .rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
+    from .helpers import limit_calls, limit_time
     from .rtlsdraio import RtlSdrAio, AIO_AVAILABLE
 
 if AIO_AVAILABLE:

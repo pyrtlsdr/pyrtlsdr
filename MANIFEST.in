@@ -1,0 +1,3 @@
+include README*
+include demo_waterfall.py
+include test.py
