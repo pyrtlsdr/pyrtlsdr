@@ -50,6 +50,10 @@ class BaseRtlSdr(object):
         test_mode_enabled (Optional[bool]): If True, enables a special
             test mode, which will return the value of an internal RTL2832
             8-bit counter with calls to :meth:`read_bytes`.
+        serial_number (Optional[str]): If not None, the device will be searched
+            for by the given serial_number by :meth:`get_device_index_by_serial`
+            and the ``device_index`` returned will be used automatically.
+
     """
     # some default values for various parameters
     DEFAULT_GAIN = 'auto'
@@ -67,6 +71,22 @@ class BaseRtlSdr(object):
 
     @staticmethod
     def get_device_index_by_serial(serial):
+        """Retrieves the device index for a device matching the given serial number
+
+        Arguments:
+            serial (str): The serial number to search for
+
+        Returns:
+            int: The device_index as reported by ``librtlsdr``
+
+        Notes:
+            Most devices by default have the same serial number: `'0000001'`.
+            This can be set to a custom value by using the `rtl\_eeprom`_ utility
+            packaged with ``librtlsdr``.
+
+        .. _rtl\_eeprom: https://manpages.ubuntu.com/manpages/trusty/man1/rtl_eeprom.1.html
+
+        """
         if PY3 and isinstance(serial, str):
             serial = bytes(serial, 'UTF-8')
 
@@ -78,6 +98,12 @@ class BaseRtlSdr(object):
 
     @staticmethod
     def get_device_serial_addresses():
+        """Get serial numbers for all attached devices
+
+        Returns:
+            list: A ``list`` of all detected serial numbers (``str``)
+
+        """
         def get_serial(device_index):
             bfr = (c_ubyte * 256)()
             r = librtlsdr.rtlsdr_get_device_usb_strings(device_index, None, None, bfr)
@@ -106,11 +132,17 @@ class BaseRtlSdr(object):
             test_mode_enabled (Optional[bool]): If True, enables a special
                 test mode, which will return the value of an internal RTL2832
                 8-bit counter with calls to :meth:`read_bytes`.
+            serial_number (Optional[str]): If not None, the device will be searched
+                for by the given serial_number by :meth:`get_device_index_by_serial`
+                and the ``device_index`` returned will be used automatically.
+
         Notes:
             The arguments used here are passed directly from object
             initialization.
+
         Raises:
             IOError: If communication with the device could not be established.
+
         """
 
         if serial_number is not None:
