@@ -242,8 +242,6 @@ class BaseRtlSdr(object):
         return real_rate
 
     def set_bandwidth(self, bw):
-        '''Set tuner bandwidth (in Hz).
-        Set to 0 (default) for automatic bandwidth selection. '''
 
         bw = int(bw)
         if tuner_bandwidth_supported:
@@ -268,9 +266,6 @@ class BaseRtlSdr(object):
         return
 
     def get_bandwidth(self):
-        '''Get bandwidth value (in Hz)
-        This value is stored locally and may not reflect the real tuner bandwidth
-        '''
 
         return getattr(self, '_bandwidth', 0)
 
@@ -491,7 +486,15 @@ class BaseRtlSdr(object):
         """)
     freq_correction = property(get_freq_correction, set_freq_correction,
         doc="""int: Get/Set frequency offset of the tuner (in PPM)""")
-    bandwidth = property(get_bandwidth, set_bandwidth)
+    bandwidth = property(get_bandwidth, set_bandwidth,
+        doc="""int: Get/Set bandwidth value (in Hz)
+
+        Set value to 0 (default) for automatic bandwidth selection.
+
+        Notes:
+            This value is stored locally and may not reflect the real tuner bandwidth
+
+        """)
 
 
 # This adds async read support to base class BaseRtlSdr (don't use that one)
