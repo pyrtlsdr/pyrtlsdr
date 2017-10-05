@@ -84,7 +84,7 @@ class BaseRtlSdr(object):
             This can be set to a custom value by using the `rtl\_eeprom`_ utility
             packaged with ``librtlsdr``.
 
-        .. _rtl\_eeprom: https://manpages.ubuntu.com/manpages/trusty/man1/rtl_eeprom.1.html
+        .. _rtl\_eeprom: http://manpages.ubuntu.com/manpages/trusty/man1/rtl_eeprom.1.html
 
         """
         if PY3 and isinstance(serial, str):
@@ -415,8 +415,8 @@ class BaseRtlSdr(object):
 
         Returns:
             int: The tuner type as reported by the driver.
-                See the enum definition `here`_ for more information.
-        .. _here: https://github.com/librtlsdr/librtlsdr/blob/master/include/rtl-sdr.h#L172
+                See the `tuner enum definition`_ for more information.
+        .. _tuner enum definition: https://github.com/librtlsdr/librtlsdr/blob/c7d970ac5b70e897501909a48b2b32d4bfb16979/include/rtl-sdr.h#L185-L201
         """
         result = librtlsdr.rtlsdr_get_tuner_type(self.dev_p)
         if result < 0:
