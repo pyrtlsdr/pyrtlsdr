@@ -414,8 +414,10 @@ class BaseRtlSdr(object):
         """Get the tuner type.
 
         Returns:
-            int: The tuner type as reported by the driver.
+            int:
+                The tuner type as reported by the driver.
                 See the `tuner enum definition`_ for more information.
+
         .. _tuner enum definition: https://github.com/librtlsdr/librtlsdr/blob/c7d970ac5b70e897501909a48b2b32d4bfb16979/include/rtl-sdr.h#L185-L201
         """
         result = librtlsdr.rtlsdr_get_tuner_type(self.dev_p)
@@ -436,8 +438,8 @@ class BaseRtlSdr(object):
                 Defaults to :attr:`DEFAULT_READ_SIZE`.
 
         Returns:
-            ctypes.Array[c_ubyte]: A buffer of len(num_bytes) containing the
-                raw samples read.
+            ctypes.Array[c_ubyte]:
+                A buffer of len(num_bytes) containing the raw samples read.
         """
         # FIXME: libsdrrtl may not be able to read an arbitrary number of bytes
 
