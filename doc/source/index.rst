@@ -12,6 +12,8 @@ Contents:
    :maxdepth: 2
 
    rtlsdr
+   rtlsdraio
+   rtlsdrtcp
    helpers
 
 

@@ -11,20 +11,24 @@ log = logging.getLogger(__name__)
 
 _CLASS_TEMPLATE = """
 class AsyncCallbackIter:
-    '''
-    Convert a callback-based legacy async function into one supporting asyncio
+    '''Convert a callback-based legacy async function into one supporting asyncio
     and Python 3.5+
+
+    The queued data can be iterated using ``async for``
+
+    Arguments:
+        func_start: A callable which should take a single callback that will be
+            passed data. Will be run in a seperate thread in case it blocks.
+        func_stop (optional): A callable to stop ``func_start`` from calling the
+            callback. Will be run in a seperate thread in case it blocks.
+        queue_size (:obj:`int`, optional): The maximum amount of data
+            that will be buffered.
+        loop (optional): The ``asyncio.event_loop`` to use. If not supplied,
+            :func:`asyncio.get_event_loop` will be used.
+
     '''
 
     def __init__(self, func_start, func_stop=None, queue_size=20, *, loop=None):
-        '''
-        Function `func_start` should take a single callback that will be passed
-        data. Will be run in a seperate thread in case it blocks.
-        Function `func_stop` is an optional function to stop `func_start` from
-        calling the callback. Will be run in a seperate thread in case it blocks.
-        `queue_size` is the maximum number of data that will be buffered.
-        `loop` is an optional asyncio event loop.
-        '''
         self.queue = asyncio.Queue(queue_size)
         self.loop = loop if loop else asyncio.get_event_loop()
         self.func_stop = func_stop
@@ -33,6 +37,13 @@ class AsyncCallbackIter:
         self.running = False
 
     async def add_to_queue(self, *args):
+        '''Add items to the queue
+
+        Arguments:
+            *args: Arguments to be added
+
+        This method is a :obj:`~asyncio.coroutine`
+        '''
         try:
             self.queue.put_nowait(args)
         except asyncio.QueueFull:
@@ -44,6 +55,15 @@ class AsyncCallbackIter:
         asyncio.run_coroutine_threadsafe(self.add_to_queue(*args), self.loop)
 
     async def start(self):
+        '''Start the execution
+
+        The callback given by ``func_start`` will be called by
+        :meth:`asyncio.AbstractEventLoop.run_in_executor` and will continue
+        until :meth:`stop` is called.
+
+        This method is a :obj:`~asyncio.coroutine`
+        '''
+
         assert(not self.running)
 
         # start legacy async function
@@ -53,6 +73,14 @@ class AsyncCallbackIter:
         self.running = True
 
     async def stop(self):
+        '''Stop the running executor task
+
+        If ``func_stop`` was supplied, it will be called after the queue has
+        been exhausted.
+
+        This method is a :obj:`~asyncio.coroutine`
+        '''
+
         assert(self.running)
 
         self.running = False
@@ -104,13 +132,18 @@ class RtlSdrAio(RtlSdr):
     DEFAULT_READ_SIZE = 128*1024
 
     def stream(self, num_samples_or_bytes=DEFAULT_READ_SIZE, format='samples', loop=None):
-        '''
-        Start async streaming from SDR and return an async iterator (Python 3.5+).
-        `num_samples_or_bytes` is the number of bytes/samples that will be return each iteration.
-        `format` specifies whether raw data ("bytes") or IQ samples ("samples") will be returned.
-        `loop` is an asyncio event loop.
-        `self.stop()` should be called at some point.
-        '''
+        """Start async streaming from SDR and return an async iterator (Python 3.5+).
+
+        Arguments:
+            num_samples_or_bytes (int): The number of bytes/samples that will be
+                returned each iteration
+            format (:obj:`str`, optional): Specifies whether raw data ("bytes")
+                or IQ samples ("samples") will be returned
+            loop (optional): An asyncio event loop
+
+        Notes:
+            :meth:`~rtlsdr.rtlsdraio.RtlSdrAio.stop` should be called at some point.
+        """
         if format == 'samples':
             func_start = self.read_samples_async
         elif format == 'bytes':
@@ -126,5 +159,6 @@ class RtlSdrAio(RtlSdr):
         return self.async_iter
 
     def stop(self):
-        ''' Stop async stream. '''
+        """Stop async stream
+        """
         return asyncio.ensure_future(self.async_iter.stop(), loop=self.async_iter.loop)

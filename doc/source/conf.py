@@ -36,6 +36,7 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinxcontrib.asyncio',
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.ifconfig',
@@ -304,6 +305,6 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'python':('https://docs.python.org/', None),
+    'python':('https://docs.python.org/3.5', None),
     'numpy':('https://docs.scipy.org/doc/numpy/', None),
 }
