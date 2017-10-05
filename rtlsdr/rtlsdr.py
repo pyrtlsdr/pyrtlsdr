@@ -54,6 +54,11 @@ class BaseRtlSdr(object):
             for by the given serial_number by :meth:`get_device_index_by_serial`
             and the ``device_index`` returned will be used automatically.
 
+    Attributes:
+        gain_values (list(int)): The valid gain parameters supported by the device
+            (in tenths of dB). These are stored as returned by ``librtlsdr``.
+        valid_gains_db (list(float)): The valid gains in dB
+
     """
     # some default values for various parameters
     DEFAULT_GAIN = 'auto'
