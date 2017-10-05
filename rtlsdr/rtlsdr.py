@@ -480,7 +480,7 @@ class BaseRtlSdr(object):
                 Defaults to :attr:`DEFAULT_READ_SIZE`.
 
         Returns:
-            The samples read as either a :class:`list` or :class:`numpy.array`
+            The samples read as either a :class:`list` or :class:`numpy.ndarray`
             (if available).
         """
         num_bytes = 2*num_samples
@@ -497,7 +497,7 @@ class BaseRtlSdr(object):
 
         Returns:
             The unpacked iq values as either a :class:`list` or
-            :class:`numpy.array` (if available).
+            :class:`numpy.ndarray` (if available).
         """
         if has_numpy:
             # use NumPy array
