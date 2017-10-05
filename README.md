@@ -7,12 +7,14 @@ A Python wrapper for librtlsdr (a driver for Realtek RTL2832U based SDR's)
 
 pyrtlsdr is a simple Python interface to devices supported by the RTL-SDR project, which turns certain USB DVB-T dongles
 employing the Realtek RTL2832U chipset into low-cost, general purpose software-defined radio receivers. It wraps many of the
-functions in the [librtlsdr library](https://github.com/librtlsdr/librtlsdr) ([download](https://github.com/librtlsdr/librtlsdr/releases)) including asynchronous read support
+functions in the [librtlsdr library](https://github.com/librtlsdr/librtlsdr) including asynchronous read support
 and also provides a more Pythonic API.
+
+Releases for `librtlsdr` can be found [here](https://github.com/librtlsdr/librtlsdr/releases)
 
 # Usage
 
-pyrtlsdr can be installed by downloading the source files and running `python setup.py install`, or using [pip](http://www.pip-installer.org/en/latest/) and
+pyrtlsdr can be installed by downloading the source files and running `python setup.py install`, or using [pip](https://pip.pypa.io/en/stable/) and
 `pip install pyrtlsdr`.
 
 All functions in librtlsdr are accessible via librtlsdr.py and a Pythonic interface is available in rtlsdr.py (recommended).
@@ -60,7 +62,7 @@ show()
 ```
 
 ### Resulting Plot:
-![link](http://i.imgur.com/hFhg8.png)
+![](https://i.imgur.com/hFhg8.png "Resulting Plot")
 
 See the files 'demo_waterfall.py' and 'test.py' for more examples.
 
@@ -86,7 +88,7 @@ sdr = RtlSdr(serial_number='00000001')
 Most devices by default have the same serial number: '0000001'. This can be set
 to a custom value by using the [rtl_eeprom][rtl_eeprom] utility packaged with `librtlsdr`.
 
-[rtl_eeprom]: http://manpages.ubuntu.com/manpages/trusty/man1/rtl_eeprom.1.html
+[rtl_eeprom]: https://manpages.ubuntu.com/manpages/trusty/man1/rtl_eeprom.1.html
 
 # Experimental features
 

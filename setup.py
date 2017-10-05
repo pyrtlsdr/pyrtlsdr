@@ -51,8 +51,7 @@ setup(
     version=VERSION,
     author='roger',
     url='https://github.com/roger-/pyrtlsdr',
-    download_url='https://github.com/roger-/pyrtlsdr',
-    description=('A Python wrapper for librtlsdr (a driver for Realtek RTL2832U based SDR\'s)'),
+    description='A Python wrapper for librtlsdr (a driver for Realtek RTL2832U based SDR\'s)',
     long_description=long_description,
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Console',
@@ -69,4 +68,5 @@ setup(
     license='GPLv3',
     keywords='radio librtlsdr rtlsdr sdr',
     setup_requires=['pypandoc'],
+    platforms=['any'],
     packages=find_packages(exclude=['tests*']))
