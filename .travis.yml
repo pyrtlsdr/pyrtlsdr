@@ -18,12 +18,15 @@ before_install:
 install:
   - pip install -U pip setuptools wheel pypandoc
   - pip install -U pytest pytest-xdist pytest-cov coveralls
+  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then pip install -r docs/requirements.txt & pip install travis-sphinx; fi"
   - pip install -e .
 script:
+  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then travis-sphinx --branches=master,codedoc --source=doc/source --nowarn build; fi"
   - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr
   - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
 after_success:
   - coveralls
+  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then travis-sphinx --branches=master,codedoc deploy; fi"
 deploy:
   provider: pypi
   distributions: "sdist bdist_wheel"
