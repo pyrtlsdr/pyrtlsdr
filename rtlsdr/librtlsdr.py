@@ -15,18 +15,27 @@
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import sys
+import os
 from ctypes import *
 from ctypes.util import find_library
 
 def load_librtlsdr():
-    driver_files = ['rtlsdr.dll', 'librtlsdr.so']
+    if sys.platform == "linux" and 'LD_LIBRARY_PATH' in os.environ.keys():
+        ld_library_paths = [local_path for local_path in os.environ['LD_LIBRARY_PATH'].split(':') if local_path.strip()]
+        driver_files = [local_path + '/librtlsdr.so' for local_path in ld_library_paths]
+    else:
+        driver_files = []
+    driver_files += ['librtlsdr.so', 'rtlsdr/librtlsdr.so']
+    driver_files += ['rtlsdr.dll', 'librtlsdr.so']
     driver_files += ['..//rtlsdr.dll', '..//librtlsdr.so']
     driver_files += ['rtlsdr//rtlsdr.dll', 'rtlsdr//librtlsdr.so']
-    driver_files += [find_library('rtlsdr'), find_library('librtlsdr')]
-
+    driver_files += [lambda : find_library('rtlsdr'), lambda : find_library('librtlsdr')]
     dll = None
 
     for driver in driver_files:
+        if callable(driver):
+            driver = callable(driver)
         try:
             dll = CDLL(driver)
             break
