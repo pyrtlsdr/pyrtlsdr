@@ -35,7 +35,7 @@ def load_librtlsdr():
 
     for driver in driver_files:
         if callable(driver):
-            driver = callable(driver)
+            driver = driver()
         try:
             dll = CDLL(driver)
             break
