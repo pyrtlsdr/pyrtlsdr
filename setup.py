@@ -27,8 +27,8 @@ VERSION = '0.2.7'
 #README = open(os.path.join(HERE, 'README.md')).read()
 
 def convert_readme():
-    import pypandoc
-    rst = pypandoc.convert_file('README.md', 'rst')
+    from m2r import parse_from_file
+    rst = parse_from_file('README.md')
     with open('README.rst', 'w') as f:
         f.write(rst)
     return rst
@@ -67,6 +67,6 @@ setup(
                  'Topic :: Utilities'],
     license='GPLv3',
     keywords='radio librtlsdr rtlsdr sdr',
-    setup_requires=['pypandoc'],
+    setup_requires=['m2r'],
     platforms=['any'],
     packages=find_packages(exclude=['tests*']))
