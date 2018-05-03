@@ -1,5 +1,5 @@
 rtlsdr module
-==============
+=============
 
 .. automodule:: rtlsdr.rtlsdr
     :members:

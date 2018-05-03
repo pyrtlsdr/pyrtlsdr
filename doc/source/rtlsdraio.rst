@@ -1,9 +1,6 @@
 rtlsdraio module
 ================
 
-.. autoclass:: rtlsdr.rtlsdraio.RtlSdrAio
-    :members:
+.. automodule:: rtlsdr.rtlsdraio
+    :members: RtlSdrAio, AsyncCallbackIter
     :show-inheritance:
-
-.. autoclass:: rtlsdr.rtlsdraio.AsyncCallbackIter
-    :members:
