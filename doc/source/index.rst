@@ -6,15 +6,13 @@
 Welcome to pyrtlsdr's documentation!
 ====================================
 
-Contents:
-
 .. toctree::
-   :maxdepth: 2
+   :caption: Contents
+   :name: mastertoc
+   :maxdepth: 3
 
-   rtlsdr
-   rtlsdraio
-   rtlsdrtcp
-   helpers
+   Overview
+   Reference
 
 
 Indices and tables
