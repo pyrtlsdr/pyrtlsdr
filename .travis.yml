@@ -9,14 +9,13 @@ addons:
   apt:
     packages:
       - libusb-1.0-0-dev
-      - pandoc
 before_install:
   - cd tools/travis
   - ./install-librtlsdr.sh
   - cd ../..
   - export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
 install:
-  - pip install -U pip setuptools wheel pypandoc
+  - pip install -U pip setuptools wheel m2r
   - pip install -U pytest pytest-xdist pytest-cov coveralls
   - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then pip install -r doc/requirements.txt & pip install travis-sphinx; fi"
   - pip install -e .
