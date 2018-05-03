@@ -1,3 +1,33 @@
+"""
+This module adds :mod:`asyncio` support for reading samples from the device.
+
+The main functionality can be found in the :meth:`~rtlsdr.rtlsdraio.RtlSdrAio.stream`
+method of :class:`rtlsdr.rtlsdraio.RtlSdrAio`.
+
+Example:
+    .. code-block:: python
+
+       import asyncio
+       from rtlsdr import RtlSdr
+
+       async def streaming():
+           sdr = RtlSdr()
+
+           async for samples in sdr.stream():
+               # do something with samples
+               # ...
+
+           # to stop streaming:
+           await sdr.stop()
+
+           # done
+           sdr.close()
+
+       loop = asyncio.get_event_loop()
+       loop.run_until_complete(streaming())
+
+"""
+
 import logging
 try:
     import asyncio
