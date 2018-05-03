@@ -20,7 +20,7 @@ install:
   - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then pip install -r doc/requirements.txt & pip install travis-sphinx; fi"
   - pip install -e .
 script:
-  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then travis-sphinx build --branches=master,codedoc --source=doc/source --nowarn; fi"
+  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then travis-sphinx build --source=doc/source --nowarn; fi"
   - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr
   - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
 after_success:
