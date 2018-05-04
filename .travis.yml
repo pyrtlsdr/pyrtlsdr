@@ -17,7 +17,7 @@ before_install:
 install:
   - pip install -U pip setuptools wheel m2r
   - pip install -U pytest pytest-xdist pytest-cov coveralls
-  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then pip install -r doc/requirements.txt & pip install travis-sphinx; fi"
+  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then pip install -r doc/requirements.txt; fi"
   - pip install -e .
 script:
   - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then travis-sphinx build --source=doc/source --nowarn; fi"
