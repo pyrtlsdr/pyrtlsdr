@@ -1,0 +1,4 @@
+Sphinx
+sphinx_rtd_theme
+sphinxcontrib-asyncio
+git+https://github.com/nocarryr/travis-sphinx.git@custom-repo#egg=travis-sphinx

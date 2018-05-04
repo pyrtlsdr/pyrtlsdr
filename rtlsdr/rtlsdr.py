@@ -41,6 +41,25 @@ except ImportError:
 
 
 class BaseRtlSdr(object):
+    """Core interface for most API functionality
+
+    Arguments:
+        device_index (:obj:`int`, optional): The device index to use if there are
+            multiple dongles attached.  If only one is being used,
+            the default value (0) will be used.
+        test_mode_enabled (:obj:`bool`, optional): If True, enables a special
+            test mode, which will return the value of an internal RTL2832
+            8-bit counter with calls to :meth:`read_bytes`.
+        serial_number (:obj:`str`, optional): If not None, the device will be searched
+            for by the given serial_number by :meth:`get_device_index_by_serial`
+            and the ``device_index`` returned will be used automatically.
+
+    Attributes:
+        gain_values (list(int)): The valid gain parameters supported by the device
+            (in tenths of dB). These are stored as returned by ``librtlsdr``.
+        valid_gains_db (list(float)): The valid gains in dB
+
+    """
     # some default values for various parameters
     DEFAULT_GAIN = 'auto'
     DEFAULT_FC = 80e6
@@ -57,6 +76,22 @@ class BaseRtlSdr(object):
 
     @staticmethod
     def get_device_index_by_serial(serial):
+        """Retrieves the device index for a device matching the given serial number
+
+        Arguments:
+            serial (str): The serial number to search for
+
+        Returns:
+            int: The device_index as reported by ``librtlsdr``
+
+        Notes:
+            Most devices by default have the same serial number: `'0000001'`.
+            This can be set to a custom value by using the `rtl\_eeprom`_ utility
+            packaged with ``librtlsdr``.
+
+        .. _rtl\_eeprom: http://manpages.ubuntu.com/manpages/trusty/man1/rtl_eeprom.1.html
+
+        """
         if PY3 and isinstance(serial, str):
             serial = bytes(serial, 'UTF-8')
 
@@ -68,6 +103,12 @@ class BaseRtlSdr(object):
 
     @staticmethod
     def get_device_serial_addresses():
+        """Get serial numbers for all attached devices
+
+        Returns:
+            list(str): A ``list`` of all detected serial numbers (``str``)
+
+        """
         def get_serial(device_index):
             bfr = (c_ubyte * 256)()
             r = librtlsdr.rtlsdr_get_device_usb_strings(device_index, None, None, bfr)
@@ -84,13 +125,30 @@ class BaseRtlSdr(object):
         self.open(device_index, test_mode_enabled, serial_number)
 
     def open(self, device_index=0, test_mode_enabled=False, serial_number=None):
-        ''' Initialize RtlSdr object.
-        The test_mode_enabled parameter can be used to enable a special test mode, which will return the value of an
-        internal RTL2832 8-bit counter with calls to read_bytes()
+        """Connect to the device through the underlying wrapper library
 
-        If provided, serial_number parameter (str) will be used to search for the
-        device instead of the device_index.
-        '''
+        Initializes communication with the device and retrieves information
+        from it with a call to :meth:`init_device_values`.
+
+        Arguments:
+            device_index (:obj:`int`, optional): The device index to use if there are
+                multiple dongles attached.  If only one is being used,
+                the default value (0) will be used.
+            test_mode_enabled (:obj:`bool`, optional): If True, enables a special
+                test mode, which will return the value of an internal RTL2832
+                8-bit counter with calls to :meth:`read_bytes`.
+            serial_number (:obj:`str`, optional): If not None, the device will be searched
+                for by the given serial_number by :meth:`get_device_index_by_serial`
+                and the ``device_index`` returned will be used automatically.
+
+        Notes:
+            The arguments used here are passed directly from object
+            initialization.
+
+        Raises:
+            IOError: If communication with the device could not be established.
+
+        """
 
         if serial_number is not None:
             device_index = self.get_device_index_by_serial(serial_number)
@@ -121,6 +179,12 @@ class BaseRtlSdr(object):
         self.init_device_values()
 
     def init_device_values(self):
+        """Retrieves information from the device
+
+        This method acquires the values for :attr:`gain_values`. Also sets the
+        device to the default :attr:`center frequency <DEFAULT_RS>`, the
+        :attr:`sample rate <DEFAULT_FC>` and :attr:`gain <DEFAULT_GAIN>`
+        """
         self.gain_values = self.get_gains()
         self.valid_gains_db = [val/10 for val in self.gain_values]
 
@@ -140,8 +204,6 @@ class BaseRtlSdr(object):
         self.close()
 
     def set_center_freq(self, freq):
-        ''' Set center frequency of tuner (in Hz).
-        Use get_center_freq() to see the precise frequency used. '''
 
         freq = int(freq)
 
@@ -154,7 +216,6 @@ class BaseRtlSdr(object):
         return
 
     def get_center_freq(self):
-        ''' Return center frequency of tuner (in Hz). '''
 
         result = librtlsdr.rtlsdr_get_center_freq(self.dev_p)
         if result < 0:
@@ -169,7 +230,6 @@ class BaseRtlSdr(object):
         return center_freq
 
     def set_freq_correction(self, err_ppm):
-        ''' Set frequency offset of tuner (in PPM). '''
 
         freq = int(err_ppm)
 
@@ -182,7 +242,6 @@ class BaseRtlSdr(object):
         return
 
     def get_freq_correction(self):
-        ''' Get frequency offset of tuner (in PPM). '''
 
         result = librtlsdr.rtlsdr_get_freq_correction(self.dev_p)
         if result < 0:
@@ -192,8 +251,6 @@ class BaseRtlSdr(object):
         return result
 
     def set_sample_rate(self, rate):
-        ''' Set sample rate of tuner (in Hz).
-        Use get_sample_rate() to see the precise sample rate used. '''
 
         rate = int(rate)
 
@@ -206,7 +263,6 @@ class BaseRtlSdr(object):
         return
 
     def get_sample_rate(self):
-        ''' Get sample rate of tuner (in Hz) '''
 
         result = librtlsdr.rtlsdr_get_sample_rate(self.dev_p)
         if result < 0:
@@ -223,8 +279,6 @@ class BaseRtlSdr(object):
         return real_rate
 
     def set_bandwidth(self, bw):
-        '''Set tuner bandwidth (in Hz).
-        Set to 0 (default) for automatic bandwidth selection. '''
 
         bw = int(bw)
         if tuner_bandwidth_supported:
@@ -249,18 +303,10 @@ class BaseRtlSdr(object):
         return
 
     def get_bandwidth(self):
-        '''Get bandwidth value (in Hz)
-        This value is stored locally and may not reflect the real tuner bandwidth
-        '''
 
         return getattr(self, '_bandwidth', 0)
 
     def set_gain(self, gain):
-        ''' Set gain of tuner.
-        If gain is 'auto', AGC mode is enabled; otherwise gain is in dB. The actual
-        gain used is rounded to the nearest value supported by the device (see the
-        values in RtlSdr.valid_gains_db).
-        '''
         if isinstance(gain, basestring) and gain == 'auto':
             # disable manual gain -> enable AGC
             self.set_manual_gain_enabled(False)
@@ -284,7 +330,6 @@ class BaseRtlSdr(object):
         return
 
     def get_gain(self):
-        ''' Get gain of tuner (in dB). '''
 
         result = librtlsdr.rtlsdr_get_tuner_gain(self.dev_p)
         if 0 and result == 0:
@@ -294,9 +339,11 @@ class BaseRtlSdr(object):
         return result/10
 
     def get_gains(self):
-        ''' Get list of supported gains from driver
-        All gains are in tenths of a dB
-        '''
+        """Get all supported gain values from driver
+
+        Returns:
+            list(int): Gains in tenths of a dB
+        """
         buffer = (c_int *50)()
         result = librtlsdr.rtlsdr_get_tuner_gains(self.dev_p, buffer)
         if result == 0:
@@ -310,10 +357,16 @@ class BaseRtlSdr(object):
         return gains
 
     def set_manual_gain_enabled(self, enabled):
-        ''' Enable manual gain control of tuner.
-        If enabled is False, then AGC is used. Use set_gain() instead of calling
-        this directly.
-        '''
+        """Enable or disable manual gain control of tuner.
+
+        Arguments:
+            enabled (bool):
+
+        Notes:
+            If ``enabled`` is False, then AGC should also be used by calling
+            :meth:`set_agc_mode`. It is recommended to use :meth:`set_gain`
+            instead of calling this method directly.
+        """
         result = librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev_p, int(enabled))
         if result < 0:
             raise IOError('Error code %d when setting gain mode'\
@@ -322,8 +375,11 @@ class BaseRtlSdr(object):
         return
 
     def set_agc_mode(self, enabled):
-        ''' Enable RTL2832 AGC
-        '''
+        """Enable RTL2832 AGC
+
+        Arguments:
+            enabled (bool):
+        """
         result = librtlsdr.rtlsdr_set_agc_mode(self.dev_p, int(enabled))
         if result < 0:
             raise IOError('Error code %d when setting AGC mode'\
@@ -332,12 +388,12 @@ class BaseRtlSdr(object):
         return result
 
     def set_direct_sampling(self, direct):
-        ''' Enable direct sampling.
-        direct -- sampling mode
-        If direct is False or 0, disable direct sampling
-        If direct is 'i' or 1, use ADC I input
-        If direct is 'q' or 2, use ADC Q input
-        '''
+        """Enable direct sampling.
+
+        Arguments:
+            direct: If False or 0, disable direct sampling.  If 'i' or 1,
+                use ADC I input.  If 'q' or 2, use ADC Q input.
+        """
 
         # convert parameter
         if isinstance(direct, basestring):
@@ -360,8 +416,15 @@ class BaseRtlSdr(object):
         return result
 
     def get_tuner_type(self):
-        ''' Get the tuner type.
-        '''
+        """Get the tuner type.
+
+        Returns:
+            int:
+                The tuner type as reported by the driver.
+                See the `tuner enum definition`_ for more information.
+
+        .. _tuner enum definition: https://github.com/librtlsdr/librtlsdr/blob/c7d970ac5b70e897501909a48b2b32d4bfb16979/include/rtl-sdr.h#L185-L201
+        """
         result = librtlsdr.rtlsdr_get_tuner_type(self.dev_p)
         if result < 0:
             raise IOError('Error code %d when getting tuner type'\
@@ -370,10 +433,19 @@ class BaseRtlSdr(object):
         return result
 
     def read_bytes(self, num_bytes=DEFAULT_READ_SIZE):
-        ''' Read specified number of bytes from tuner. Does not attempt to unpack
-        complex samples (see read_samples()), and data may be unsafe as buffer is
-        reused.
-        '''
+        """Read specified number of bytes from tuner.
+
+        Does not attempt to unpack complex samples (see :meth:`read_samples`),
+        and data may be unsafe as buffer is reused.
+
+        Arguments:
+            num_bytes (:obj:`int`, optional): The number of bytes to read.
+                Defaults to :attr:`DEFAULT_READ_SIZE`.
+
+        Returns:
+            ctypes.Array[c_ubyte]:
+                A buffer of len(num_bytes) containing the raw samples read.
+        """
         # FIXME: libsdrrtl may not be able to read an arbitrary number of bytes
 
         num_bytes = int(num_bytes)
@@ -398,10 +470,19 @@ class BaseRtlSdr(object):
         return self.buffer
 
     def read_samples(self, num_samples=DEFAULT_READ_SIZE):
-        ''' Read specified number of complex samples from tuner. Real and imaginary
-        parts are normalized to be in the range [-1, 1]. Data is safe after
-        this call (will not get overwritten by another one).
-        '''
+        """Read specified number of complex samples from tuner.
+
+        Real and imaginary parts are normalized to be in the range [-1, 1].
+        Data is safe after this call (will not get overwritten by another one).
+
+        Arguments:
+            num_samples (:obj:`int`, optional): Number of samples to read.
+                Defaults to :attr:`DEFAULT_READ_SIZE`.
+
+        Returns:
+            The samples read as either a :class:`list` or :class:`numpy.ndarray`
+            (if available).
+        """
         num_bytes = 2*num_samples
 
         raw_data = self.read_bytes(num_bytes)
@@ -410,9 +491,14 @@ class BaseRtlSdr(object):
         return iq
 
     def packed_bytes_to_iq(self, bytes):
-        ''' Convenience function to unpack array of bytes to Python list/array
-        of complex numbers and normalize range. Called automatically by read_samples()
-        '''
+        """Unpack a sequence of bytes to a sequence of normalized complex numbers
+
+        This is called automatically by :meth:`read_samples`.
+
+        Returns:
+            The unpacked iq values as either a :class:`list` or
+            :class:`numpy.ndarray` (if available).
+        """
         if has_numpy:
             # use NumPy array
             iq = np.empty(len(bytes)//2, 'complex')
@@ -425,26 +511,56 @@ class BaseRtlSdr(object):
 
         return iq
 
-    center_freq = fc = property(get_center_freq, set_center_freq)
-    sample_rate = rs = property(get_sample_rate, set_sample_rate)
-    gain = property(get_gain, set_gain)
-    freq_correction = property(get_freq_correction, set_freq_correction)
-    bandwidth = property(get_bandwidth, set_bandwidth)
+    center_freq = fc = property(get_center_freq, set_center_freq,
+        doc="""int: Get/Set the center frequency of the device (in Hz)""")
+    sample_rate = rs = property(get_sample_rate, set_sample_rate,
+        doc="""int: Get/Set the sample rate of the tuner (in Hz)""")
+    gain = property(get_gain, set_gain,
+        doc="""float or str: Get/Set gain of the tuner (in dB)
+
+        Notes:
+            If set to 'auto', AGC mode is enabled; otherwise gain is in dB.
+            The actual gain used is rounded to the nearest value supported by
+            the device (see the values in :attr:`valid_gains_db`).
+        """)
+    freq_correction = property(get_freq_correction, set_freq_correction,
+        doc="""int: Get/Set frequency offset of the tuner (in PPM)""")
+    bandwidth = property(get_bandwidth, set_bandwidth,
+        doc="""int: Get/Set bandwidth value (in Hz)
+
+        Set value to 0 (default) for automatic bandwidth selection.
+
+        Notes:
+            This value is stored locally and may not reflect the real tuner bandwidth
+
+        """)
 
 
 # This adds async read support to base class BaseRtlSdr (don't use that one)
 class RtlSdr(BaseRtlSdr):
+    """This adds async read support to :class:`BaseRtlSdr`
+    """
     DEFAULT_ASYNC_BUF_NUMBER = 0 # librtlsdr will use the default (15)
     DEFAULT_READ_SIZE = 1024
 
     read_async_canceling = False
 
     def read_bytes_async(self, callback, num_bytes=DEFAULT_READ_SIZE, context=None):
-        ''' Continuously read "num_bytes" bytes from tuner and call Python function
-        "callback" with the result. "context" is any Python object that will be
-        make available to callback function (default supplies this RtlSdr object).
-        Data may be overwritten (see read_bytes()).
-        '''
+        """Continuously read bytes from tuner
+
+        Arguments:
+            callback: A function or method that will be called with the result.
+                See :meth:`_bytes_converter_callback` for the signature.
+            num_bytes (int): Number of bytes to read for each callback.
+                Defaults to :attr:`DEFAULT_READ_SIZE`.
+            context (Optional): Object to be passed as an argument to the callback.
+                If not supplied or None, the :class:`RtlSdr` instance
+                will be used.
+
+        Notes:
+            As with :meth:`~BaseRtlSdr.read_bytes`, the data passed to the
+            callback may by overwritten.
+        """
         num_bytes = int(num_bytes)
 
         # we don't call the provided callback directly, but add a layer inbetween
@@ -484,7 +600,19 @@ class RtlSdr(BaseRtlSdr):
         self._callback_bytes(values, context)
 
     def read_samples_async(self, callback, num_samples=DEFAULT_READ_SIZE, context=None):
-        ''' Combination of read_samples() and read_bytes_async() '''
+        """Continuously read 'samples' from the tuner
+
+        This is a combination of :meth:`read_samples` and :meth:`read_bytes_async`
+
+        Arguments:
+            callback: A function or method that will be called with the result.
+                See :meth:`_samples_converter_callback` for the signature.
+            num_samples (int): The number of samples read into each callback.
+                Defaults to :attr:`DEFAULT_READ_SIZE`.
+            context (Optional): Object to be passed as an argument to the callback.
+                If not supplied or None, the :class:`RtlSdr` instance
+                will be used.
+        """
 
         num_bytes = 2*num_samples
 
@@ -499,10 +627,15 @@ class RtlSdr(BaseRtlSdr):
         self._callback_samples(iq, context)
 
     def cancel_read_async(self):
-        ''' Cancel async read. This should be called eventually when using async
-        reads, or callbacks will never stop. See also decorators limit_time()
-        and limit_calls() in helpers.py.
-        '''
+        """Cancel async read.
+        This should be called eventually when using async reads
+        (:meth:`read_bytes_async` or :meth:`read_samples_async`),
+        or callbacks will never stop.
+
+        See Also:
+            :func:`~rtlsdr.helpers.limit_time` and
+            :func:`~rtlsdr.helpers.limit_calls`
+        """
 
         result = librtlsdr.rtlsdr_cancel_async(self.dev_p)
         # sometimes we get additional callbacks after canceling an async read,

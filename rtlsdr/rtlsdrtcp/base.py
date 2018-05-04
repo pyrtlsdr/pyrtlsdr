@@ -39,6 +39,14 @@ class CommunicationError(Exception):
 
 
 class RtlSdrTcpBase(object):
+    """Base class for all ``rtlsdrtcp`` functionality
+
+    Arguments:
+        device_index (:obj:`int`, optional):
+        test_mode_enabled (:obj:`bool`, optional):
+        hostname (:obj:`str`, optional):
+        port (:obj:`int`, optional):
+    """
     # Use port 1235 as default since rtl_tcp uses 1234
     DEFAULT_PORT = 1235
 
@@ -54,9 +62,9 @@ class RtlSdrTcpBase(object):
         self.server_thread = None
 
     def packed_bytes_to_iq(self, bytes):
-        ''' Convenience function to unpack array of bytes to Python list/array
-        of complex numbers and normalize range. Called automatically by read_samples()
-        '''
+        """A direct copy of :meth:`rtlsdr.BaseRtlSdr.packed_bytes_to_iq`
+        """
+
         if has_numpy:
             # use NumPy array
             iq = np.empty(len(bytes)//2, 'complex')
@@ -92,12 +100,15 @@ API_DESCRIPTORS = {
 
 
 class MessageBase(object):
-
     """Base class for messages sent between clients and servers.
 
     Hanldes serialization/deserialization and communication with
     socket type objects.
 
+    Attributes:
+        timestamp (float): Timestamp given from :func:`time.time`
+        header (dict): A ``dict`` containing message type and payload information
+        data: The payload containing either the request or response data
     """
 
     def __init__(self, **kwargs):
@@ -127,8 +138,11 @@ class MessageBase(object):
 
     @classmethod
     def from_remote(cls, sock):
-        """Reads data for the socket buffer and reconstructs the appropriate
-        message that was sent by the other end.
+        """Reads data from the socket and parses an instance of :class:`MessageBase`
+
+        Arguments:
+            sock: The :class:`~socket.socket` object to read from
+
         """
         header = cls._recv(sock)
         if not PY2:
@@ -139,6 +153,13 @@ class MessageBase(object):
         return cls(**kwargs)
 
     def get_header(self, **kwargs):
+        """Builds the header data for the message
+
+        The :attr:`timestamp` is added to the header if not already present.
+
+        Returns:
+            dict:
+        """
         d = {}
         ts = kwargs.get('timestamp')
         if ts is None:
@@ -150,10 +171,24 @@ class MessageBase(object):
         return kwargs.get('data', kwargs.get('header', {}).get('data'))
 
     def send_message(self, sock):
+        """Serializes and sends the message
+
+        Arguments:
+            sock: The :class:`~socket.socket` object to write to
+
+        """
         header, data = self._serialize()
         self._send(sock, header)
 
     def get_response(self, sock):
+        """Waits for a specific response message
+
+        The message class returned from :meth:`get_response_class` is used
+        to parse the message (called from :meth:`from_remote`)
+
+        Arguments:
+            sock: The :class:`~socket.socket` object to read from
+        """
         cls = self.get_response_class()
         return cls.from_remote(sock)
 
@@ -161,6 +196,8 @@ class MessageBase(object):
         return AckMessage.from_remote(sock)
 
     def _serialize(self):
+        """Serializes the message header and data
+        """
         struct_fmt = self.header.get('struct_fmt')
         if struct_fmt is not None:
             return json.dumps(self.header), self.data
@@ -171,9 +208,8 @@ class MessageBase(object):
 
 
 class AckMessage(MessageBase):
-
-    """Simple message type meant for ACKnolegemnt of message receipt."""
-
+    """Simple message type meant for ACKnolegemnt of message receipt
+    """
     def get_header(self, **kwargs):
         d = super(AckMessage, self).get_header(**kwargs)
         d['ACK'] = True

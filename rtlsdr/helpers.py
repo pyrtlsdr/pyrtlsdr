@@ -20,10 +20,24 @@ from functools import wraps
 import time
 
 def limit_time(max_seconds):
-    '''Decorator to cancel async reads after "max_seconds" seconds elapse.
-    Call to read_samples_async() or read_bytes_async() must not override context
-    parameter.
-    '''
+    """Decorator to cancel async reads after a specified time period.
+
+    Arguments:
+        max_seconds: Number of seconds to wait before cancelling
+
+    Examples:
+        Stop reading after 10 seconds:
+            >>> @limit_time(10)
+            >>> def read_callback(data, context):
+            >>>     print('signal mean:', sum(data)/len(data))
+            >>> sdr = RtlSdr()
+            >>> sdr.read_samples_async(read_callback)
+
+    Notes:
+        The context in either :meth:`~rtlsdr.RtlSdr.read_bytes_async`
+        or :meth:`~rtlsdr.RtlSdr.read_samples_async` is relied upon and must
+        use the default value (the :class:`~rtlsdr.RtlSdr` instance)
+    """
     def decorator(f):
         f._start_time = None
 
@@ -45,10 +59,22 @@ def limit_time(max_seconds):
 
 
 def limit_calls(max_calls):
-    '''Decorator to cancel async reads after "max_calls" function calls occur.
-    Call to read_samples_async() or read_bytes_async() must not override context
-    parameter.
-    '''
+    """Decorator to cancel async reads after the given number of calls.
+
+    Arguments:
+        max_calls (int): Number of calls to wait for before cancelling
+
+    Examples:
+        Stop reading after 10 calls:
+            >>> @limit_calls(10)
+            >>> def read_callback(data, context):
+            >>>     print('signal mean:', sum(data)/len(data))
+            >>> sdr = RtlSdr()
+            >>> sdr.read_samples_async(read_callback)
+
+    Notes:
+        See notes in :func:`limit_time`
+    """
     def decorator(f):
         f._num_calls = 0
 
