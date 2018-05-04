@@ -25,7 +25,7 @@ script:
   - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
 after_success:
   - coveralls
-  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then travis-sphinx deploy --branches=master,codedoc; fi"
+  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then travis-sphinx deploy; fi"
 deploy:
   provider: pypi
   distributions: "sdist bdist_wheel"
