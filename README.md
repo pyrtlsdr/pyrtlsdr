@@ -10,7 +10,16 @@ employing the Realtek RTL2832U chipset into low-cost, general purpose software-d
 functions in the [librtlsdr library](https://github.com/librtlsdr/librtlsdr) including asynchronous read support
 and also provides a more Pythonic API.
 
-Releases for `librtlsdr` can be found in the project [releases page](https://github.com/librtlsdr/librtlsdr/releases)
+# Links
+
+* Documentation:
+  * https://nocarryr.github.io/pyrtlsdr/
+* Releases:
+  * https://pypi.org/project/pyrtlsdr/
+* Source code and project home:
+  * https://github.com/roger-/pyrtlsdr
+* Releases for `librtlsdr`:
+  * https://github.com/librtlsdr/librtlsdr/releases
 
 # Usage
 
