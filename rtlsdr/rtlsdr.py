@@ -597,7 +597,27 @@ class RtlSdr(BaseRtlSdr):
         return
 
     def _bytes_converter_callback(self, raw_buffer, num_bytes, context):
-        # convert buffer to safer type
+        """Converts the raw buffer used in ``rtlsdr_read_async`` to a usable type
+
+        This method is used internally by :meth:`read_bytes_async` to convert
+        the raw data from ``rtlsdr_read_async`` into a memory-safe array.
+
+        The callback given in :meth:`read_bytes_async` will then be called
+        with the signature::
+
+            callback(values, context)
+
+        Arguments:
+            raw_buffer: Buffer of type ``unsigned char``
+            num_bytes (int): Length of ``raw_buffer``
+            context: User-defined value passed to ``rtlsdr_read_async``.
+                In most cases, will be a reference to the :class:`RtlSdr` instance
+
+        Notes:
+            This method is not meant to be called directly or
+            overridden by subclasses.
+
+        """
         array_type = (c_ubyte*num_bytes)
         values = cast(raw_buffer, POINTER(array_type)).contents
 
@@ -630,6 +650,26 @@ class RtlSdr(BaseRtlSdr):
         return
 
     def _samples_converter_callback(self, buffer, context):
+        """Converts the raw buffer used in ``rtlsdr_read_async`` to a usable type
+
+        This method is used internally by :meth:`read_samples_async` to convert
+        the data into a sequence of complex numbers.
+
+        The callback given in :meth:`read_samples_async` will then be called
+        with the signature::
+
+            callback(samples, context)
+
+        Arguments:
+            buffer: Buffer of type ``unsigned char``
+            context: User-defined value passed to ``rtlsdr_read_async``.
+                In most cases, will be a reference to the :class:`RtlSdr` instance
+
+        Notes:
+            This method is not meant to be called directly or
+            overridden by subclasses.
+
+        """
         iq = self.packed_bytes_to_iq(buffer)
 
         self._callback_samples(iq, context)
