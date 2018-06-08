@@ -182,8 +182,8 @@ class BaseRtlSdr(object):
         """Retrieves information from the device
 
         This method acquires the values for :attr:`gain_values`. Also sets the
-        device to the default :attr:`center frequency <DEFAULT_RS>`, the
-        :attr:`sample rate <DEFAULT_FC>` and :attr:`gain <DEFAULT_GAIN>`
+        device to the default :attr:`center frequency <DEFAULT_FC>`, the
+        :attr:`sample rate <DEFAULT_RS>` and :attr:`gain <DEFAULT_GAIN>`
         """
         self.gain_values = self.get_gains()
         self.valid_gains_db = [val/10 for val in self.gain_values]
