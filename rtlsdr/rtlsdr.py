@@ -55,6 +55,14 @@ class BaseRtlSdr(object):
             and the ``device_index`` returned will be used automatically.
 
     Attributes:
+        DEFAULT_GAIN: Default :attr:`gain` value used on initialization: ``'auto'``
+        DEFAULT_FC (float): Default :attr:`center_freq` value used on
+            initialization: ``80e6`` (80 Mhz)
+        DEFAULT_RS (float): Default :attr:`sample_rate` value used on
+            initialization: ``1.024e6`` (1024 Msps)
+        DEFAULT_READ_SIZE (int): Default number of samples or bytes to read
+            if no arguments are supplied for :meth:`read_bytes`
+            or :meth:`read_samples`.  Default value is ``1024``
         gain_values (list(int)): The valid gain parameters supported by the device
             (in tenths of dB). These are stored as returned by ``librtlsdr``.
         valid_gains_db (list(float)): The valid gains in dB
