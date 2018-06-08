@@ -15,7 +15,7 @@ before_install:
   - cd ../..
   - export LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH
 install:
-  - pip install -U pip setuptools wheel m2r
+  - pip install -U pip setuptools wheel
   - pip install -U pytest pytest-xdist pytest-cov coveralls
   - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then pip install -r doc/requirements.txt; fi"
   - pip install -e .
