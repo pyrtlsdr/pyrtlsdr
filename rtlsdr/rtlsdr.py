@@ -509,10 +509,10 @@ class BaseRtlSdr(object):
         """
         if has_numpy:
             # use NumPy array
-            iq = np.empty(len(bytes)//2, 'complex')
-            iq.real, iq.imag = bytes[::2], bytes[1::2]
-            iq /= (255/2)
-            iq -= (1 + 1j)
+            data = np.frombuffer(bytes, dtype=np.uint8)
+            data = (data - 127.5) / 127.5
+            iq = np.empty(data.size // 2, dtype=np.complex128)
+            iq.real, iq.imag = data[::2], data[1::2]
         else:
             # use normal list
             iq = [complex(i/(255/2) - 1, q/(255/2) - 1) for i, q in izip(bytes[::2], bytes[1::2])]
