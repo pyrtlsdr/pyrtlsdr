@@ -59,7 +59,7 @@ def check_generated_data(samples, direct_sampling=0, use_numpy=True):
         a = np.fromiter((complex(i, q) for i, q in iter_test_samples(test_len)), dtype='complex')
         a /= (255/2)
         a -= (1 + 1j)
-        assert np.array_equal(samples, a)
+        assert np.allclose(samples, a)
     else:
         a = [complex(i/(255/2) - 1, q/(255/2) - 1) for i, q in iter_test_samples(test_len)]
         assert samples == a
