@@ -509,7 +509,7 @@ class BaseRtlSdr(object):
         """
         if has_numpy:
             # use NumPy array
-            data = np.frombuffer(bytes, dtype=np.uint8)
+            data = np.ctypeslib.as_array(bytes)
             iq = data.astype(np.float64).view(np.complex128)
             iq /= 127.5
             iq -= (1 + 1j)
