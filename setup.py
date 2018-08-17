@@ -21,7 +21,7 @@ import re
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'pyrtlsdr'
-VERSION = '0.2.8'
+VERSION = '0.2.9'
 
 #HERE = os.path.abspath(os.path.dirname(__file__))
 #README = open(os.path.join(HERE, 'README.md')).read()
