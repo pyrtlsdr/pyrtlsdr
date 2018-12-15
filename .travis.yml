@@ -16,7 +16,7 @@ matrix:
           - ALLOW_PYPI_DEPLOY=false
     - python: "3.6"
       env:
-          - ALLOW_DOC_DEPLOY=false
+          - ALLOW_DOC_DEPLOY=true
           - ALLOW_PYPI_DEPLOY=true
     - python: "3.7"
       env:
