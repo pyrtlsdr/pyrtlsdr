@@ -131,7 +131,7 @@ class AsyncCallbackIter:
             await self.loop.run_in_executor(None, self.func_stop)
         await self.executor_task
 
-    async def __aiter__(self):
+    def __aiter__(self):
         return self
 
     async def __anext__(self):
