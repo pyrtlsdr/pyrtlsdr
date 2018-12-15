@@ -1,10 +1,27 @@
 language: python
-sudo: required
-dist: trusty
-python:
-  - "2.7"
-  - "3.4"
-  - "3.5.2"
+dist: xenial
+matrix:
+    include:
+    - python: "2.7"
+      env:
+          - ALLOW_DOC_DEPLOY=false
+          - ALLOW_PYPI_DEPLOY=false
+    - python: "3.4"
+      env:
+          - ALLOW_DOC_DEPLOY=false
+          - ALLOW_PYPI_DEPLOY=false
+    - python: "3.5"
+      env:
+          - ALLOW_DOC_DEPLOY=false
+          - ALLOW_PYPI_DEPLOY=false
+    - python: "3.6"
+      env:
+          - ALLOW_DOC_DEPLOY=true
+          - ALLOW_PYPI_DEPLOY=true
+    - python: "3.7"
+      env:
+          - ALLOW_DOC_DEPLOY=false
+          - ALLOW_PYPI_DEPLOY=false
 addons:
   apt:
     packages:
@@ -17,20 +34,20 @@ before_install:
 install:
   - pip install -U pip setuptools wheel
   - pip install -U pytest pytest-xdist pytest-cov coveralls
-  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then pip install -r doc/requirements.txt; fi"
+  - sh -c "if [ '$ALLOW_DOC_DEPLOY' = 'true' ]; then pip install -r doc/requirements.txt; fi"
   - pip install -e .
 script:
-  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then travis-sphinx build --source=doc/source --nowarn; fi"
+  - sh -c "if [ '$ALLOW_DOC_DEPLOY' = 'true' ]; then travis-sphinx build --source=doc/source --nowarn; fi"
   - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr
   - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
 after_success:
   - coveralls
-  - sh -c "if [ '$TRAVIS_PYTHON_VERSION' = '3.5.2' ]; then travis-sphinx deploy; fi"
+  - sh -c "if [ '$ALLOW_DOC_DEPLOY' = 'true' ]; then travis-sphinx deploy; fi"
 deploy:
   provider: pypi
   distributions: "sdist bdist_wheel"
   on:
-    python: "3.5.2"
+    condition: $ALLOW_PYPI_DEPLOY = true
     tags: true
   user: nocarryr
   password:
