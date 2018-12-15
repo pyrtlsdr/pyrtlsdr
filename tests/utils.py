@@ -14,13 +14,15 @@ from conftest import is_travisci
 
 def iter_test_samples(num_samples=None):
     count = 0
-    while True:
+    complete = False
+    while not complete:
         for i, q in zip(range(256), range(255, -1, -1)):
             yield i, q
             if num_samples is not None:
                 count += 1
                 if count >= num_samples:
-                    raise StopIteration()
+                    complete = True
+                    break
 
 def iter_test_bytes(num_bytes=None):
     count = 0
@@ -28,18 +30,21 @@ def iter_test_bytes(num_bytes=None):
         num_samples = num_bytes // 2
     else:
         num_samples = None
-    while True:
+    complete = False
+    while not complete:
         for i, q in iter_test_samples(num_samples):
             yield i
             if num_bytes is not None:
                 count += 1
                 if count >= num_bytes:
-                    raise StopIteration()
+                    complete = True
+                    break
             yield q
             if num_bytes is not None:
                 count += 1
                 if count >= num_bytes:
-                    raise StopIteration()
+                    complete = True
+                    break
 
 def check_generated_data(samples, direct_sampling=0, use_numpy=True):
     if not is_travisci():
