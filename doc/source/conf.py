@@ -20,7 +20,9 @@ import os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 
-from rtlsdr import __version__
+import pkg_resources
+__version__ = pkg_resources.require('pyrtlsdr')[0].version
+
 
 import sphinx_rtd_theme
 
