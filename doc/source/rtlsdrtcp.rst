@@ -1,26 +1,26 @@
-rtlsdr\.rtlsdrtcp package
-=========================
+:mod:`rtlsdr.rtlsdrtcp`
+=======================
 
 .. automodule:: rtlsdr.rtlsdrtcp
 
-rtlsdr\.rtlsdrtcp\.server module
---------------------------------
+:mod:`rtlsdr.rtlsdrtcp.server`
+------------------------------
 
 .. automodule:: rtlsdr.rtlsdrtcp.server
     :members:
     :undoc-members:
     :show-inheritance:
 
-rtlsdr\.rtlsdrtcp\.client module
---------------------------------
+:mod:`rtlsdr.rtlsdrtcp.client`
+------------------------------
 
 .. automodule:: rtlsdr.rtlsdrtcp.client
     :members:
     :undoc-members:
     :show-inheritance:
 
-rtlsdr\.rtlsdrtcp\.base module
-------------------------------
+:mod:`rtlsdr.rtlsdrtcp.base`
+----------------------------
 
 .. automodule:: rtlsdr.rtlsdrtcp.base
     :members:

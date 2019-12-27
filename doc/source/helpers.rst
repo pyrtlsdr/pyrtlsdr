@@ -1,5 +1,5 @@
-helpers module
-==============
+:mod:`rtlsdr.helpers`
+=====================
 
 .. automodule:: rtlsdr.helpers
     :members:
