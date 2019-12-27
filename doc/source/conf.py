@@ -48,6 +48,7 @@ extensions = [
     'm2r',
 ]
 
+autodoc_mock_imports = ['rtlsdr.librtlsdr']
 autodoc_member_order = 'groupwise'
 napoleon_google_docstring = True
 # Add any paths that contain templates here, relative to this directory.
