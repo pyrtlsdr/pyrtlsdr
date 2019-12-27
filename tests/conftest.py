@@ -7,6 +7,21 @@ def pytest_addoption(parser):
     parser.addoption('--no-overrides', action='store_true',
         help='Run tests that do not override (monkeypatch) librtlsdr')
 
+def pytest_configure(config):
+    config.addinivalue_line(
+        'markers',
+        'no_overrides: mark test to not monkeypatch librtlsdr',
+    )
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption('--no-overrides'):
+        # '--no-overrides' given, don't skip
+        return
+    skip_no_overrides = pytest.mark.skip(reason='need --no-overrides to run')
+    for item in items:
+        if 'no_overrides' in item.keywords:
+            item.add_marker(skip_no_overrides)
+
 collect_ignore = ['setup.py', 'demo_waterfall.py']
 
 ASYNC_AVAILABLE = sys.version_info.major >= 3
