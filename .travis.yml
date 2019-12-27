@@ -38,7 +38,7 @@ install:
   - pip install -e .
 script:
   - sh -c "if [ '$ALLOW_DOC_DEPLOY' = 'true' ]; then travis-sphinx build --source=doc/source --nowarn; fi"
-  - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr
+  - py.test --cov-config .coveragerc --cov=rtlsdr
   - py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
 after_success:
   - coveralls
