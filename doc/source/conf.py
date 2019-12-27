@@ -38,7 +38,6 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinxcontrib.asyncio',
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.ifconfig',

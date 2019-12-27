@@ -1,5 +1,4 @@
 Sphinx
 sphinx_rtd_theme
-sphinxcontrib-asyncio
 travis-sphinx>=2.1.2
 m2r
