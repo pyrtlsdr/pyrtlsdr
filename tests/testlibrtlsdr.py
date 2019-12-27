@@ -1,7 +1,17 @@
 import time
 from ctypes import *
 
-from utils import iter_test_bytes, iter_test_samples
+try:
+    from utils import iter_test_bytes, iter_test_samples
+except ImportError:
+    # add no-op versions of above functions so this module can be used
+    # to monkeypatch librtlsdr in rtfd.org builds (see setup.py)
+    def iter_test_bytes():
+        while True:
+            yield 0
+    def iter_test_samples():
+        while True:
+            yield 0, 0
 
 class p_rtlsdr_dev(object):
     def __init__(self, *args):

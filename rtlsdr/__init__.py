@@ -18,6 +18,8 @@ import os
 import warnings
 import pkg_resources
 
+IS_RTDBUILD = os.environ.get('READTHEDOCS', '').lower() == 'true'
+
 try:
     __version__ = pkg_resources.require('pyrtlsdr')[0].version
 except: # pragma: no cover
@@ -53,7 +55,15 @@ if RTLSDR_CLIENT_MODE:
     RtlSdrAio = None
     AIO_AVAILABLE = False
 else:
-    from .librtlsdr import librtlsdr
+    if IS_RTDBUILD:
+        # monkeypatch librtlsdr module for rtfd.org builds
+        from . import librtlsdr
+        from . import _mock_librtlsdr
+        for attr in ['p_rtlsdr_dev', 'librtlsdr', 'rtlsdr_read_async_cb_t']:
+            mock_obj = getattr(_mock_librtlsdr, attr)
+            setattr(librtlsdr, attr, mock_obj)
+    else:
+        from .librtlsdr import librtlsdr
     from .rtlsdr import RtlSdr
     from .rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
     from .helpers import limit_calls, limit_time

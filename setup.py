@@ -18,10 +18,25 @@
 import os
 import sys
 import re
+import shutil
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'pyrtlsdr'
 VERSION = '0.2.91'
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+IS_RTDBUILD = os.environ.get('READTHEDOCS', '').lower() == 'true'
+
+if IS_RTDBUILD:
+    # copy a mocked wrapper since we can't build librtlsdr on rtfd
+    def copy_mock_librtlsdr():
+        mock_src = os.path.join(BASE_DIR, 'tests', 'testlibrtlsdr.py')
+        mock_dst = os.path.join(BASE_DIR, 'rtlsdr', '_mock_librtlsdr.py')
+        if not os.path.exists(mock_dst):
+            print(' -> '.join([mock_src, mock_dst]))
+            shutil.copy(mock_src, mock_dst)
+    if 'install' in sys.argv:
+        copy_mock_librtlsdr()
 
 #HERE = os.path.abspath(os.path.dirname(__file__))
 #README = open(os.path.join(HERE, 'README.md')).read()
