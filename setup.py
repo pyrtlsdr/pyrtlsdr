@@ -31,10 +31,13 @@ if IS_RTDBUILD:
     # copy a mocked wrapper since we can't build librtlsdr on rtfd
     def copy_mock_librtlsdr():
         mock_src = os.path.join(BASE_DIR, 'tests', 'testlibrtlsdr.py')
-        mock_dst = os.path.join(BASE_DIR, 'rtlsdr', '_mock_librtlsdr.py')
-        if not os.path.exists(mock_dst):
-            print(' -> '.join([mock_src, mock_dst]))
-            shutil.copy(mock_src, mock_dst)
+        lib_dst = os.path.join(BASE_DIR, 'rtlsdr', 'librtlsdr.py')
+        orig_lib_dst = os.path.join(BASE_DIR, 'rtlsdr', 'librtlsdr.py.orig')
+        if not os.path.exists(orig_lib_dst):
+            print(' -> '.join([lib_dst, orig_lib_dst]))
+            os.rename(lib_dst, orig_lib_dst)
+            print(' -> '.join([mock_src, lib_dst]))
+            shutil.copy(mock_src, lib_dst)
     if 'install' in sys.argv:
         copy_mock_librtlsdr()
 

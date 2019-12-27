@@ -156,5 +156,8 @@ class AsyncGenerator(object):
 
 librtlsdr = LibRtlSdr()
 
+tuner_bandwidth_supported = True
+tuner_set_bandwidth_supported = True
+
 def rtlsdr_read_async_cb_t(cb):
     return cb
