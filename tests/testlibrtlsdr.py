@@ -3,6 +3,8 @@ from ctypes import *
 
 from utils import iter_test_bytes, iter_test_samples
 
+ERROR_CODE = 0
+
 class p_rtlsdr_dev(object):
     def __init__(self, *args):
         pass
@@ -22,8 +24,12 @@ class LibRtlSdr(object):
         self.agc_mode = 0
         self.direct_sampling = 0
     def rtlsdr_get_device_count(self):
+        if ERROR_CODE != 0:
+            return ERROR_CODE
         return self.NUM_FAKE_DEVICES
     def rtlsdr_get_device_usb_strings(self, device_index, manufact, product, serial):
+        if ERROR_CODE != 0:
+            return ERROR_CODE
         if device_index >= self.NUM_FAKE_DEVICES:
             return -1
         ser_string = '%08d' % (device_index)
@@ -31,6 +37,8 @@ class LibRtlSdr(object):
             serial[i] = ord(c)
         return 0
     def rtlsdr_get_index_by_serial(self, serial):
+        if ERROR_CODE != 0:
+            return ERROR_CODE
         if not serial.isdigit():
             return -1
         i = int(serial)
@@ -38,38 +46,44 @@ class LibRtlSdr(object):
             return -3
         return i
     def rtlsdr_open(self, *args):
-        return 0
+        return ERROR_CODE
     def rtlsdr_set_testmode(self, *args):
-        return 0
+        return ERROR_CODE
     def rtlsdr_reset_buffer(self, *args):
-        return 0
+        return ERROR_CODE
     def rtlsdr_close(self, *args):
-        return 0
+        return ERROR_CODE
     def rtlsdr_set_center_freq(self, dev_p, fc):
         self.fc = fc
-        return 0
+        return ERROR_CODE
     def rtlsdr_get_center_freq(self, *args):
+        if ERROR_CODE != 0:
+            return ERROR_CODE
         return self.fc
     def rtlsdr_set_freq_correction(self, dev_p, err_ppm):
         self.err_ppm = err_ppm
-        return 0
+        return ERROR_CODE
     def rtlsdr_set_sample_rate(self, dev_p, rs):
         self.rs = rs
-        return 0
+        return ERROR_CODE
     def rtlsdr_set_and_get_tuner_bandwidth(self, dev_p, bw, applied_bw, apply_bw):
         if apply_bw == 0:
             applied_bw._obj.value = self.bw
         else:
             self.bw = bw
-        return 0
+        return ERROR_CODE
     def rtlsdr_set_tuner_bandwidth(self, dev_p, bw):
-        return 0
+        return ERROR_CODE
     def rtlsdr_get_sample_rate(self, *args):
+        if ERROR_CODE != 0:
+            return ERROR_CODE
         return self.rs
     def rtlsdr_set_tuner_gain(self, dev_p, gain):
         self.gain = gain
-        return 0
+        return ERROR_CODE
     def rtlsdr_get_tuner_gain(self, *args):
+        if ERROR_CODE != 0:
+            return ERROR_CODE
         return self.gain
     def rtlsdr_get_tuner_gains(self, dev_p, buf):
         for i, gain in enumerate(self.gains):
@@ -77,19 +91,19 @@ class LibRtlSdr(object):
         return len(self.gains)
     def rtlsdr_set_tuner_gain_mode(self, dev_p, mode):
         self.gain_mode = mode
-        return 0
+        return ERROR_CODE
     def rtlsdr_set_agc_mode(self, dev_p, mode):
         self.agc_mode = mode
-        return 0
+        return ERROR_CODE
     def rtlsdr_set_direct_sampling(self, dev_p, direct):
         self.direct_sampling = direct
-        return 0
+        return ERROR_CODE
     def rtlsdr_get_tuner_type(self, *args):
-        return 0
+        return ERROR_CODE
     def rtlsdr_read_sync(self, dev_p, buf, num_bytes, num_bytes_read):
         num_bytes_read._obj.value = num_bytes
         self._generate_fake_data(num_bytes, buf)
-        return 0
+        return ERROR_CODE
     def _generate_fake_data(self, data_len, buf=None):
         if buf is None:
             array_type = (c_ubyte*data_len)
@@ -116,11 +130,11 @@ class LibRtlSdr(object):
         self.async_generator = AsyncGenerator(self, num_bytes)
         self.async_generator.run()
         self.async_generator = None
-        return 0
+        return ERROR_CODE
     def rtlsdr_cancel_async(self, *args):
         if self.async_generator is not None:
             self.async_generator.running = False
-        return 0
+        return ERROR_CODE
 
 class AsyncGenerator(object):
     """Simple object to emulate `rtlsdr_read_async` behavior.

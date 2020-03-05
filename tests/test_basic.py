@@ -1,3 +1,4 @@
+import pytest
 
 def test_pkg_version():
     import subprocess
@@ -21,3 +22,24 @@ def test_serial_addressing(sdr_cls, use_numpy):
         assert sdr_cls.get_device_index_by_serial(serial) == i
         sdr = sdr_cls(serial_number=serial)
         sdr.close()
+
+def test_error_codes(monkeypatch):
+    import testlibrtlsdr
+    for attr in ['p_rtlsdr_dev', 'librtlsdr', 'rtlsdr_read_async_cb_t']:
+        lib_attr = '.'.join(['rtlsdr', 'rtlsdr', attr])
+        override = getattr(testlibrtlsdr, attr)
+        monkeypatch.setattr(lib_attr, override)
+
+    from rtlsdr.rtlsdr import RtlSdr, LibUSBError
+
+    for errno in LibUSBError._errno_map.keys():
+        err_id, err_msg = LibUSBError._errno_map[errno]
+
+        monkeypatch.setattr(testlibrtlsdr, 'ERROR_CODE', errno)
+
+        with pytest.raises(LibUSBError) as exc:
+            sdr = RtlSdr()
+
+        assert exc.value.errno == errno
+        assert err_id in str(exc.value)
+        assert err_msg in str(exc.value)
