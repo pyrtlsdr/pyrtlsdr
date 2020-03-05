@@ -105,7 +105,7 @@ class BaseRtlSdr(object):
 
         result = librtlsdr.rtlsdr_get_index_by_serial(serial)
         if result < 0:
-            raise IOError('Error code %d when searching device by serial' % (result))
+            raise LibUSBError(result)
 
         return result
 
@@ -121,8 +121,8 @@ class BaseRtlSdr(object):
             bfr = (c_ubyte * 256)()
             r = librtlsdr.rtlsdr_get_device_usb_strings(device_index, None, None, bfr)
             if r != 0:
-                raise IOError(
-                    'Error code %d when reading USB strings (device %d)' % (r, device_index)
+                raise LibUSBError(
+                    r, 'while reading USB strings (device %d)' % (device_index)
                 )
             return ''.join((chr(b) for b in bfr if b > 0))
 
@@ -168,20 +168,17 @@ class BaseRtlSdr(object):
         # initialize device
         result = librtlsdr.rtlsdr_open(self.dev_p, device_index)
         if result < 0:
-            raise IOError('Error code %d when opening SDR (device index = %d)'\
-                          % (result, device_index))
+            raise LibUSBError(result, 'Could not open SDR (device index = %d)' % (device_index))
 
         # enable test mode if necessary
         result = librtlsdr.rtlsdr_set_testmode(self.dev_p, int(test_mode_enabled))
         if result < 0:
-            raise IOError('Error code %d when setting test mode'\
-                          % (result))
+            raise LibUSBError(result, 'Could not set test mode')
 
         # reset buffers
         result = librtlsdr.rtlsdr_reset_buffer(self.dev_p)
         if result < 0:
-            raise IOError('Error code %d when resetting buffer (device index = %d)'\
-                          % (result, device_index))
+            raise LibUSBError(result, 'Could not reset buffer')
 
         self.device_opened = True
         self.init_device_values()
@@ -218,8 +215,7 @@ class BaseRtlSdr(object):
         result = librtlsdr.rtlsdr_set_center_freq(self.dev_p, freq)
         if result < 0:
             self.close()
-            raise IOError('Error code %d when setting center freq. to %d Hz'\
-                          % (result, freq))
+            raise LibUSBError(result, 'Could not set center_freq to %d Hz' % (freq))
 
         return
 
@@ -228,8 +224,7 @@ class BaseRtlSdr(object):
         result = librtlsdr.rtlsdr_get_center_freq(self.dev_p)
         if result < 0:
             self.close()
-            raise IOError('Error code %d when getting center freq.'\
-                          % (result))
+            raise LibUSBError(result, 'Could not get center_freq')
 
         # FIXME: the E4000 rounds to kHz, this may not be true for other tuners
         reported_center_freq = result
@@ -244,8 +239,7 @@ class BaseRtlSdr(object):
         result = librtlsdr.rtlsdr_set_freq_correction(self.dev_p, err_ppm)
         if result < 0:
             self.close()
-            raise IOError('Error code %d when setting freq. offset to %d ppm'\
-                          % (result, err_ppm))
+            raise LibUSBError(result, 'Could not set freq. offset to %d ppm' % (err_ppm))
 
         return
 
@@ -254,8 +248,7 @@ class BaseRtlSdr(object):
         result = librtlsdr.rtlsdr_get_freq_correction(self.dev_p)
         if result < 0:
             self.close()
-            raise IOError('Error code %d when getting freq. offset in ppm.'\
-                          % (result))
+            raise LibUSBError(result, 'Could not get freq. offset')
         return result
 
     def set_sample_rate(self, rate):
@@ -265,8 +258,7 @@ class BaseRtlSdr(object):
         result = librtlsdr.rtlsdr_set_sample_rate(self.dev_p, rate)
         if result < 0:
             self.close()
-            raise IOError('Error code %d when setting sample rate to %d Hz'\
-                          % (result, rate))
+            raise LibUSBError(result, 'Could not set sample rate to %d Hz' % (rate))
 
         return
 
@@ -275,8 +267,7 @@ class BaseRtlSdr(object):
         result = librtlsdr.rtlsdr_get_sample_rate(self.dev_p)
         if result < 0:
             self.close()
-            raise IOError('Error code %d when getting sample rate'\
-                          % (result))
+            raise LibUSBError(result, 'Could not get sample rate')
 
         # figure out actual sample rate, taken directly from librtlsdr
         reported_sample_rate = result
@@ -305,8 +296,7 @@ class BaseRtlSdr(object):
 
         if result != 0:
             self.close()
-            raise IOError('Error code %d when setting tuner bandwidth to %d Hz'\
-                          % (result, bw))
+            raise LibUSBError(result, 'Could not set tuner bandwidth to %d Hz' % (bw))
 
         return
 
@@ -332,8 +322,7 @@ class BaseRtlSdr(object):
                                                  self.gain_values[nearest_gain_ind])
         if result < 0:
             self.close()
-            raise IOError('Error code %d when setting gain to %d'\
-                          % (result, gain))
+            raise LibUSBError(result, 'Could not set gain to %d' % (gain))
 
         return
 
@@ -377,8 +366,7 @@ class BaseRtlSdr(object):
         """
         result = librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev_p, int(enabled))
         if result < 0:
-            raise IOError('Error code %d when setting gain mode'\
-                          % (result))
+            raise LibUSBError(result, 'Could not get gain mode')
 
         return
 
@@ -390,8 +378,7 @@ class BaseRtlSdr(object):
         """
         result = librtlsdr.rtlsdr_set_agc_mode(self.dev_p, int(enabled))
         if result < 0:
-            raise IOError('Error code %d when setting AGC mode'\
-                          % (result))
+            raise LibUSBError(result, 'Could not set AGC mode')
 
         return result
 
@@ -418,8 +405,7 @@ class BaseRtlSdr(object):
 
         result = librtlsdr.rtlsdr_set_direct_sampling(self.dev_p, direct)
         if result < 0:
-            raise IOError('Error code %d when setting AGC mode'\
-                          % (result))
+            raise LibUSBError(result, 'Could not set direct sampling')
 
         return result
 
@@ -435,8 +421,7 @@ class BaseRtlSdr(object):
         """
         result = librtlsdr.rtlsdr_get_tuner_type(self.dev_p)
         if result < 0:
-            raise IOError('Error code %d when getting tuner type'\
-                          % (result))
+            raise LibUSBError(result, 'Could not get tuner type')
 
         return result
 
@@ -467,8 +452,7 @@ class BaseRtlSdr(object):
                                             byref(self.num_bytes_read))
         if result < 0:
             self.close()
-            raise IOError('Error code %d when reading %d bytes'\
-                          % (result, num_bytes))
+            raise LibUSBError(result, 'Could not read %d bytes' % (num_bytes))
 
         if self.num_bytes_read.value != num_bytes:
             self.close()
@@ -589,8 +573,7 @@ class RtlSdr(BaseRtlSdr):
                     context, self.DEFAULT_ASYNC_BUF_NUMBER, num_bytes)
         if result < 0:
             self.close()
-            raise IOError('Error code %d when requesting %d bytes'\
-                          % (result, num_bytes))
+            raise LibUSBError(result, 'Could not read %d bytes' % (num_bytes))
 
         self.read_async_canceling = False
 
@@ -690,7 +673,37 @@ class RtlSdr(BaseRtlSdr):
         # in this case we don't raise exceptions
         if result < 0 and not self.read_async_canceling:
             self.close()
-            raise IOError('Error code %d when canceling async read'\
-                          % (result))
+            raise LibUSBError(result, 'Could not cancel async read')
 
         self.read_async_canceling = True
+
+
+class LibUSBError(IOError):
+    _errno_map = {
+        -1:  ('LIBUSB_ERROR_IO', 'Input/output error'),
+        -2:  ('LIBUSB_ERROR_INVALID_PARAM', 'Invalid parameter'),
+        -3:  ('LIBUSB_ERROR_ACCESS', 'Access denied (insufficient permissions)'),
+        -4:  ('LIBUSB_ERROR_NO_DEVICE', 'No such device (it may have been disconnected)'),
+        -5:  ('LIBUSB_ERROR_NOT_FOUND', 'Entity not found'),
+        -6:  ('LIBUSB_ERROR_BUSY', 'Resource busy'),
+        -7:  ('LIBUSB_ERROR_TIMEOUT', 'Operation timed out'),
+        -8:  ('LIBUSB_ERROR_OVERFLOW', 'Overflow'),
+        -9:  ('LIBUSB_ERROR_PIPE', 'Pipe error'),
+        -10: ('LIBUSB_ERROR_INTERRUPTED', 'System call interrupted (perhaps due to signal)'),
+        -11: ('LIBUSB_ERROR_NO_MEM', 'Insufficient memory'),
+        -12: ('LIBUSB_ERROR_NOT_SUPPORTED', 'Operation not supported or unimplemented on this platform'),
+        -99: ('LIBUSB_ERROR_OTHER', 'Other error'),
+    }
+    def __init__(self, errno, msg=''):
+        self.errno = errno
+        self.msg = msg
+    def __str__(self):
+        t = self._errno_map.get(self.errno)
+        if t is not None:
+            err_id, err_msg = t
+            msg = '<{err_id} ({self.errno}): {err_msg}> "{self.msg}"'.format(
+                self=self, err_id=err_id, err_msg=err_msg,
+            )
+        else:
+            msg = 'Error code {self.errno}: {self.msg}'.format(self=self)
+        return msg
