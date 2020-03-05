@@ -21,7 +21,21 @@ from __future__ import print_function
 import sys
 import argparse
 
+try:
+    import numpy as np
+    HAVE_NP = True
+except ImportError:
+    np = None
+    HAVE_NP = False
+
 from rtlsdr import *
+
+def get_mean(samples):
+    if HAVE_NP:
+        r = samples.mean()
+    else:
+        r = sum(samples)/len(samples)
+    return r
 
 def main(**opts):
     rs = opts.get('rs', 2.4e6)
@@ -33,8 +47,15 @@ def main(**opts):
 
     @limit_calls(num_reads)
     def test_callback(samples, rtlsdr_obj):
-        print('  in callback')
-        print('  signal mean:', sum(samples)/len(samples))
+        print('  in callback, index:', rtlsdr_obj._read_index)
+        print('  signal mean:', get_mean(samples))
+
+        all_samples = rtlsdr_obj._all_samples
+        if HAVE_NP:
+            all_samples[rtlsdr_obj._read_index,:] = samples
+        else:
+            all_samples.extend(samples)
+        rtlsdr_obj._read_index += 1
 
     sdr = RtlSdr()
 
@@ -48,17 +69,32 @@ def main(**opts):
 
     print('Reading samples...')
     samples = sdr.read_samples(num_samples)
-    print('  signal mean:', sum(samples)/len(samples))
+    print('  signal mean:', get_mean(samples))
 
     print('Testing callback...')
+
+    if HAVE_NP:
+        all_samples = np.zeros((num_reads, num_samples), dtype=np.complex128)
+    else:
+        all_samples = []
+
+    sdr._all_samples = all_samples
+    sdr._read_index = 0
+    sdr._num_reads = num_reads
+
     sdr.read_samples_async(test_callback, num_samples)
+
+    if HAVE_NP:
+        all_samples = all_samples.flatten()
+
+    print('Total sample count={}, mean={}'.format(len(all_samples), get_mean(all_samples)))
 
     try:
         import pylab as mpl
 
         print('Testing spectrum plotting...')
         mpl.figure()
-        mpl.psd(samples, NFFT=nfft, Fc=sdr.fc/1e6, Fs=sdr.rs/1e6)
+        mpl.psd(all_samples, NFFT=nfft, Fc=sdr.fc/1e6, Fs=sdr.rs/1e6)
 
         mpl.show()
     except:
