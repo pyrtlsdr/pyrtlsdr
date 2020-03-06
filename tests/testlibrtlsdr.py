@@ -46,6 +46,15 @@ class LibRtlSdr(object):
             return -3
         return i
     def rtlsdr_open(self, *args):
+        self.fc = 1e6
+        self.rs = 2e6
+        self.bw = 2e6
+        self.err_ppm = 0
+        self.gain = 0
+        self.gains = list(range(0, 300, 25))
+        self.gain_mode = 0
+        self.agc_mode = 0
+        self.direct_sampling = 0
         return ERROR_CODE
     def rtlsdr_set_testmode(self, *args):
         return ERROR_CODE
@@ -105,9 +114,11 @@ class LibRtlSdr(object):
     def rtlsdr_get_tuner_type(self, *args):
         return ERROR_CODE
     def rtlsdr_read_sync(self, dev_p, buf, num_bytes, num_bytes_read):
+        if ERROR_CODE != 0:
+            return ERROR_CODE
         num_bytes_read._obj.value = num_bytes
         self._generate_fake_data(num_bytes, buf)
-        return ERROR_CODE
+        return 0
     def _generate_fake_data(self, data_len, buf=None):
         if buf is None:
             array_type = (c_ubyte*data_len)
