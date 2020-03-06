@@ -1,5 +1,5 @@
-rtlsdraio module
-================
+:mod:`rtlsdr.rtlsdraio`
+=======================
 
 .. automodule:: rtlsdr.rtlsdraio
     :members: RtlSdrAio, AsyncCallbackIter
