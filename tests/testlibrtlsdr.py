@@ -63,6 +63,10 @@ class LibRtlSdr(object):
     def rtlsdr_set_freq_correction(self, dev_p, err_ppm):
         self.err_ppm = err_ppm
         return ERROR_CODE
+    def rtlsdr_get_freq_correction(self, dev_p):
+        if ERROR_CODE != 0:
+            return ERROR_CODE
+        return self.err_ppm
     def rtlsdr_set_sample_rate(self, dev_p, rs):
         self.rs = rs
         return ERROR_CODE
