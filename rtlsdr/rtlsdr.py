@@ -279,6 +279,7 @@ class BaseRtlSdr(object):
 
     def set_bandwidth(self, bw):
 
+        requested_bw = int(bw)
         bw = int(bw)
         if tuner_bandwidth_supported:
             apply_bw = c_int(1)
@@ -296,7 +297,7 @@ class BaseRtlSdr(object):
 
         if result != 0:
             self.close()
-            raise LibUSBError(result, 'Could not set tuner bandwidth to %d Hz' % (bw))
+            raise LibUSBError(result, 'Could not set tuner bandwidth to %d Hz' % (requested_bw))
 
         return
 
