@@ -64,7 +64,7 @@ def main(**opts):
     sdr.fc = fc
     sdr.gain = gain
     print('  sample rate: %0.6f MHz' % (sdr.rs/1e6))
-    print('  center frequency %0.6f MHz' % (sdr.fc/1e6))
+    print('  center frequency: %0.6f MHz' % (sdr.fc/1e6))
     print('  gain: %d dB' % sdr.gain)
 
     print('Reading samples...')
