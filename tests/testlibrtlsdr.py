@@ -125,6 +125,8 @@ class LibRtlSdr(object):
                 buf_index += 1
         return buf
     def rtlsdr_read_async(self, dev_p, callback, context, buf_num, num_bytes):
+        if ERROR_CODE != 0:
+            return ERROR_CODE
         self.async_callback = callback
         self.async_context = context
         self.async_generator = AsyncGenerator(self, num_bytes)
