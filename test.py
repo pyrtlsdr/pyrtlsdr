@@ -44,6 +44,7 @@ def main(**opts):
     num_reads = opts.get('num_reads', 2)
     num_samples = opts.get('num_samples', 256*1024)
     nfft = opts.get('nfft', 1024)
+    plot_enabled = opts.get('plot_enabled', False)
 
     @limit_calls(num_reads)
     def test_callback(samples, rtlsdr_obj):
@@ -89,17 +90,18 @@ def main(**opts):
 
     print('Total sample count={}, mean={}'.format(len(all_samples), get_mean(all_samples)))
 
-    try:
-        import pylab as mpl
+    if plot_enabled:
+        try:
+            import pylab as mpl
 
-        print('Testing spectrum plotting...')
-        mpl.figure()
-        mpl.psd(all_samples, NFFT=nfft, Fc=sdr.fc/1e6, Fs=sdr.rs/1e6)
+            print('Testing spectrum plotting...')
+            mpl.figure()
+            mpl.psd(all_samples, NFFT=nfft, Fc=sdr.fc/1e6, Fs=sdr.rs/1e6)
 
-        mpl.show()
-    except:
-        # matplotlib not installed/working
-        pass
+            mpl.show()
+        except:
+            # matplotlib not installed/working
+            pass
 
     print('Done\n')
     sdr.close()
@@ -139,7 +141,10 @@ def parse_args(argv=None):
     p.add_argument(
         '--nfft', dest='nfft', type=int, default=1024,
         help='Number of FFT bins to use for plotting (if matplotlib is available)',
-
+    )
+    p.add_argument(
+        '--plot', dest='plot_enabled', action='store_true',
+        help='Plot the PSD results (if matplotlib is installed)',
     )
 
     args = p.parse_args(argv)
