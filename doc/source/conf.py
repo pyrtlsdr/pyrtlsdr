@@ -19,9 +19,10 @@ import os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('../..'))
 
-from rtlsdr import __version__
+import pkg_resources
+__version__ = pkg_resources.require('pyrtlsdr')[0].version
+
 
 import sphinx_rtd_theme
 
@@ -38,7 +39,6 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinxcontrib.asyncio',
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.ifconfig',
@@ -308,6 +308,6 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'python':('https://docs.python.org/3.5', None),
+    'python':('https://docs.python.org/', None),
     'numpy':('https://docs.scipy.org/doc/numpy/', None),
 }
