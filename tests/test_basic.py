@@ -1,3 +1,4 @@
+import sys
 import pytest
 import itertools
 
@@ -18,6 +19,7 @@ def test(sdr_cls, use_numpy):
     generic_test(sdr, use_numpy=use_numpy)
     sdr.close()
 
+@pytest.mark.skipif(sys.version_info < (3, 5), reason="requires python3.5 or higher")
 def test_example_script(capsys, use_numpy):
     from pathlib import Path
     import rtlsdr
