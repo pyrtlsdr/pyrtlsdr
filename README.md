@@ -13,7 +13,7 @@ and also provides a more Pythonic API.
 # Links
 
 * Documentation:
-  * https://nocarryr.github.io/pyrtlsdr/
+  * https://pyrtlsdr.readthedocs.io/
 * Releases:
   * https://pypi.org/project/pyrtlsdr/
 * Source code and project home:
