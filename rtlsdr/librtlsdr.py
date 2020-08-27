@@ -20,30 +20,45 @@ import os
 from ctypes import *
 from ctypes.util import find_library
 
+def paths():
+    '''Generic function to search for paths to files,
+        return list doesn't make sense atm, but can be used later'''
+    search = ['librtlsdr.dll']
+    return_files = []
+    for i in sys.path:
+        #print('checking',i)
+        try: files = os.listdir(i)
+        except: pass
+
+        for f in search:
+            #check for files in dir
+            if f in files:
+                #print(f'{f} is in {i}')
+                path = i+'\\'+f
+                return_files.append(path.replace('\\','/'))
+                print(path.replace('\\','/'))#i like forward slashes more
+
+    return return_files
+
 def load_librtlsdr():
     if sys.platform == "linux" and 'LD_LIBRARY_PATH' in os.environ.keys():
         ld_library_paths = [local_path for local_path in os.environ['LD_LIBRARY_PATH'].split(':') if local_path.strip()]
         driver_files = [local_path + '/librtlsdr.so' for local_path in ld_library_paths]
     else:
-        driver_files = []
-    driver_files += ['librtlsdr.so', 'rtlsdr/librtlsdr.so']
-    driver_files += ['rtlsdr.dll', 'librtlsdr.so']
-    driver_files += ['..//rtlsdr.dll', '..//librtlsdr.so']
-    driver_files += ['rtlsdr//rtlsdr.dll', 'rtlsdr//librtlsdr.so']
-    driver_files += [lambda : find_library('rtlsdr'), lambda : find_library('librtlsdr')]
-    dll = None
+        driver_files = paths()
 
     for driver in driver_files:
-        if callable(driver):
-            driver = driver()
         try:
             dll = CDLL(driver)
             break
         except:
             pass
     else:
-        raise ImportError('Error loading librtlsdr. Make sure librtlsdr '\
-                          '(and all of its dependencies) are in your path')
+        raise ImportError(f'''Error loading librtlsdr. Make sure librtlsdr 
+                          (and all of its dependencies) are in one of {sys.path}. 
+                          
+
+                          ''')
 
     return dll
 
