@@ -129,10 +129,10 @@ class BaseRtlSdr(object):
         num_devices = librtlsdr.rtlsdr_get_device_count()
         return [get_serial(i) for i in range(num_devices)]
 
-    def __init__(self, device_index=0, test_mode_enabled=False, serial_number=None):
-        self.open(device_index, test_mode_enabled, serial_number)
+    def __init__(self, device_index=0, test_mode_enabled=False, dithering_enabled=True, serial_number=None):
+        self.open(device_index, test_mode_enabled, dithering_enabled, serial_number)
 
-    def open(self, device_index=0, test_mode_enabled=False, serial_number=None):
+    def open(self, device_index=0, test_mode_enabled=False, dithering_enabled=True, serial_number=None):
         """Connect to the device through the underlying wrapper library
 
         Initializes communication with the device and retrieves information
@@ -145,6 +145,8 @@ class BaseRtlSdr(object):
             test_mode_enabled (:obj:`bool`, optional): If True, enables a special
                 test mode, which will return the value of an internal RTL2832
                 8-bit counter with calls to :meth:`read_bytes`.
+            dithering_enabled (:obj:`bool`, optional): If False, disables PLL dithering
+                to prevent it destroying phase coherence in CLK-synchronized dongles.
             serial_number (:obj:`str`, optional): If not None, the device will be searched
                 for by the given serial_number by :meth:`get_device_index_by_serial`
                 and the ``device_index`` returned will be used automatically.
@@ -174,6 +176,13 @@ class BaseRtlSdr(object):
         result = librtlsdr.rtlsdr_set_testmode(self.dev_p, int(test_mode_enabled))
         if result < 0:
             raise LibUSBError(result, 'Could not set test mode')
+
+        # ECM: must disable dithering before frequency is set
+        # disable PLL dithering if necessary
+        result = librtlsdr.rtlsdr_set_dithering(self.dev_p, int(dithering_enabled))
+        if result < 0:
+            raise IOError('Error code %d when setting PLL dithering mode'\
+                           % (result))
 
         # reset buffers
         result = librtlsdr.rtlsdr_reset_buffer(self.dev_p)
@@ -407,6 +416,20 @@ class BaseRtlSdr(object):
         result = librtlsdr.rtlsdr_set_direct_sampling(self.dev_p, direct)
         if result < 0:
             raise LibUSBError(result, 'Could not set direct sampling')
+
+        return result
+
+    # ECM: Pipe up keenerd's experimental dithering control for coherent operation
+    def set_dithering(self, enabled):
+        """Disable PLL dithering.
+
+        Arguments:
+            enabled (bool):
+        """
+        result = librtlsdr.rtlsdr_set_dithering(self.dev_p, int(enabled))
+        if result < 0:
+            raise IOError('Error code %d when setting dither mode'\
+                          % (result))
 
         return result
 
