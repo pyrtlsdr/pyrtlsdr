@@ -91,6 +91,8 @@ class Waterfall(object):
             self.sdr.gain -= GAIN_INC
         elif event.key == ' ':
             self.sdr.gain = 'auto'
+        elif event.key == 'b':
+            self.sdr.set_bias_tee(True)
         elif event.key == 'shift':
             self.shift_key_down = True
         elif event.key == 'right':
