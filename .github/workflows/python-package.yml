@@ -29,7 +29,7 @@ jobs:
         cd tools/travis
         ./install-librtlsdr.sh
         cd ../..
-        echo "LD_LIBRARY_PATH=$HOME/.local:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+        echo "NEW_LD_LIBPATH=$HOME/.local:$LD_LIBRARY_PATH" >> $GITHUB_ENV
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
@@ -37,8 +37,8 @@ jobs:
         pip install -e .
     - name: Test with pytest
       run: |
-        py.test --cov-config .coveragerc --cov=rtlsdr
-        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
+        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-config .coveragerc --cov=rtlsdr
+        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
     - name: Upload to Coveralls
       run: coveralls --service=github
       env:
