@@ -31,7 +31,7 @@ if not ASYNC_AVAILABLE:
     collect_ignore.append('test_aio.py')
 
 def is_travisci():
-    return all([os.environ.get(key) == 'true' for key in ['CI', 'TRAVIS']])
+    return any([os.environ.get(key) == 'true' for key in ['CI', 'TRAVIS']])
 
 @pytest.fixture(params=[True, False])
 def tuner_bandwidth_supported(request, monkeypatch):
