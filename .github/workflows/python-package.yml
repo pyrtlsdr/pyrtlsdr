@@ -40,11 +40,15 @@ jobs:
       run: |
         LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-config .coveragerc --cov=rtlsdr
         LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
+    - name: Set up Python3 for coveralls
+      if: ${{ matrix.python-version == 2.7 }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
     - name: Upload to Coveralls
       run: coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_FLAG_NAME: run-${{ matrix.python-version }}
         COVERALLS_PARALLEL: true
 
