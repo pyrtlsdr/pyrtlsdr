@@ -25,6 +25,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Build librtlsdr
       run: |
+        sudo apt-get install -y libusb-1.0-0-dev
         cd tools/travis
         ./install-librtlsdr.sh
         cd ../..
