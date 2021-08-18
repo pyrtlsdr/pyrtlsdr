@@ -26,7 +26,7 @@ jobs:
     - name: Build librtlsdr
       run: |
         sudo apt-get install -y libusb-1.0-0-dev
-        cd tools/travis
+        cd tools/ci
         ./install-librtlsdr.sh
         cd ../..
         echo "NEW_LD_LIBPATH=$HOME/.local:$LD_LIBRARY_PATH" >> $GITHUB_ENV
