@@ -36,7 +36,7 @@ class RtlSdrTcpServer(RtlSdr, RtlSdrTcpBase):
                                hostname, port)
         RtlSdr.__init__(self, device_index, test_mode_enabled, serial_number)
 
-    def open(self, device_index=0, test_mode_enabled=False, serial_number=None):
+    def open(self, device_index=0, test_mode_enabled=False, dithering_enabled=True, serial_number=None):
         if not self.device_ready:
             return
         super(RtlSdrTcpServer, self).open(device_index, test_mode_enabled, serial_number)
