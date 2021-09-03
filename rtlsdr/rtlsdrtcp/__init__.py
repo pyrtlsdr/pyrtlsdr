@@ -7,7 +7,7 @@ connected physically to an SDR dongle and communicate with an instance of
 
 The client is intended to function as closely as possible to the base
 :class:`~rtlsdr.rtlsdr.RtlSdr` class (as if it had a physical dongle
-attatched to it).
+attached to it).
 
 Both of these classes have the same arguments as the base
 :class:`~rtlsdr.rtlsdr.RtlSdr` class with the addition of ``hostname`` and ``port``.
