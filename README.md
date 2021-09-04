@@ -131,7 +131,7 @@ loop.run_until_complete(streaming())
 ```
 
 ## rtlsdrtcp
-The `RtlSdrTcpServer` class is meant to be connected physically to an SDR dongle and communicate with an instance of `RtlSdrTcpClient`. The client is intended to function as closely as possible to the base RtlSdr class (as if it had a physical dongle attatched to it).
+The `RtlSdrTcpServer` class is meant to be connected physically to an SDR dongle and communicate with an instance of `RtlSdrTcpClient`. The client is intended to function as closely as possible to the base RtlSdr class (as if it had a physical dongle attached to it).
 
 Both of these classes have the same arguments as the base `RtlSdr` class with the addition of `hostname` and `port`:
 ```python
