@@ -14,6 +14,7 @@
 
 import sys
 import os
+sys.path.append(os.path.abspath('./ext'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -45,7 +46,6 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-    'm2r',
 ]
 
 autodoc_member_order = 'groupwise'
@@ -55,7 +55,6 @@ templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = ['.rst', '.md']
 # source_suffix = '.rst'
 
 # The encoding of source files.
