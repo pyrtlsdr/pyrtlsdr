@@ -87,7 +87,7 @@ def check_close(num_digits, *args):
 
 def generic_test(sdr, test_async=True, test_exceptions=True, use_numpy=True):
     """Functionality checks common to all tests
-    Instanciates the given subclass of :class:`rtlsdr.RtlSdr`,
+    Instantiates the given subclass of :class:`rtlsdr.RtlSdr`,
     checks get/set methods for sample_rate, center_freq and gain,
     then reads 1024 samples.
 

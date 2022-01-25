@@ -185,6 +185,6 @@ All of the code contained here is licensed by the GNU General Public License v3.
 # Credit
 
 Credit to dbasden for his earlier wrapper [python-librtlsdr](https://github.com/dbasden/python-librtlsdr) and all the
-contributers on GitHub.
+contributors on GitHub.
 
 Copyright (C) 2013 by Roger <https://github.com/roger->

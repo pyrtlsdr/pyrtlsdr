@@ -102,7 +102,7 @@ API_DESCRIPTORS = {
 class MessageBase(object):
     """Base class for messages sent between clients and servers.
 
-    Hanldes serialization/deserialization and communication with
+    Handles serialization/deserialization and communication with
     socket type objects.
 
     Attributes:

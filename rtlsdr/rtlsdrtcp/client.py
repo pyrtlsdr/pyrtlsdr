@@ -62,7 +62,7 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
             resp_data = resp.data
         elif isinstance(resp, AckMessage):
             if not resp.header.get('ok'):
-                raise CommunicationError('ACK message recieved as "NAK"')
+                raise CommunicationError('ACK message received as "NAK"')
             resp_data = None
         self._close_socket()
         return resp_data
