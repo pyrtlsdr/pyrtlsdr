@@ -14,6 +14,7 @@
 
 import sys
 import os
+sys.path.append(os.path.abspath('./ext'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -24,11 +25,10 @@ import pkg_resources
 __version__ = pkg_resources.require('pyrtlsdr')[0].version
 
 
-import sphinx_rtd_theme
-
 html_theme = "sphinx_rtd_theme"
-
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme_options = {
+    'collapse_navigation':False,
+}
 
 # -- General configuration ------------------------------------------------
 
@@ -45,7 +45,6 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-    'm2r',
 ]
 
 autodoc_member_order = 'groupwise'
@@ -55,7 +54,6 @@ templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = ['.rst', '.md']
 # source_suffix = '.rst'
 
 # The encoding of source files.

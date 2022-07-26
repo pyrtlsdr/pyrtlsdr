@@ -1,0 +1,68 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python package
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Build librtlsdr
+      run: |
+        sudo apt-get install -y libusb-1.0-0-dev
+        cd tools/ci
+        ./install-librtlsdr.sh
+        cd ../..
+        echo "NEW_LD_LIBPATH=$HOME/.local:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install -U pytest pytest-xdist pytest-cov
+        pip install numpy
+        pip install -e .
+    - name: Test with pytest
+      run: |
+        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-config .coveragerc --cov=rtlsdr
+        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
+    - name: Set up Python3 for coveralls
+      if: ${{ matrix.python-version == 2.7 }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Upload to Coveralls
+      run: |
+        python -m pip install coveralls
+        python -m coveralls --service=github
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_FLAG_NAME: run-${{ matrix.python-version }}
+        COVERALLS_PARALLEL: true
+
+  coveralls:
+    name: Indicate completion to coveralls.io
+    needs: test
+    runs-on: ubuntu-latest
+    container: python:3-slim
+    steps:
+    - name: Finished
+      run: |
+        pip3 install --upgrade coveralls
+        coveralls --finish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -7,7 +7,7 @@ RELEASE=${1:-$DEFAULT_RELEASE}
 TAR_FILE="$RELEASE.tar.gz"
 PKG_URL="https://github.com/librtlsdr/librtlsdr/archive/$TAR_FILE"
 
-if [ "$TRAVIS" = "true" ]; then
+if [ "$CI" = "true" ]; then
   set -ex
 fi
 
@@ -23,7 +23,7 @@ tar xvzf $TAR_FILE
 cd "librtlsdr-$RELEASE"
 mkdir build
 cd build
-if [ "$TRAVIS" = "true" ]; then
+if [ "$CI" = "true" ]; then
   cmake -DCMAKE_INSTALL_PREFIX=$HOME/.local -DLIB_INSTALL_DIR=$HOME/.local/ ../
   make
   make install
