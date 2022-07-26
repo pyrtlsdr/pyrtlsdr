@@ -382,6 +382,19 @@ class BaseRtlSdr(object):
             raise LibUSBError(result, 'Could not set AGC mode')
 
         return result
+        
+    def set_bias_tee(self, enabled):
+        """Enable RTL2832 Bias Tee
+
+        Arguments:
+            enabled (bool):
+        """
+        result = librtlsdr.rtlsdr_set_bias_tee(self.dev_p, int(enabled))
+        if result < 0:
+            raise LibUSBError(result, 'Could not set Bias Tee mode')
+
+        return result
+        
 
     def set_direct_sampling(self, direct):
         """Enable direct sampling.
