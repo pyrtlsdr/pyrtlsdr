@@ -48,7 +48,7 @@ setup(
     name=PACKAGE_NAME,
     version=VERSION,
     author='roger',
-    url='https://github.com/roger-/pyrtlsdr',
+    url='https://github.com/pyrtlsdr/pyrtlsdr',
     description='A Python wrapper for librtlsdr (a driver for Realtek RTL2832U based SDR\'s)',
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Console',

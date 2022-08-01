@@ -64,8 +64,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pyrtlsdr'
-copyright = u'2016, Roger <https://github.com/roger-/pyrtlsdr>'
-author = u'Roger <https://github.com/roger-/pyrtlsdr>'
+copyright = u'2016, Roger <https://github.com/pyrlsdr/pyrtlsdr>'
+author = u'Roger <https://github.com/pyrlsdr/pyrtlsdr>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -243,7 +243,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'pyrtlsdr.tex', u'pyrtlsdr Documentation',
-     u'Roger \\textless{}https://github.com/roger-/pyrtlsdr\\textgreater{}', 'manual'),
+     u'Roger \\textless{}https://github.com/pyrtlsdr/pyrtlsdr\\textgreater{}', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

@@ -17,7 +17,7 @@ and also provides a more Pythonic API.
 * Releases:
   * https://pypi.org/project/pyrtlsdr/
 * Source code and project home:
-  * https://github.com/roger-/pyrtlsdr
+  * https://github.com/pyrtlsdr/pyrtlsdr
 * Releases for `librtlsdr`:
   * https://github.com/librtlsdr/librtlsdr/releases
 
@@ -187,4 +187,4 @@ All of the code contained here is licensed by the GNU General Public License v3.
 Credit to dbasden for his earlier wrapper [python-librtlsdr](https://github.com/dbasden/python-librtlsdr) and all the
 contributors on GitHub.
 
-Copyright (C) 2013 by Roger <https://github.com/roger->
+Copyright (C) 2013 by Roger <https://github.com/pyrtlsdr/pyrtlsdr>
