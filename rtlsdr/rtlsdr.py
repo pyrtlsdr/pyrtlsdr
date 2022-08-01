@@ -382,19 +382,33 @@ class BaseRtlSdr(object):
             raise LibUSBError(result, 'Could not set AGC mode')
 
         return result
-        
+
     def set_bias_tee(self, enabled):
         """Enable RTL2832 Bias Tee
 
+        Enables or disables the Bias Tee option (RTL-SDRv3 only)
+
         Arguments:
             enabled (bool):
+
+        .. warning::
+
+            Using this could potentially damage your device!
+            Please make sure you understand what Bias Tee does before using
+            this method.
+
+            See the Bias T section of the `RTL-SDRv3 Manual`_ for information.
+
+        .. versionadded:: 0.2.93
+
+        .. _RTL-SDRv3 Manual: https://www.rtl-sdr.com/rtl-sdr-blog-v-3-dongles-user-guide/
         """
         result = librtlsdr.rtlsdr_set_bias_tee(self.dev_p, int(enabled))
         if result < 0:
             raise LibUSBError(result, 'Could not set Bias Tee mode')
 
         return result
-        
+
 
     def set_direct_sampling(self, direct):
         """Enable direct sampling.
