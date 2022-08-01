@@ -79,11 +79,11 @@ jobs:
 
   deploy:
     needs: test
-    if: ${{ success() && (github.event.inputs.allow_deploy == 'true' || github.event.inputs.allow_sphinx_deploy == 'true') }}
+    if: ${{ success() && (github.event.inputs.allow_deploy == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
@@ -95,11 +95,6 @@ jobs:
         with:
           name: 'dists'
           path: dist
-      - name: Download sphinx artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: 'dists-sphinx'
-          path: dist-sphinx
       - name: Publish to PyPI
         if: ${{ success() && github.event.inputs.allow_deploy == 'true' }}
         env:
