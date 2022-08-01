@@ -9,7 +9,6 @@ https://github.com/executablebooks/MyST-Parser/blob/v0.15.2/myst_parser/docutils
 
 from docutils import nodes
 from markdown_it.token import Token
-from markdown_it.utils import AttrDict
 from myst_parser.main import MdParserConfig, default_parser
 from myst_parser.docutils_ import Parser as _Parser
 
@@ -24,7 +23,7 @@ class Parser(_Parser):
         config = MdParserConfig(renderer="docutils", enable_extensions=['linkify'])
         parser = default_parser(config)
         parser.options["document"] = document
-        env = AttrDict()
+        env = {}
 
         tokens = parser.parse(inputstring, env)
         if not tokens or tokens[0].type != "front_matter":
