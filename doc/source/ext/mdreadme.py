@@ -9,7 +9,9 @@ https://github.com/executablebooks/MyST-Parser/blob/v0.15.2/myst_parser/docutils
 
 from docutils import nodes
 from markdown_it.token import Token
-from myst_parser.main import MdParserConfig, default_parser
+from myst_parser.config.main import MdParserConfig
+from myst_parser.parsers.mdit import create_md_parser
+from myst_parser.mdit_to_docutils.sphinx_ import SphinxRenderer
 from myst_parser.docutils_ import Parser as _Parser
 
 
@@ -20,8 +22,8 @@ class Parser(_Parser):
         :param inputstring: The source string to parse
         :param document: The root docutils node to add AST elements to
         """
-        config = MdParserConfig(renderer="docutils", enable_extensions=['linkify'])
-        parser = default_parser(config)
+        config = MdParserConfig(enable_extensions=['linkify'])
+        parser = create_md_parser(config, SphinxRenderer)
         parser.options["document"] = document
         env = {}
 
