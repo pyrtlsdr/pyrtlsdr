@@ -1,7 +1,7 @@
 # pyrtlsdr
 A Python wrapper for librtlsdr (a driver for Realtek RTL2832U based SDR's)
 
-[![Build Status](https://travis-ci.org/roger-/pyrtlsdr.svg?branch=master)](https://travis-ci.org/roger-/pyrtlsdr)[![Coverage Status](https://coveralls.io/repos/github/roger-/pyrtlsdr/badge.svg?branch=master)](https://coveralls.io/github/roger-/pyrtlsdr?branch=master)
+[![PyPI](https://img.shields.io/pypi/v/pyrtlsdr)](https://pypi.org/project/pyrtlsdr) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/pyrtlsdr/pyrtlsdr/Python%20package) ![PyPI - Downloads](https://img.shields.io/pypi/dm/pyrtlsdr) [![Coveralls](https://img.shields.io/coveralls/github/pyrtlsdr/pyrtlsdr)](https://coveralls.io/github/pyrtlsdr/pyrtlsdr)
 
 # Description
 
