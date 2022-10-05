@@ -52,9 +52,12 @@ jobs:
         LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
     - name: Test with pytest (win)
       if: ${{ startsWith(matrix.os, 'windows') }}
+      env:
+        LIBRTLSDR_PATH: ${{ GITHUB_WORKSPACE }}\pyrtlsdr\rtlsdr
       run: |
-        PATH=${{ env.NEW_LD_LIBPATH }}:$PATH py.test --cov-config .coveragerc --cov=rtlsdr
-        PATH=${{ env.NEW_LD_LIBPATH }}:$PATH py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
+        setx /M PATH "%PATH%;${{ LIBRTLSDR_PATH }}"
+        py.test --cov-config .coveragerc --cov=rtlsdr
+        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
     - name: Set up Python3 for coveralls
       if: ${{ matrix.python-version == 2.7 }}
       uses: actions/setup-python@v2
