@@ -53,9 +53,9 @@ jobs:
     - name: Test with pytest (win)
       if: ${{ startsWith(matrix.os, 'windows') }}
       env:
-        LIBRTLSDR_PATH: ${{ GITHUB_WORKSPACE }}\pyrtlsdr\rtlsdr
+        LIBRTLSDR_PATH: ${{ github.workspace }}\pyrtlsdr\rtlsdr
       run: |
-        setx /M PATH "%PATH%;${{ LIBRTLSDR_PATH }}"
+        setx /M PATH "%PATH%;%LIBRTLSDR_PATH%"
         py.test --cov-config .coveragerc --cov=rtlsdr
         py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
     - name: Set up Python3 for coveralls
