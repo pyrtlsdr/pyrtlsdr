@@ -5,7 +5,7 @@ name: Python package
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, windows-tests ]
   pull_request:
     branches: [ master ]
   workflow_dispatch:
@@ -13,11 +13,14 @@ on:
 jobs:
   test:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest]
         python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
-
+        exclude:
+          - os: windows-latest
+            python-version: "2.7"
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -25,12 +28,17 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Build librtlsdr
+      if: ${{ matrix.os == ubuntu-latest }}
       run: |
         sudo apt-get install -y libusb-1.0-0-dev
         cd tools/ci
         ./install-librtlsdr.sh
         cd ../..
         echo "NEW_LD_LIBPATH=$HOME/.local:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+    - name: Install librtlsdr
+      if: ${{ matrix.os == windows-latest }}
+      run: |
+        python tools/ci/install-librtlsdr-win.py rtlsdr
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
@@ -38,9 +46,15 @@ jobs:
         pip install numpy
         pip install -e .
     - name: Test with pytest
+      if: ${{ matrix.os == ubuntu-latest }}
       run: |
         LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-config .coveragerc --cov=rtlsdr
         LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
+    - name: Test with pytest (win)
+      if: ${{ matrix.os == windows-latest }}
+      run: |
+        PATH=${{ env.NEW_LD_LIBPATH }}:$PATH py.test --cov-config .coveragerc --cov=rtlsdr
+        PATH=${{ env.NEW_LD_LIBPATH }}:$PATH py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
     - name: Set up Python3 for coveralls
       if: ${{ matrix.python-version == 2.7 }}
       uses: actions/setup-python@v2
@@ -52,7 +66,7 @@ jobs:
         python -m coveralls --service=github
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        COVERALLS_FLAG_NAME: run-${{ matrix.python-version }}
+        COVERALLS_FLAG_NAME: run_${{ matrix.os }}_${{ matrix.python-version }}
         COVERALLS_PARALLEL: true
 
   coveralls:
