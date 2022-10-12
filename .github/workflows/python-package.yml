@@ -39,6 +39,7 @@ jobs:
       if: ${{ startsWith(matrix.os, 'windows') }}
       run: |
         python tools/ci/install-librtlsdr-win.py rtlsdr
+        ls rtlsdr
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
@@ -56,6 +57,8 @@ jobs:
         LIBRTLSDR_PATH: ${{ github.workspace }}\rtlsdr
       run: |
         setx /M PATH "%PATH%;%LIBRTLSDR_PATH%"
+        echo "libpath: %LIBRTLSDR_PATH%"
+        echo "PATH: %PATH%"
         py.test --cov-config .coveragerc --cov=rtlsdr
         py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
     - name: Set up Python3 for coveralls
