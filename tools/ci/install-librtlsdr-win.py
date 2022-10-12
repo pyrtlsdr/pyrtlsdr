@@ -36,7 +36,7 @@ def main():
     p.add_argument('-t', '--tag', dest='tag', default=LIBRTLSDR_TAG)
     p.add_argument('out_dir', default=str(LIB_DEST))
     args = p.parse_args()
-    args.out_dir = Path(args.out_dir)
+    args.out_dir = Path(args.out_dir).resolve()
 
     get_archive(args.out_dir, args.tag)
 
