@@ -56,8 +56,8 @@ jobs:
       env:
         LIBRTLSDR_PATH: ${{ github.workspace }}\rtlsdr
       run: |
-        $env:LIBRTLSDR_PATH = ${{ env.LIBRTLSDR_PATH }}
-        $env:Path = $env:LIBRTLSDR_PATH + ';' + $env:Path
+        $env:LIBRTLSDR_PATH = '${{ env.LIBRTLSDR_PATH }}'
+        $env:Path = '${{ $env.LIBRTLSDR_PATH }};' + $env:Path
         $env:LIBRTLSDR_PATH
         $env:Path
         py.test --cov-config .coveragerc --cov=rtlsdr
