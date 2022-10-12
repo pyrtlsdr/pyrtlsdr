@@ -56,9 +56,10 @@ jobs:
       env:
         LIBRTLSDR_PATH: ${{ github.workspace }}\rtlsdr
       run: |
-        setx /M PATH "%PATH%;%LIBRTLSDR_PATH%"
-        echo "libpath: %LIBRTLSDR_PATH%"
-        echo "PATH: %PATH%"
+        $env:LIBRTLSDR_PATH = ${{ env.LIBRTLSDR_PATH }}
+        $env:Path = $env:LIBRTLSDR_PATH + ';' + $env:Path
+        $env:LIBRTLSDR_PATH
+        $env:Path
         py.test --cov-config .coveragerc --cov=rtlsdr
         py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
     - name: Set up Python3 for coveralls
