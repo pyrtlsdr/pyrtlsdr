@@ -177,8 +177,8 @@ class BaseRtlSdr(object):
         if result < 0:
             raise LibUSBError(result, 'Could not set test mode')
 
-        # ECM: must disable dithering before frequency is set
-        # disable PLL dithering if necessary
+        # disable PLL dithering if necessary. If it's going to happen, it must
+        # happen before frequency is set.
         result = librtlsdr.rtlsdr_set_dithering(self.dev_p, int(dithering_enabled))
         if result < 0:
             raise IOError('Error code %d when setting PLL dithering mode'\
@@ -446,16 +446,15 @@ class BaseRtlSdr(object):
 
         return result
 
-    # ECM: Pipe up keenerd's experimental dithering control for coherent operation
     def set_dithering(self, enabled):
-        """Disable PLL dithering.
+        """Enable/disable PLL dithering.
 
         Arguments:
             enabled (bool):
         """
         result = librtlsdr.rtlsdr_set_dithering(self.dev_p, int(enabled))
         if result < 0:
-            raise IOError('Error code %d when setting dither mode'\
+            raise IOError('Error code %d when setting PLL dither mode'\
                           % (result))
 
         return result
