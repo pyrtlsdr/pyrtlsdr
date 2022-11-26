@@ -1,7 +1,7 @@
 # pyrtlsdr
 A Python wrapper for librtlsdr (a driver for Realtek RTL2832U based SDR's)
 
-[![Build Status](https://travis-ci.org/roger-/pyrtlsdr.svg?branch=master)](https://travis-ci.org/roger-/pyrtlsdr)[![Coverage Status](https://coveralls.io/repos/github/roger-/pyrtlsdr/badge.svg?branch=master)](https://coveralls.io/github/roger-/pyrtlsdr?branch=master)
+[![PyPI](https://img.shields.io/pypi/v/pyrtlsdr)](https://pypi.org/project/pyrtlsdr) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/pyrtlsdr/pyrtlsdr/Python%20package) ![PyPI - Downloads](https://img.shields.io/pypi/dm/pyrtlsdr) [![Coveralls](https://img.shields.io/coveralls/github/pyrtlsdr/pyrtlsdr)](https://coveralls.io/github/pyrtlsdr/pyrtlsdr)
 
 # Description
 
@@ -17,7 +17,7 @@ and also provides a more Pythonic API.
 * Releases:
   * https://pypi.org/project/pyrtlsdr/
 * Source code and project home:
-  * https://github.com/roger-/pyrtlsdr
+  * https://github.com/pyrtlsdr/pyrtlsdr
 * Releases for `librtlsdr`:
   * https://github.com/librtlsdr/librtlsdr/releases
 
@@ -131,7 +131,7 @@ loop.run_until_complete(streaming())
 ```
 
 ## rtlsdrtcp
-The `RtlSdrTcpServer` class is meant to be connected physically to an SDR dongle and communicate with an instance of `RtlSdrTcpClient`. The client is intended to function as closely as possible to the base RtlSdr class (as if it had a physical dongle attatched to it).
+The `RtlSdrTcpServer` class is meant to be connected physically to an SDR dongle and communicate with an instance of `RtlSdrTcpClient`. The client is intended to function as closely as possible to the base RtlSdr class (as if it had a physical dongle attached to it).
 
 Both of these classes have the same arguments as the base `RtlSdr` class with the addition of `hostname` and `port`:
 ```python
@@ -185,6 +185,6 @@ All of the code contained here is licensed by the GNU General Public License v3.
 # Credit
 
 Credit to dbasden for his earlier wrapper [python-librtlsdr](https://github.com/dbasden/python-librtlsdr) and all the
-contributers on GitHub.
+contributors on GitHub.
 
-Copyright (C) 2013 by Roger <https://github.com/roger->
+Copyright (C) 2013 by Roger <https://github.com/pyrtlsdr/pyrtlsdr>

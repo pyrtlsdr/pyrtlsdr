@@ -22,7 +22,7 @@ import shutil
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'pyrtlsdr'
-VERSION = '0.2.92'
+VERSION = '0.2.93'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 IS_RTDBUILD = os.environ.get('READTHEDOCS', '').lower() == 'true'
@@ -48,7 +48,7 @@ setup(
     name=PACKAGE_NAME,
     version=VERSION,
     author='roger',
-    url='https://github.com/roger-/pyrtlsdr',
+    url='https://github.com/pyrtlsdr/pyrtlsdr',
     description='A Python wrapper for librtlsdr (a driver for Realtek RTL2832U based SDR\'s)',
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Console',

@@ -14,6 +14,7 @@
 
 import sys
 import os
+sys.path.append(os.path.abspath('./ext'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -24,11 +25,10 @@ import pkg_resources
 __version__ = pkg_resources.require('pyrtlsdr')[0].version
 
 
-import sphinx_rtd_theme
-
 html_theme = "sphinx_rtd_theme"
-
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme_options = {
+    'collapse_navigation':False,
+}
 
 # -- General configuration ------------------------------------------------
 
@@ -45,7 +45,6 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-    'm2r',
 ]
 
 autodoc_member_order = 'groupwise'
@@ -55,7 +54,6 @@ templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = ['.rst', '.md']
 # source_suffix = '.rst'
 
 # The encoding of source files.
@@ -66,8 +64,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pyrtlsdr'
-copyright = u'2016, Roger <https://github.com/roger-/pyrtlsdr>'
-author = u'Roger <https://github.com/roger-/pyrtlsdr>'
+copyright = u'2016, Roger <https://github.com/pyrlsdr/pyrtlsdr>'
+author = u'Roger <https://github.com/pyrlsdr/pyrtlsdr>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -83,7 +81,7 @@ release = __version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -245,7 +243,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'pyrtlsdr.tex', u'pyrtlsdr Documentation',
-     u'Roger \\textless{}https://github.com/roger-/pyrtlsdr\\textgreater{}', 'manual'),
+     u'Roger \\textless{}https://github.com/pyrtlsdr/pyrtlsdr\\textgreater{}', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

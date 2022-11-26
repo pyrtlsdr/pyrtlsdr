@@ -48,9 +48,9 @@ class AsyncCallbackIter:
 
     Arguments:
         func_start: A callable which should take a single callback that will be
-            passed data. Will be run in a seperate thread in case it blocks.
+            passed data. Will be run in a separate thread in case it blocks.
         func_stop (optional): A callable to stop ``func_start`` from calling the
-            callback. Will be run in a seperate thread in case it blocks.
+            callback. Will be run in a separate thread in case it blocks.
         queue_size (:obj:`int`, optional): The maximum amount of data
             that will be buffered.
         loop (optional): The ``asyncio.event_loop`` to use. If not supplied,

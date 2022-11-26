@@ -9,7 +9,7 @@ Welcome to pyrtlsdr's documentation!
 .. toctree::
    :caption: Contents
    :name: mastertoc
-   :maxdepth: 3
+   :maxdepth: 2
 
    Overview
    Reference

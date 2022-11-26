@@ -1,0 +1,104 @@
+
+name: Test Distribution
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      allow_deploy:
+        description: 'Deploy with twine'
+        required: true
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+      - name: Build dists
+        run: python setup.py sdist bdist_wheel
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'dists'
+          path: 'dist/*'
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
+        dist-type: [sdist, wheel]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Build librtlsdr
+      run: |
+        sudo apt-get install -y libusb-1.0-0-dev
+        cd tools/ci
+        ./install-librtlsdr.sh
+        cd ../..
+        echo "NEW_LD_LIBPATH=$HOME/.local:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install -U pytest pytest-xdist pytest-cov
+        pip install numpy
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: 'dists'
+        path: dist
+    - name: Delete source directories
+      run: |
+        rm -Rf rtlsdr
+    - name: Install wheel
+      if: ${{ matrix.dist-type == 'wheel' }}
+      run: pip install dist/*.whl
+    - name: Install sdist
+      if: ${{ matrix.dist-type == 'sdist' }}
+      run: pip install dist/*.tar.gz
+    - name: Test distribution
+      run: |
+        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-config .coveragerc --cov=rtlsdr
+        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --boxed --no-overrides --pyargs tests/no_override*
+
+  deploy:
+    needs: test
+    if: ${{ success() && (github.event.inputs.allow_deploy == 'true') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel twine
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: 'dists'
+          path: dist
+      - name: Publish to PyPI
+        if: ${{ success() && github.event.inputs.allow_deploy == 'true' }}
+        env:
+          TWINE_REPOSITORY: ${{ secrets.TWINE_REPOSITORY }}
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: twine upload dist/*
