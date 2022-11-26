@@ -133,7 +133,6 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 f = librtlsdr.rtlsdr_set_direct_sampling
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 
-# ECM: Pipe up dithering disable for coherent applications
 # RTLSDR_API int rtlsdr_set_dithering(rtlsdr_dev *dev, int on)
 f = librtlsdr.rtlsdr_set_dithering
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
