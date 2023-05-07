@@ -459,7 +459,36 @@ class BaseRtlSdr(object):
 
         return result
 
+    def set_gpio_output(self, gpio):
+        """Set GPIO pin to output mode.
+        
+        Arguments:
+            gpio (int): RTL-SDR GPIO pin number"""
+        result = librtlsdr.rtlsdr_set_gpio_output(self.dev_p, int(gpio))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO to output mode'\
+                          % (result))
+
+        return result
+
+    def set_gpio_input(self, gpio):
+        """Set GPIO pin to input mode.
+        
+        Arguments:
+            gpio (int): RTL-SDR GPIO pin number"""
+        result = librtlsdr.rtlsdr_set_gpio_input(self.dev_p, int(gpio))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO to input mode'\
+                          % (result))
+
+        return result
+
     def set_gpio_bit(self, gpio, val):
+        """Set GPIO pin value.
+        
+        Arguments:
+            gpio (int): RTL-SDR GPIO pin number
+            val (int): state to set GPIO pin to, 0 or 1"""
         result = librtlsdr.rtlsdr_set_gpio_bit(self.dev_p, int(gpio), int(val))
         if result < 0:
             raise IOError('Error code %d when setting GPIO bit'\
@@ -468,10 +497,58 @@ class BaseRtlSdr(object):
         return result
 
     def get_gpio_bit(self, gpio):
+        """Get GPIO pin value.
+        
+        Arguments:
+            gpio (int): RTL-SDR GPIO pin number
+            
+        Returns:
+            val (int): Setting of GPIO pin"""
         val = c_int32(-1)
         result = librtlsdr.rtlsdr_get_gpio_bit(self.dev_p, int(gpio), byref(val))
         if result < 0:
             raise IOError('Error code %d when getting GPIO bit'\
+                          % (result))
+
+        return int(val.value)
+
+    def set_gpio_byte(self, val):
+        """Set multiple GPIO pins at once using a byte.
+        
+        Arguments:
+            val (int): byte"""
+        result = librtlsdr.rtlsdr_set_gpio_byte(self.dev_p, int(val))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO byte'\
+                          % (result))
+
+        return result
+
+    def get_gpio_byte(self):
+        """Get multiple GPIO pin values at once as a byte.
+        
+        Returns:
+            val (int): byte containing settings of multiple GPIO pins"""
+        val = c_int32(-1)
+        result = librtlsdr.rtlsdr_get_gpio_byte(self.dev_p, byref(val))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO byte'\
+                          % (result))
+
+        return int(val.value)
+
+    def set_gpio_status(self):
+        """Get GPD register status as a byte.
+
+        Note that the librtlsdr API calls rtlsdr_read_reg, and this function
+        is used everywhere like a getter.
+        
+        Returns:
+            val (int): byte containing status of all GPIO pins"""
+        val = c_int32(-1)
+        result = librtlsdr.rtlsdr_set_gpio_status(self.dev_p, byref(val))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO byte'\
                           % (result))
 
         return int(val.value)
