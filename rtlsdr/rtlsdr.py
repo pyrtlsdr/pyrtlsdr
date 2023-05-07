@@ -459,6 +459,23 @@ class BaseRtlSdr(object):
 
         return result
 
+    def set_gpio_bit(self, gpio, val):
+        result = librtlsdr.rtlsdr_set_gpio_bit(self.dev_p, int(gpio), int(val))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO bit'\
+                          % (result))
+
+        return result
+
+    def get_gpio_bit(self, gpio):
+        val = c_int32(-1)
+        result = librtlsdr.rtlsdr_get_gpio_bit(self.dev_p, int(gpio), byref(val))
+        if result < 0:
+            raise IOError('Error code %d when getting GPIO bit'\
+                          % (result))
+
+        return int(val.value)
+
     def get_tuner_type(self):
         """Get the tuner type.
 

@@ -137,6 +137,14 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 f = librtlsdr.rtlsdr_set_dithering
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 
+# RTLSDR_API librtlsdr.rtlsdr_set_gpio_bit(rtlsdr_dev_t *dev, uint8_t gpio, int val)
+f = librtlsdr.rtlsdr_set_gpio_bit
+f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint8, c_int]
+
+# RTLSDR_API librtlsdr.rtlsdr_get_gpio_bit(rtlsdr_dev_t *dev, uint8_t gpio, int *val)
+f = librtlsdr.rtlsdr_get_gpio_bit
+f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint8, POINTER(c_int)]
+
 # int rtlsdr_set_sample_rate(rtlsdr_dev_t *dev, uint32_t rate);
 f = librtlsdr.rtlsdr_set_sample_rate
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint]
