@@ -1,5 +1,10 @@
 import pytest
 
+@pytest.fixture(autouse=True)
+def librtlsdr_override(request):
+    """Override the `librtlsdr_override` fixture in conftest.py
+    """
+    return
 
 @pytest.fixture(params=[True, False])
 def librtlsdr_missing(request, monkeypatch):
