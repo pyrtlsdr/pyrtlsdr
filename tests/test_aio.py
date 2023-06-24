@@ -1,11 +1,15 @@
 import pytest
 
+@pytest.fixture(params=[64*1024, 96*1024, 128*1024])
+def num_samples(request):
+    return request.param
+
 @pytest.fixture(params=['samples', 'bytes'])
 def read_format(request):
     return request.param
 
 @pytest.mark.asyncio
-async def test(rtlsdraio, read_format):
+async def test(rtlsdraio, num_samples, read_format):
     import math
     from utils import generic_test
 
@@ -24,8 +28,9 @@ async def test(rtlsdraio, read_format):
     print('Streaming %s...' % (read_format))
 
     i = 0
-    async_iter = sdr.stream(format=read_format)
+    async_iter = sdr.stream(num_samples_or_bytes=num_samples, format=read_format)
     async for samples in async_iter:
+        assert len(samples) == num_samples
         if read_format == 'bytes':
             samples = sdr.packed_bytes_to_iq(samples)
         power = sum(abs(s)**2 for s in samples) / len(samples)
