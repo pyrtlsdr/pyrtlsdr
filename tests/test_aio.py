@@ -1,25 +1,13 @@
 import pytest
 
+@pytest.fixture(params=['samples', 'bytes'])
+def read_format(request):
+    return request.param
+
 @pytest.mark.asyncio
-async def test(rtlsdraio):
+async def test(rtlsdraio, read_format):
     import math
     from utils import generic_test
-
-    async def process_samples(sdr, fmt):
-        async def packed_bytes_to_iq(samples):
-            return sdr.packed_bytes_to_iq(samples)
-
-        i = 0
-        async for samples in sdr.stream(format=fmt):
-            if fmt == 'bytes':
-                samples = await packed_bytes_to_iq(samples)
-            power = sum(abs(s)**2 for s in samples) / len(samples)
-            print('Relative power:', 10*math.log10(power), 'dB')
-
-            i += 1
-
-            if i > 20:
-                break
 
     sdr = rtlsdraio.RtlSdrAio()
     generic_test(sdr)
@@ -33,17 +21,28 @@ async def test(rtlsdraio):
     print('  gain: %d dB' % sdr.gain)
 
 
-    print('Streaming samples...')
-    await process_samples(sdr, 'samples')
+    print('Streaming %s...' % (read_format))
+
+    i = 0
+    async_iter = sdr.stream(format=read_format)
+    async for samples in async_iter:
+        if read_format == 'bytes':
+            samples = sdr.packed_bytes_to_iq(samples)
+        power = sum(abs(s)**2 for s in samples) / len(samples)
+        print('Relative power:', 10*math.log10(power), 'dB')
+
+        i += 1
+
+        if i > 20:
+            break
     await sdr.stop()
 
-    print('Streaming bytes...')
-    await process_samples(sdr, 'bytes')
-    await sdr.stop()
+    assert not async_iter.running
+    assert async_iter.executor_task.done()
 
     # make sure our format parameter checks work
     with pytest.raises(ValueError):
-        await process_samples(sdr, 'foo')
+        _ = sdr.stream(format='foo')
 
     print('Done')
 
