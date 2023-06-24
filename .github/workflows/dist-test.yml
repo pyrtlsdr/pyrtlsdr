@@ -43,9 +43,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: MatteoH2O1999/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+        cache-build: true
     - name: Build librtlsdr
       run: |
         sudo apt-get install -y libusb-1.0-0-dev
