@@ -25,6 +25,7 @@ jobs:
       uses: MatteoH2O1999/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+        cache-build: true
     - name: Build librtlsdr
       run: |
         sudo apt-get install -y libusb-1.0-0-dev
