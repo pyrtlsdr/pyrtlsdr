@@ -38,6 +38,9 @@ jobs:
         pip install -U pytest pytest-forked pytest-cov
         pip install numpy
         pip install -e .
+    - name: Install py3 dependencies
+      run: pip install pytest-asyncio
+      if: ${{ matrix.python-version != 2.7 }}
     - name: Test with pytest
       run: |
         LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-config .coveragerc --cov=rtlsdr
