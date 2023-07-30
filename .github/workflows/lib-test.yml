@@ -2,10 +2,10 @@ name: Test pyrtlsdrlib integration
 
 on:
   push:
-    branches: [ rtlsdrlib-pypi-test ]
-#   pull_request:
-#     branches: [ master ]
-#   workflow_dispatch:
+    branches: [ master, rtlsdrlib-integration ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   test:
