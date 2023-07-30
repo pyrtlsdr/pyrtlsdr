@@ -32,6 +32,7 @@ jobs:
       # TODO!! Remove the `-i ...` after pyrtlsdrlib is on PyPI
       run: pip install -i https://test.pypi.org/simple/ -e '.[lib]'
     - name: Test with pytest
+      shell: bash
       run: |
         py.test --cov-config .coveragerc --cov=rtlsdr
-        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --forked --no-overrides --pyargs 'tests/no_override*'
+        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --forked --no-overrides --pyargs tests/no_override*
