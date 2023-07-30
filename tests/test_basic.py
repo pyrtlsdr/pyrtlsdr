@@ -9,7 +9,7 @@ def test_pkg_version():
     setup_version = subprocess.check_output(['python', 'setup.py', '-V'])
     if isinstance(setup_version, bytes):
         setup_version = setup_version.decode('UTF-8')
-    setup_version = setup_version.strip('\n')
+    setup_version = setup_version.splitlines()[0]
 
     assert rtlsdr.__version__ == setup_version
 
