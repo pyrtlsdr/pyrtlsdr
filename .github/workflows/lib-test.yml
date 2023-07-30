@@ -34,4 +34,4 @@ jobs:
     - name: Test with pytest
       run: |
         py.test --cov-config .coveragerc --cov=rtlsdr
-        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --forked --no-overrides --pyargs tests/no_override*
+        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --forked --no-overrides --pyargs 'tests/no_override*'
