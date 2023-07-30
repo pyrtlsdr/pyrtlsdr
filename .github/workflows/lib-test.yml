@@ -29,8 +29,7 @@ jobs:
         pip install -U pytest pytest-cov
         pip install numpy
     - name: Install pyrtlsdr with lib
-      # TODO!! Remove the `-i ...` after pyrtlsdrlib is on PyPI
-      run: pip install -i https://test.pypi.org/simple/ -e '.[lib]'
+      run: pip install -e '.[lib]'
     - name: Test with pytest
       shell: bash
       run: |
