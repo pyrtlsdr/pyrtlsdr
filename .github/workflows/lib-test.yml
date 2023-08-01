@@ -2,7 +2,7 @@ name: Test pyrtlsdrlib integration
 
 on:
   push:
-    branches: [ master, rtlsdrlib-integration ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
   workflow_dispatch:
