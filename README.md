@@ -193,7 +193,11 @@ function you need to add support for, and please send a pull request if you'd li
 * Some operating systems (Linux, OS X) seem to result in libusb buffer issues when performing small reads. Try reading 1024
 (or higher powers of two) samples at a time if you have problems.
 
-* If you're having librtlsdr import errors:
+## librtlsdr import errors
+
+First try upgrading `pyrtlsdr` and using the `pyrtlsdrlib` helper package described above.
+
+* In cases where that isn't feasible:
   * **Windows**: Make sure all the librtlsdr DLL files (librtlsdr.dll, libusb-1.0.dll) are in your system path, or the same folder
 as this README file. Also make sure you have all of *their* dependencies (e.g. libgcc_s_dw2-1.dll or possibly the Visual Studio runtime files). If rtl_sdr.exe
 works, then you should be okay. Also note that you can't mix the 64 bit version of Python with 32 bit builds of librtlsdr, and vice versa.
