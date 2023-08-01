@@ -75,18 +75,22 @@ jobs:
         name: 'dists'
         path: dist
     - name: Delete source directories
+      shell: bash
       run: |
         rm -Rf rtlsdr
     - name: Install wheel
+      shell: bash
       if: ${{ matrix.dist-type == 'wheel' }}
       run: pip install dist/*.whl
     - name: Install sdist
+      shell: bash
       if: ${{ matrix.dist-type == 'sdist' }}
       run: pip install dist/*.tar.gz
     - name: Install pyrtlsdrlib
       if: ${{ matrix.python-version != 2.7 }}
       run: pip install pyrtlsdrlib
     - name: Test distribution
+      shell: bash
       run: |
         py.test --cov-config .coveragerc --cov=rtlsdr
         py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_client_mode.py
