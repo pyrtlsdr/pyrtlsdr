@@ -21,10 +21,31 @@ and also provides a more Pythonic API.
 * Releases for `librtlsdr`:
   * https://github.com/librtlsdr/librtlsdr/releases
 
-# Usage
+# Installation
 
 pyrtlsdr can be installed by downloading the source files and running `python setup.py install`, or using [pip](https://pip.pypa.io/en/stable/) and
 `pip install pyrtlsdr`.
+
+## Full installation (recommended)
+
+**New in version 0.3.0**
+
+On most platforms, the `librtlsdr` binaries may be also installed with the [pyrtlsdrlib](https://github.com/pyrtlsdr/pyrtlsdrlib) package.  This new feature should *drastically* simplify the installation process (especially for Windows).
+
+This can be done by installing `pyrtlsdrlib` separately (via pip) or for simplicity, both can be installed at once via:
+
+```bash
+pip install pyrtlsdr[lib]
+```
+
+If errors are encountered with the `pyrtlsdrlib` integration (during installation or package import),
+you may want to ensure you have the latest versions of both:
+
+```bash
+pip install --upgrade pyrtlsdr[lib]
+```
+
+# Usage
 
 All functions in librtlsdr are accessible via librtlsdr.py and a Pythonic interface is available in rtlsdr.py (recommended).
 Some documentation can be found in docstrings in the latter file.
