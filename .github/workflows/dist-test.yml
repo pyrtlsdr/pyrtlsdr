@@ -39,7 +39,8 @@ jobs:
         python-version: ["2.7", "3.8", "3.9", "3.10", "3.11"]
         dist-type: [sdist, wheel]
       fail-fast: false
-
+    env:
+      LD_LIBRARY_PATH: ''
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -48,6 +49,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         cache-build: true
     - name: Build librtlsdr
+      if: ${{ matrix.python-version == 2.7 }}
       run: |
         sudo apt-get install -y libusb-1.0-0-dev
         cd tools/ci
@@ -73,10 +75,14 @@ jobs:
     - name: Install sdist
       if: ${{ matrix.dist-type == 'sdist' }}
       run: pip install dist/*.tar.gz
+    - name: Install pyrtlsdrlib
+      if: ${{ matrix.python-version != 2.7 }}
+      run: pip install pyrtlsdrlib
     - name: Test distribution
       run: |
-        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-config .coveragerc --cov=rtlsdr
-        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --forked --no-overrides --pyargs tests/no_override*
+        py.test --cov-config .coveragerc --cov=rtlsdr
+        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_client_mode.py
+        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_dll_loader.py
 
   deploy:
     needs: test
