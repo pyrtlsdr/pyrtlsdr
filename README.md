@@ -21,10 +21,31 @@ and also provides a more Pythonic API.
 * Releases for `librtlsdr`:
   * https://github.com/librtlsdr/librtlsdr/releases
 
-# Usage
+# Installation
 
 pyrtlsdr can be installed by downloading the source files and running `python setup.py install`, or using [pip](https://pip.pypa.io/en/stable/) and
 `pip install pyrtlsdr`.
+
+## Full installation (recommended)
+
+**New in version 0.3.0**
+
+On most platforms, the `librtlsdr` binaries may be also installed with the [pyrtlsdrlib](https://github.com/pyrtlsdr/pyrtlsdrlib) package.  This new feature should *drastically* simplify the installation process (especially for Windows).
+
+This can be done by installing `pyrtlsdrlib` separately (via pip) or for simplicity, both can be installed at once via:
+
+```bash
+pip install pyrtlsdr[lib]
+```
+
+If errors are encountered with the `pyrtlsdrlib` integration (during installation or package import),
+you may want to ensure you have the latest versions of both:
+
+```bash
+pip install --upgrade pyrtlsdr[lib]
+```
+
+# Usage
 
 All functions in librtlsdr are accessible via librtlsdr.py and a Pythonic interface is available in rtlsdr.py (recommended).
 Some documentation can be found in docstrings in the latter file.
@@ -172,7 +193,11 @@ function you need to add support for, and please send a pull request if you'd li
 * Some operating systems (Linux, OS X) seem to result in libusb buffer issues when performing small reads. Try reading 1024
 (or higher powers of two) samples at a time if you have problems.
 
-* If you're having librtlsdr import errors:
+## librtlsdr import errors
+
+First try upgrading `pyrtlsdr` and using the `pyrtlsdrlib` helper package described above.
+
+* In cases where that isn't feasible:
   * **Windows**: Make sure all the librtlsdr DLL files (librtlsdr.dll, libusb-1.0.dll) are in your system path, or the same folder
 as this README file. Also make sure you have all of *their* dependencies (e.g. libgcc_s_dw2-1.dll or possibly the Visual Studio runtime files). If rtl_sdr.exe
 works, then you should be okay. Also note that you can't mix the 64 bit version of Python with 32 bit builds of librtlsdr, and vice versa.
