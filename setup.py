@@ -22,7 +22,7 @@ import shutil
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'pyrtlsdr'
-VERSION = '0.2.93'
+VERSION = '0.3.0'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 IS_RTDBUILD = os.environ.get('READTHEDOCS', '').lower() == 'true'
