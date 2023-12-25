@@ -1,2 +1,0 @@
--r doc/requirements.txt
--e '.[lib]'
