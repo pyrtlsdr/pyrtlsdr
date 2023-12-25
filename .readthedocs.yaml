@@ -8,9 +8,7 @@ build:
 
 python:
   install:
-    - requirements: doc/requirements.txt
-    - method: pip
-      path: .
+    - requirements: requirements.rtd.txt
 
 sphinx:
   configuration: doc/source/conf.py
