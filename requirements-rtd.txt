@@ -1,2 +1,2 @@
 -r doc/requirements.txt
--e .
+-e '.[lib]'
