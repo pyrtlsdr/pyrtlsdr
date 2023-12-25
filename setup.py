@@ -22,7 +22,7 @@ import shutil
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'pyrtlsdr'
-VERSION = '0.2.93'
+VERSION = '0.3.0'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 IS_RTDBUILD = os.environ.get('READTHEDOCS', '').lower() == 'true'
@@ -59,10 +59,10 @@ setup(
                  'Programming Language :: Python :: 2',
                  'Programming Language :: Python :: 2.7',
                  'Programming Language :: Python :: 3',
-                 'Programming Language :: Python :: 3.4',
-                 'Programming Language :: Python :: 3.5',
-                 'Programming Language :: Python :: 3.6',
-                 'Programming Language :: Python :: 3.7',
+                 'Programming Language :: Python :: 3.8',
+                 'Programming Language :: Python :: 3.9',
+                 'Programming Language :: Python :: 3.10',
+                 'Programming Language :: Python :: 3.11',
                  'Topic :: Utilities'],
     license='GPLv3',
     keywords='radio librtlsdr rtlsdr sdr',
