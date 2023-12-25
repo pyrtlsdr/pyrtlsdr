@@ -1,15 +1,10 @@
 #! /usr/bin/env python
-import sys
 import threading
 import struct
 import traceback
 import argparse
 
-PY2 = sys.version_info[0] == 2
-if PY2:
-    from SocketServer import TCPServer, BaseRequestHandler
-else:
-    from socketserver import TCPServer, BaseRequestHandler
+from socketserver import TCPServer, BaseRequestHandler
 
 from rtlsdr import RtlSdr
 

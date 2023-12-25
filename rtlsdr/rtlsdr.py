@@ -24,13 +24,7 @@ from .librtlsdr import (
     tuner_bandwidth_supported,
     tuner_set_bandwidth_supported,
 )
-try:                from itertools import izip
-except ImportError: izip = zip
-import sys
 
-PY3 = sys.version_info.major >= 3
-if PY3:
-    basestring = str
 
 # see if NumPy is available
 has_numpy = True
@@ -100,7 +94,7 @@ class BaseRtlSdr(object):
         .. _rtl\_eeprom: http://manpages.ubuntu.com/manpages/trusty/man1/rtl_eeprom.1.html
 
         """
-        if PY3 and isinstance(serial, str):
+        if isinstance(serial, str):
             serial = bytes(serial, 'UTF-8')
 
         result = librtlsdr.rtlsdr_get_index_by_serial(serial)
@@ -306,7 +300,7 @@ class BaseRtlSdr(object):
         return getattr(self, '_bandwidth', 0)
 
     def set_gain(self, gain):
-        if isinstance(gain, basestring) and gain == 'auto':
+        if isinstance(gain, str) and gain == 'auto':
             # disable manual gain -> enable AGC
             self.set_manual_gain_enabled(False)
 
@@ -419,7 +413,7 @@ class BaseRtlSdr(object):
         """
 
         # convert parameter
-        if isinstance(direct, basestring):
+        if isinstance(direct, str):
             if direct.lower() == 'i':
                 direct = 1
             elif direct.lower() == 'q':
@@ -527,7 +521,7 @@ class BaseRtlSdr(object):
             iq -= (1 + 1j)
         else:
             # use normal list
-            iq = [complex(i/(255/2) - 1, q/(255/2) - 1) for i, q in izip(bytes[::2], bytes[1::2])]
+            iq = [complex(i/(255/2) - 1, q/(255/2) - 1) for i, q in zip(bytes[::2], bytes[1::2])]
 
         return iq
 
