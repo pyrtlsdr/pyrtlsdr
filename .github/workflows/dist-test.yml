@@ -39,16 +39,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest ]
-        python-version: ["2.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
         dist-type: [sdist, wheel]
-        exclude:
-          - os: windows-latest
-            python-version: "2.7"
-          - os: macos-latest
-            python-version: "2.7"
       fail-fast: false
-    env:
-      LD_LIBRARY_PATH: ''
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -56,22 +49,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         cache-build: true
-    - name: Build librtlsdr
-      if: ${{ matrix.python-version == 2.7 }}
-      run: |
-        sudo apt-get install -y libusb-1.0-0-dev
-        cd tools/ci
-        ./install-librtlsdr.sh
-        cd ../..
-        echo "NEW_LD_LIBPATH=$HOME/.local:$LD_LIBRARY_PATH" >> $GITHUB_ENV
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
-        pip install -U pytest pytest-forked pytest-cov
+        pip install -U pytest pytest-forked pytest-cov pytest-asyncio
         pip install numpy
-    - name: Install py3 dependencies
-      run: pip install pytest-asyncio
-      if: ${{ matrix.python-version != 2.7 }}
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:
@@ -90,7 +72,6 @@ jobs:
       if: ${{ matrix.dist-type == 'sdist' }}
       run: pip install dist/*.tar.gz
     - name: Install pyrtlsdrlib
-      if: ${{ matrix.python-version != 2.7 }}
       run: pip install pyrtlsdrlib
     - name: Test distribution
       shell: bash
@@ -98,8 +79,6 @@ jobs:
         py.test --cov-config .coveragerc --cov=rtlsdr
         py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_client_mode.py
         py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_dll_loader.py
-      env:
-        LD_LIBRARY_PATH: ${{ env.NEW_LD_LIBPATH }}
   deploy:
     needs: test
     if: ${{ success() && (github.event.inputs.allow_deploy == 'true') }}
