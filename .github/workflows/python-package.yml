@@ -48,13 +48,15 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install -U pytest pytest-cov
         pip install numpy
+    - name: Install py3 dependencies
+      run: pip install pytest-asyncio
+      if: ${{ matrix.python-version != 2.7 }}
     - name: Install pyrtlsdr with lib
       if: ${{ matrix.python-version != 2.7 }}
       run: pip install -e '.[lib]'
     - name: Install pyrtlsdr
       run: pip install -e .
       if: ${{ matrix.python-version == 2.7 }}
-
     - name: Test with pytest
       shell: bash
       run: |
