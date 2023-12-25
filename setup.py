@@ -15,40 +15,6 @@
 #    along with pyrlsdr.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import os
-import sys
-import re
-import shutil
-from setuptools import setup, find_packages
+from setuptools import setup
 
-PACKAGE_NAME = 'pyrtlsdr'
-VERSION = '0.3.0'
-
-
-#HERE = os.path.abspath(os.path.dirname(__file__))
-#README = open(os.path.join(HERE, 'README.md')).read()
-
-setup(
-    name=PACKAGE_NAME,
-    version=VERSION,
-    author='roger',
-    url='https://github.com/pyrtlsdr/pyrtlsdr',
-    description='A Python wrapper for librtlsdr (a driver for Realtek RTL2832U based SDR\'s)',
-    classifiers=['Development Status :: 4 - Beta',
-                 'Environment :: Console',
-                 'Intended Audience :: Developers',
-                 'License :: OSI Approved :: GNU General Public License (GPL)',
-                 'Natural Language :: English',
-                 'Operating System :: OS Independent',
-                 'Programming Language :: Python :: 2',
-                 'Programming Language :: Python :: 2.7',
-                 'Programming Language :: Python :: 3',
-                 'Programming Language :: Python :: 3.8',
-                 'Programming Language :: Python :: 3.9',
-                 'Programming Language :: Python :: 3.10',
-                 'Programming Language :: Python :: 3.11',
-                 'Topic :: Utilities'],
-    license='GPLv3',
-    keywords='radio librtlsdr rtlsdr sdr',
-    platforms=['any'],
-    packages=find_packages(exclude=['tests*']))
+setup()
