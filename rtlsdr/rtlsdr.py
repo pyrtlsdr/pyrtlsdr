@@ -129,10 +129,10 @@ class BaseRtlSdr(object):
         num_devices = librtlsdr.rtlsdr_get_device_count()
         return [get_serial(i) for i in range(num_devices)]
 
-    def __init__(self, device_index=0, test_mode_enabled=False, dithering_enabled=True, serial_number=None):
-        self.open(device_index, test_mode_enabled, dithering_enabled, serial_number)
+    def __init__(self, device_index=0, test_mode_enabled=False, serial_number=None, dithering_enabled=True):
+        self.open(device_index, test_mode_enabled, serial_number, dithering_enabled)
 
-    def open(self, device_index=0, test_mode_enabled=False, dithering_enabled=True, serial_number=None):
+    def open(self, device_index=0, test_mode_enabled=False, serial_number=None, dithering_enabled=True):
         """Connect to the device through the underlying wrapper library
 
         Initializes communication with the device and retrieves information
@@ -145,11 +145,11 @@ class BaseRtlSdr(object):
             test_mode_enabled (:obj:`bool`, optional): If True, enables a special
                 test mode, which will return the value of an internal RTL2832
                 8-bit counter with calls to :meth:`read_bytes`.
-            dithering_enabled (:obj:`bool`, optional): If False, disables PLL dithering
-                to prevent it destroying phase coherence in CLK-synchronized dongles.
             serial_number (:obj:`str`, optional): If not None, the device will be searched
                 for by the given serial_number by :meth:`get_device_index_by_serial`
                 and the ``device_index`` returned will be used automatically.
+            dithering_enabled (:obj:`bool`, optional): If False, disables PLL dithering
+                to prevent it destroying phase coherence in CLK-synchronized dongles.
 
         Notes:
             The arguments used here are passed directly from object
