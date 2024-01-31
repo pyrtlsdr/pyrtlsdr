@@ -20,7 +20,17 @@ import os
 from ctypes import *
 from ctypes.util import find_library
 
+try:
+    import pyrtlsdrlib
+except ImportError:
+    pyrtlsdrlib = None
+
 def load_librtlsdr():
+    # If pyrtlsdrlib is intalled try its loader first
+    if pyrtlsdrlib is not None:
+        dll = pyrtlsdrlib.load_librtlsdr()
+        if dll is not None:
+            return dll
     if sys.platform == "linux" and 'LD_LIBRARY_PATH' in os.environ.keys():
         ld_library_paths = [local_path for local_path in os.environ['LD_LIBRARY_PATH'].split(':') if local_path.strip()]
         driver_files = [local_path + '/librtlsdr.so' for local_path in ld_library_paths]

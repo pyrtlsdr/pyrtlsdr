@@ -13,19 +13,30 @@ on:
 jobs:
   test:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: ["2.7", "3.8", "3.9", "3.10", "3.11"]
-      fail-fast: false
+        os: [ubuntu-latest, macos-latest, windows-latest]
 
+        exclude:
+          - os: macos-latest
+            python-version: "2.7"
+          - os: windows-latest
+            python-version: "2.7"
+
+      fail-fast: false
+    env:
+      LD_LIBRARY_PATH: ''
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: MatteoH2O1999/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+        cache-build: true
     - name: Build librtlsdr
+      if: ${{ matrix.python-version == 2.7 }}
       run: |
         sudo apt-get install -y libusb-1.0-0-dev
         cd tools/ci
@@ -35,13 +46,25 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
-        pip install -U pytest pytest-forked pytest-cov
+        pip install -U pytest pytest-cov
         pip install numpy
-        pip install -e .
+    - name: Install py3 dependencies
+      run: pip install pytest-asyncio
+      if: ${{ matrix.python-version != 2.7 }}
+    - name: Install pyrtlsdr with lib
+      if: ${{ matrix.python-version != 2.7 }}
+      run: pip install -e '.[lib]'
+    - name: Install pyrtlsdr
+      run: pip install -e .
+      if: ${{ matrix.python-version == 2.7 }}
     - name: Test with pytest
+      shell: bash
       run: |
-        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-config .coveragerc --cov=rtlsdr
-        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --forked --no-overrides --pyargs tests/no_override*
+        py.test --cov-config .coveragerc --cov=rtlsdr
+        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_client_mode.py
+        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_dll_loader.py
+      env:
+        LD_LIBRARY_PATH: ${{ env.NEW_LD_LIBPATH }}
     - name: Set up Python3 for coveralls
       if: ${{ matrix.python-version == 2.7 }}
       uses: actions/setup-python@v2

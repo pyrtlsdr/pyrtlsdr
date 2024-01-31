@@ -4,6 +4,8 @@ name: Test Distribution
 on:
   push:
     branches: [ master ]
+  pull_request:
+    branches: [ master ]
   workflow_dispatch:
     inputs:
       allow_deploy:
@@ -33,20 +35,29 @@ jobs:
 
   test:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest ]
         python-version: ["2.7", "3.8", "3.9", "3.10", "3.11"]
         dist-type: [sdist, wheel]
+        exclude:
+          - os: windows-latest
+            python-version: "2.7"
+          - os: macos-latest
+            python-version: "2.7"
       fail-fast: false
-
+    env:
+      LD_LIBRARY_PATH: ''
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: MatteoH2O1999/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+        cache-build: true
     - name: Build librtlsdr
+      if: ${{ matrix.python-version == 2.7 }}
       run: |
         sudo apt-get install -y libusb-1.0-0-dev
         cd tools/ci
@@ -58,25 +69,37 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         pip install -U pytest pytest-forked pytest-cov
         pip install numpy
+    - name: Install py3 dependencies
+      run: pip install pytest-asyncio
+      if: ${{ matrix.python-version != 2.7 }}
     - name: Download artifacts
       uses: actions/download-artifact@v2
       with:
         name: 'dists'
         path: dist
     - name: Delete source directories
+      shell: bash
       run: |
         rm -Rf rtlsdr
     - name: Install wheel
+      shell: bash
       if: ${{ matrix.dist-type == 'wheel' }}
       run: pip install dist/*.whl
     - name: Install sdist
+      shell: bash
       if: ${{ matrix.dist-type == 'sdist' }}
       run: pip install dist/*.tar.gz
+    - name: Install pyrtlsdrlib
+      if: ${{ matrix.python-version != 2.7 }}
+      run: pip install pyrtlsdrlib
     - name: Test distribution
+      shell: bash
       run: |
-        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-config .coveragerc --cov=rtlsdr
-        LD_LIBRARY_PATH=${{ env.NEW_LD_LIBPATH }} py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --forked --no-overrides --pyargs tests/no_override*
-
+        py.test --cov-config .coveragerc --cov=rtlsdr
+        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_client_mode.py
+        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_dll_loader.py
+      env:
+        LD_LIBRARY_PATH: ${{ env.NEW_LD_LIBPATH }}
   deploy:
     needs: test
     if: ${{ success() && (github.event.inputs.allow_deploy == 'true') }}
