@@ -463,7 +463,8 @@ class BaseRtlSdr(object):
         """Set GPIO pin to output mode.
         
         Arguments:
-            gpio (int): RTL-SDR GPIO pin number"""
+            gpio (int): RTL-SDR GPIO pin number
+        """
         result = librtlsdr.rtlsdr_set_gpio_output(self.dev_p, int(gpio))
         if result < 0:
             raise IOError('Error code %d when setting GPIO to output mode'\
@@ -475,7 +476,8 @@ class BaseRtlSdr(object):
         """Set GPIO pin to input mode.
         
         Arguments:
-            gpio (int): RTL-SDR GPIO pin number"""
+            gpio (int): RTL-SDR GPIO pin number
+        """
         result = librtlsdr.rtlsdr_set_gpio_input(self.dev_p, int(gpio))
         if result < 0:
             raise IOError('Error code %d when setting GPIO to input mode'\
@@ -488,7 +490,8 @@ class BaseRtlSdr(object):
         
         Arguments:
             gpio (int): RTL-SDR GPIO pin number
-            val (int): state to set GPIO pin to, 0 or 1"""
+            val (int): state to set GPIO pin to, 0 or 1
+        """
         result = librtlsdr.rtlsdr_set_gpio_bit(self.dev_p, int(gpio), int(val))
         if result < 0:
             raise IOError('Error code %d when setting GPIO bit'\
@@ -503,7 +506,8 @@ class BaseRtlSdr(object):
             gpio (int): RTL-SDR GPIO pin number
             
         Returns:
-            val (int): Setting of GPIO pin"""
+            val (int): Setting of GPIO pin
+        """
         val = c_int32(-1)
         result = librtlsdr.rtlsdr_get_gpio_bit(self.dev_p, int(gpio), byref(val))
         if result < 0:
@@ -516,7 +520,8 @@ class BaseRtlSdr(object):
         """Set multiple GPIO pins at once using a byte.
         
         Arguments:
-            val (int): byte"""
+            val (int): byte
+        """
         result = librtlsdr.rtlsdr_set_gpio_byte(self.dev_p, int(val))
         if result < 0:
             raise IOError('Error code %d when setting GPIO byte'\
@@ -528,7 +533,8 @@ class BaseRtlSdr(object):
         """Get multiple GPIO pin values at once as a byte.
         
         Returns:
-            val (int): byte containing settings of multiple GPIO pins"""
+            val (int): byte containing settings of multiple GPIO pins
+        """
         val = c_int32(-1)
         result = librtlsdr.rtlsdr_get_gpio_byte(self.dev_p, byref(val))
         if result < 0:
@@ -544,7 +550,8 @@ class BaseRtlSdr(object):
         is used everywhere like a getter.
         
         Returns:
-            val (int): byte containing status of all GPIO pins"""
+            val (int): byte containing status of all GPIO pins
+        """
         val = c_int32(-1)
         result = librtlsdr.rtlsdr_set_gpio_status(self.dev_p, byref(val))
         if result < 0:
@@ -583,7 +590,7 @@ class BaseRtlSdr(object):
             ctypes.Array[c_ubyte]:
                 A buffer of len(num_bytes) containing the raw samples read.
         """
-        # FIXME: libsdrrtl may not be able to read an arbitrary number of bytes
+        # FIXME: librtlsdr may not be able to read an arbitrary number of bytes
 
         num_bytes = int(num_bytes)
 
