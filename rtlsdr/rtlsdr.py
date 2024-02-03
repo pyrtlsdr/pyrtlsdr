@@ -129,10 +129,16 @@ class BaseRtlSdr(object):
         num_devices = librtlsdr.rtlsdr_get_device_count()
         return [get_serial(i) for i in range(num_devices)]
 
-    def __init__(self, device_index=0, test_mode_enabled=False, serial_number=None, dithering_enabled=True):
+    def __init__(
+            self, device_index=0, test_mode_enabled=False,
+            serial_number=None, dithering_enabled=True
+        ):
         self.open(device_index, test_mode_enabled, serial_number, dithering_enabled)
 
-    def open(self, device_index=0, test_mode_enabled=False, serial_number=None, dithering_enabled=True):
+    def open(
+            self, device_index=0, test_mode_enabled=False,
+            serial_number=None, dithering_enabled=True
+        ):
         """Connect to the device through the underlying wrapper library
 
         Initializes communication with the device and retrieves information
