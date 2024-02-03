@@ -129,10 +129,16 @@ class BaseRtlSdr(object):
         num_devices = librtlsdr.rtlsdr_get_device_count()
         return [get_serial(i) for i in range(num_devices)]
 
-    def __init__(self, device_index=0, test_mode_enabled=False, serial_number=None):
-        self.open(device_index, test_mode_enabled, serial_number)
+    def __init__(
+            self, device_index=0, test_mode_enabled=False,
+            serial_number=None, dithering_enabled=True
+        ):
+        self.open(device_index, test_mode_enabled, serial_number, dithering_enabled)
 
-    def open(self, device_index=0, test_mode_enabled=False, serial_number=None):
+    def open(
+            self, device_index=0, test_mode_enabled=False,
+            serial_number=None, dithering_enabled=True
+        ):
         """Connect to the device through the underlying wrapper library
 
         Initializes communication with the device and retrieves information
@@ -148,6 +154,8 @@ class BaseRtlSdr(object):
             serial_number (:obj:`str`, optional): If not None, the device will be searched
                 for by the given serial_number by :meth:`get_device_index_by_serial`
                 and the ``device_index`` returned will be used automatically.
+            dithering_enabled (:obj:`bool`, optional): If False, disables PLL dithering
+                to prevent it destroying phase coherence in CLK-synchronized dongles.
 
         Notes:
             The arguments used here are passed directly from object
@@ -174,6 +182,13 @@ class BaseRtlSdr(object):
         result = librtlsdr.rtlsdr_set_testmode(self.dev_p, int(test_mode_enabled))
         if result < 0:
             raise LibUSBError(result, 'Could not set test mode')
+
+        # disable PLL dithering if necessary. If it's going to happen, it must
+        # happen before frequency is set.
+        result = librtlsdr.rtlsdr_set_dithering(self.dev_p, int(dithering_enabled))
+        if result < 0:
+            raise IOError('Error code %d when setting PLL dithering mode'\
+                           % (result))
 
         # reset buffers
         result = librtlsdr.rtlsdr_reset_buffer(self.dev_p)
@@ -437,6 +452,120 @@ class BaseRtlSdr(object):
 
         return result
 
+    def set_dithering(self, enabled):
+        """Enable/disable PLL dithering.
+
+        Arguments:
+            enabled (bool):
+        """
+        result = librtlsdr.rtlsdr_set_dithering(self.dev_p, int(enabled))
+        if result < 0:
+            raise IOError('Error code %d when setting PLL dither mode'\
+                          % (result))
+
+        return result
+
+    def set_gpio_output(self, gpio):
+        """Set GPIO pin to output mode.
+        
+        Arguments:
+            gpio (int): RTL-SDR GPIO pin number
+        """
+        result = librtlsdr.rtlsdr_set_gpio_output(self.dev_p, int(gpio))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO to output mode'\
+                          % (result))
+
+        return result
+
+    def set_gpio_input(self, gpio):
+        """Set GPIO pin to input mode.
+        
+        Arguments:
+            gpio (int): RTL-SDR GPIO pin number
+        """
+        result = librtlsdr.rtlsdr_set_gpio_input(self.dev_p, int(gpio))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO to input mode'\
+                          % (result))
+
+        return result
+
+    def set_gpio_bit(self, gpio, val):
+        """Set GPIO pin value.
+        
+        Arguments:
+            gpio (int): RTL-SDR GPIO pin number
+            val (int): state to set GPIO pin to, 0 or 1
+        """
+        result = librtlsdr.rtlsdr_set_gpio_bit(self.dev_p, int(gpio), int(val))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO bit'\
+                          % (result))
+
+        return result
+
+    def get_gpio_bit(self, gpio):
+        """Get GPIO pin value.
+        
+        Arguments:
+            gpio (int): RTL-SDR GPIO pin number
+            
+        Returns:
+            val (int): Setting of GPIO pin
+        """
+        val = c_int32(-1)
+        result = librtlsdr.rtlsdr_get_gpio_bit(self.dev_p, int(gpio), byref(val))
+        if result < 0:
+            raise IOError('Error code %d when getting GPIO bit'\
+                          % (result))
+
+        return int(val.value)
+
+    def set_gpio_byte(self, val):
+        """Set multiple GPIO pins at once using a byte.
+        
+        Arguments:
+            val (int): byte
+        """
+        result = librtlsdr.rtlsdr_set_gpio_byte(self.dev_p, int(val))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO byte'\
+                          % (result))
+
+        return result
+
+    def get_gpio_byte(self):
+        """Get multiple GPIO pin values at once as a byte.
+        
+        Returns:
+            val (int): byte containing settings of multiple GPIO pins
+        """
+        val = c_int32(-1)
+        result = librtlsdr.rtlsdr_get_gpio_byte(self.dev_p, byref(val))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO byte'\
+                          % (result))
+
+        return int(val.value)
+
+    def set_gpio_status(self):
+        """Get GPD register status as a byte.
+
+        Note that the librtlsdr API calls rtlsdr_read_reg, and this function
+        is used everywhere like a getter.
+        
+        Returns:
+            val (int): byte containing status of all GPIO pins
+        """
+        val = c_int32(-1)
+        result = librtlsdr.rtlsdr_set_gpio_status(self.dev_p, byref(val))
+        if result < 0:
+            raise IOError('Error code %d when setting GPIO byte'\
+                          % (result))
+
+        return int(val.value)
+
     def get_tuner_type(self):
         """Get the tuner type.
 
@@ -467,7 +596,7 @@ class BaseRtlSdr(object):
             ctypes.Array[c_ubyte]:
                 A buffer of len(num_bytes) containing the raw samples read.
         """
-        # FIXME: libsdrrtl may not be able to read an arbitrary number of bytes
+        # FIXME: librtlsdr may not be able to read an arbitrary number of bytes
 
         num_bytes = int(num_bytes)
 

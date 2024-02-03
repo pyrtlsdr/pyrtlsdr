@@ -121,6 +121,23 @@ class LibRtlSdr(object):
     def rtlsdr_set_direct_sampling(self, dev_p, direct):
         self.direct_sampling = direct
         return ERROR_CODE
+    def rtlsdr_set_dithering(self, dev_p, dither):
+        self.dithering = dither
+        return ERROR_CODE
+    def rtlsdr_set_gpio_output(self, dev_p, gpio):
+        return ERROR_CODE
+    def rtlsdr_set_gpio_input(self, dev_p, gpio):
+        return ERROR_CODE
+    def rtlsdr_set_gpio_bit(self, dev_p, gpio, val):
+        return ERROR_CODE
+    def rtlsdr_get_gpio_bit(self, dev_p, gpio):
+        return ERROR_CODE
+    def rtlsdr_set_gpio_byte(self, dev_p, val):
+        return ERROR_CODE
+    def rtlsdr_get_gpio_byte(self, dev_p):
+        return ERROR_CODE
+    def rtlsdr_set_gpio_status(self, dev_p):
+        return ERROR_CODE
     def rtlsdr_get_tuner_type(self, *args):
         return ERROR_CODE
     def rtlsdr_read_sync(self, dev_p, buf, num_bytes, num_bytes_read):

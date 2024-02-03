@@ -30,16 +30,19 @@ class RtlSdrTcpServer(RtlSdr, RtlSdrTcpBase):
     """
 
     def __init__(self, device_index=0, test_mode_enabled=False, serial_number=None,
-                 hostname='127.0.0.1', port=None):
+                 hostname='127.0.0.1', port=None, dithering_enabled=True):
 
         RtlSdrTcpBase.__init__(self, device_index, test_mode_enabled,
                                hostname, port)
-        RtlSdr.__init__(self, device_index, test_mode_enabled, serial_number)
+        RtlSdr.__init__(self, device_index, test_mode_enabled, serial_number, dithering_enabled)
 
-    def open(self, device_index=0, test_mode_enabled=False, serial_number=None):
+    def open(
+            self, device_index=0, test_mode_enabled=False,
+            serial_number=None, dithering_enabled=True
+        ):
         if not self.device_ready:
             return
-        super(RtlSdrTcpServer, self).open(device_index, test_mode_enabled, serial_number)
+        super(RtlSdrTcpServer, self).open(device_index, test_mode_enabled, serial_number, dithering_enabled)
 
     def run(self):
         """Runs the server thread and returns.  Use this only if you are
