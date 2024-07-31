@@ -12,7 +12,7 @@ def client_mode(monkeypatch):
 
 @pytest.mark.no_overrides
 def test_client_mode(client_mode):
-    with pytest.warns(None) as record:
+    with pytest.warns(Warning) as record:
         import rtlsdr
     assert len(record) >= 1
     warn_classes = [rec.message.__class__ for rec in record]
