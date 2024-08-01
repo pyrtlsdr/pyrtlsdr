@@ -22,7 +22,6 @@ import numpy as np
 import sys
 from rtlsdr import RtlSdr
 from scipy.signal import welch
-from numba import jit
 
 # A simple waterfall, spectrum plotter
 #
@@ -127,7 +126,6 @@ class Waterfall:
             self.shift_key_down = False
 
     @staticmethod
-    @jit(nopython=True)
     def log10(arr):
         result = np.empty_like(arr)
         for i in range(arr.size):
