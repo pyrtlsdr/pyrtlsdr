@@ -243,4 +243,8 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, POINTER(c_uint), POINTER(c_uint)]
 f = librtlsdr.rtlsdr_set_testmode
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 
+#RTLSDR_API int rtlsdr_ir_query(rtlsdr_dev_t *d, uint8_t *buf, size_t buf_len)
+f = librtlsdr.rtlsdr_ir_query
+f.restype, f.argtypes = c_int, [p_rtlsdr_dev, POINTER(c_uint8),c_size_t]
+
 __all__  = ['librtlsdr', 'p_rtlsdr_dev', 'rtlsdr_read_async_cb_t']
