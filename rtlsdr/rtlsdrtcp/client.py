@@ -118,6 +118,9 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
     def set_direct_sampling(self, value):
         self._communicate_method('set_direct_sampling', value)
 
+    def set_bias_tee(self, value):
+        self._communicate_method('set_bias_tee', value)
+
     def read_bytes(self, num_bytes=DEFAULT_READ_SIZE):
         return self._communicate_method('read_bytes', num_bytes)
 

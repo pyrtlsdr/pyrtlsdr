@@ -87,6 +87,7 @@ API_METHODS = (
     'get_gains',
     'get_tuner_type',
     'set_direct_sampling',
+    'set_bias_tee',
     'read_bytes',
     'read_samples',
 )
