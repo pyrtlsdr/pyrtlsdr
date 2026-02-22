@@ -7,7 +7,9 @@ name = "pyrtlsdr"
 version = "0.3.0"
 description = "A Python wrapper for librtlsdr (a driver for Realtek RTL2832U based SDRs)"
 readme = "README.md"
-license = "GPL-3.0-or-later"
+
+# TODO: remove legacy table entry after dropping Python 3.8 support
+license = {text = "GPL-3.0-or-later"}
 requires-python = ">=3.8"
 authors = [
     { name = "roger" },
