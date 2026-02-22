@@ -49,6 +49,7 @@ testpaths = ["tests"]
 [dependency-groups]
 lib = [
     "pyrtlsdrlib>=0.0.3",
+    "setuptools; python_version < '3.9'",
 ]
 test = [
     {include-group = "lib"},
