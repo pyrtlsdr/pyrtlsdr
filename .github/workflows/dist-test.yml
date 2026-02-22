@@ -62,6 +62,15 @@ jobs:
       shell: bash
       run: |
         rm -Rf rtlsdr
+    - name: Ensure project is not importable
+      shell: python
+      run: |
+        try:
+          import rtlsdr
+        except ImportError:
+          rtlsdr = None
+        if rtlsdr is not None:
+          raise RuntimeError(f"pyrtlsdr is importable: {rtlsdr.__file__}")
     - name: Install wheel
       shell: bash
       run: pip install dist/*.whl
@@ -78,10 +87,15 @@ jobs:
       shell: bash
       run: |
         pip uninstall -y pyrtlsdr
-        if python -c "import rtlsdr" 2>/dev/null; then
-          echo "pyrtlsdr is still installed"
-          exit 1
-        fi
+    - name: Ensure project is not importable
+      shell: python
+      run: |
+        try:
+          import rtlsdr
+        except ImportError:
+          rtlsdr = None
+        if rtlsdr is not None:
+          raise RuntimeError(f"pyrtlsdr is importable: {rtlsdr.__file__}")
     - name: Install sdist
       shell: bash
       run: |
