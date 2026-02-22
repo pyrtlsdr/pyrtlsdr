@@ -1,17 +1,24 @@
 import sys
+from pathlib import Path
 import pytest
 import itertools
 
+
+@pytest.mark.skipif(
+    sys.version_info < (3, 11),
+    reason="tomllib is only available in python 3.11 and above"
+)
 def test_pkg_version():
-    import subprocess
     import rtlsdr
+    import tomllib
 
-    setup_version = subprocess.check_output(['python', 'setup.py', '-V'])
-    if isinstance(setup_version, bytes):
-        setup_version = setup_version.decode('UTF-8')
-    setup_version = setup_version.splitlines()[0]
+    here = Path(__file__).resolve().parent
+    pyproject_fn = here.parent / 'pyproject.toml'
+    assert pyproject_fn.exists()
+    pyproject = tomllib.loads(pyproject_fn.read_text())
+    pyproject_version = pyproject['project']['version']
+    assert rtlsdr.__version__ == pyproject_version
 
-    assert rtlsdr.__version__ == setup_version
 
 def test(sdr_cls, use_numpy):
     from utils import generic_test
