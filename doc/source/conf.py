@@ -21,8 +21,8 @@ sys.path.append(os.path.abspath('./ext'))
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 
-import pkg_resources
-__version__ = pkg_resources.require('pyrtlsdr')[0].version
+import importlib.metadata
+__version__ = importlib.metadata.version('pyrtlsdr')
 
 
 html_theme = "sphinx_rtd_theme"
