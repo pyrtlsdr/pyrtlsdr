@@ -69,10 +69,7 @@ jobs:
       run: pip install pyrtlsdrlib
     - name: Test wheel
       shell: bash
-      run: |
-        py.test --cov-config .coveragerc --cov=rtlsdr
-        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_client_mode.py
-        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_dll_loader.py
+      run: py.test tests/test_basic.py
 
     - name: Uninstall wheel
       shell: bash
@@ -85,10 +82,8 @@ jobs:
         pip install dist/*.tar.gz
     - name: Test sdist
       shell: bash
-      run: |
-        py.test --cov-config .coveragerc --cov=rtlsdr
-        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_client_mode.py
-        py.test --cov-append --cov-config .coveragerc --cov=rtlsdr --no-overrides --pyargs tests/no_override_dll_loader.py
+      run: py.test tests/test_basic.py
+
   deploy:
     needs: test
     if: ${{ success() && (github.event.inputs.allow_deploy == 'true') }}
