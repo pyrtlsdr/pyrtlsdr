@@ -16,10 +16,10 @@
 
 import os
 import warnings
-import pkg_resources
+import importlib.metadata
 
 try:
-    __version__ = pkg_resources.require('pyrtlsdr')[0].version
+    __version__ = importlib.metadata.version('pyrtlsdr')
 except: # pragma: no cover
     __version__ = 'unknown'
 
