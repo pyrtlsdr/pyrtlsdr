@@ -1,5 +1,4 @@
 from __future__ import division
-import sys
 import time
 import select
 import socket
@@ -8,10 +7,6 @@ import errno
 import traceback
 import json
 
-try:
-    from itertools import izip
-except ImportError:
-    izip = zip
 
 has_numpy = True
 try:
@@ -19,7 +14,6 @@ try:
 except ImportError:
     has_numpy = False
 
-PY2 = sys.version_info[0] == 2
 
 DEFAULT_READ_SIZE = 1024
 MAX_BUFFER_SIZE = 4096
@@ -73,7 +67,7 @@ class RtlSdrTcpBase(object):
             iq -= (1 + 1j)
         else:
             # use normal list
-            iq = [complex(i/(255/2) - 1, q/(255/2) - 1) for i, q in izip(bytes[::2], bytes[1::2])]
+            iq = [complex(i/(255/2) - 1, q/(255/2) - 1) for i, q in zip(bytes[::2], bytes[1::2])]
 
         return iq
 
@@ -118,7 +112,7 @@ class MessageBase(object):
 
     @staticmethod
     def _send(sock, data):
-        if not PY2 and isinstance(data, str):
+        if isinstance(data, str):
             data = data.encode()
         r, w, e = select.select([], [sock], [], .5)
         if sock not in w:
@@ -145,8 +139,7 @@ class MessageBase(object):
 
         """
         header = cls._recv(sock)
-        if not PY2:
-            header = header.decode()
+        header = header.decode()
         kwargs = json.loads(header)
         if kwargs.get('ACK'):
             cls = AckMessage
@@ -230,8 +223,7 @@ class ServerMessage(MessageBase):
 
         """
         header = cls._recv(sock)
-        if not PY2:
-            header = header.decode()
+        header = header.decode()
         kwargs = json.loads(header)
         struct_fmt = kwargs.get('struct_fmt')
         if struct_fmt is not None:

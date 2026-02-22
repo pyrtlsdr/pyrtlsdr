@@ -16,10 +16,10 @@
 
 import os
 import warnings
-import pkg_resources
+import importlib.metadata
 
 try:
-    __version__ = pkg_resources.require('pyrtlsdr')[0].version
+    __version__ = importlib.metadata.version('pyrtlsdr')
 except: # pragma: no cover
     __version__ = 'unknown'
 
@@ -51,16 +51,12 @@ if RTLSDR_CLIENT_MODE:
     RtlSdr = None
     RtlSdrTcpServer = None
     RtlSdrAio = None
-    AIO_AVAILABLE = False
 else:
     from .librtlsdr import librtlsdr
-    from .rtlsdr import RtlSdr
-    from .rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
     from .helpers import limit_calls, limit_time
-    from .rtlsdraio import RtlSdrAio, AIO_AVAILABLE
+    from .rtlsdraio import RtlSdrAio as RtlSdr
+    from .rtlsdrtcp import RtlSdrTcpServer, RtlSdrTcpClient
 
-if AIO_AVAILABLE:
-    RtlSdr = RtlSdrAio
 
 
 __all__  = ['librtlsdr', 'RtlSdr', 'RtlSdrTcpServer', 'RtlSdrTcpClient',
