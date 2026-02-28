@@ -635,6 +635,18 @@ wheels = [
 ]
 
 [[package]]
+name = "importlib-resources"
+version = "6.4.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "zipp", version = "3.20.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/98/be/f3e8c6081b684f176b761e6a2fef02a0be939740ed6f54109a2951d806f3/importlib_resources-6.4.5.tar.gz", hash = "sha256:980862a1d16c9e147a59603677fa2aa5fd82b87f223b6cb870695bcfce830065", size = 43372, upload-time = "2024-09-09T17:03:14.677Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/6a/4604f9ae2fa62ef47b9de2fa5ad599589d28c9fd1d335f32759813dfa91e/importlib_resources-6.4.5-py3-none-any.whl", hash = "sha256:ac29d5f956f01d5e4bb63102a5a19957f1b9175e45649977264a1416783bb717", size = 36115, upload-time = "2024-09-09T17:03:13.39Z" },
+]
+
+[[package]]
 name = "iniconfig"
 version = "2.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1368,7 +1380,7 @@ dev = [
     { name = "linkify-it-py", specifier = ">=2.0.3" },
     { name = "myst-parser", specifier = ">=3.0.1" },
     { name = "numpy", specifier = ">=1.24.4" },
-    { name = "pyrtlsdrlib", specifier = ">=0.0.3" },
+    { name = "pyrtlsdrlib", specifier = ">=0.0.4" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-asyncio", specifier = ">=0.24.0" },
     { name = "pytest-cov", specifier = ">=5.0.0" },
@@ -1380,18 +1392,18 @@ dev = [
 doc = [
     { name = "linkify-it-py", specifier = ">=2.0.3" },
     { name = "myst-parser", specifier = ">=3.0.1" },
-    { name = "pyrtlsdrlib", specifier = ">=0.0.3" },
+    { name = "pyrtlsdrlib", specifier = ">=0.0.4" },
     { name = "setuptools", marker = "python_full_version < '3.9'" },
     { name = "sphinx", specifier = ">=7.1.2" },
     { name = "sphinx-rtd-theme", specifier = ">=3.1.0" },
 ]
 lib = [
-    { name = "pyrtlsdrlib", specifier = ">=0.0.3" },
+    { name = "pyrtlsdrlib", specifier = ">=0.0.4" },
     { name = "setuptools", marker = "python_full_version < '3.9'" },
 ]
 test = [
     { name = "numpy", specifier = ">=1.24.4" },
-    { name = "pyrtlsdrlib", specifier = ">=0.0.3" },
+    { name = "pyrtlsdrlib", specifier = ">=0.0.4" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-asyncio", specifier = ">=0.24.0" },
     { name = "pytest-cov", specifier = ">=5.0.0" },
@@ -1401,15 +1413,17 @@ test = [
 
 [[package]]
 name = "pyrtlsdrlib"
-version = "0.0.3"
+version = "0.0.4"
 source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "importlib-resources", marker = "python_full_version < '3.9'" },
+]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/43/5c/21d742103df830bdee149b033d0bd8fab1bf39a011ae55bd1308e6de8f88/pyrtlsdrlib-0.0.3-py3-none-macosx_11_0_arm64.whl", hash = "sha256:84a34ef99a93714bb6c90511244132a55b6c676182c8a01905dee132ad0e5b47", size = 264344, upload-time = "2024-03-31T21:27:19.484Z" },
-    { url = "https://files.pythonhosted.org/packages/a8/62/b87b487a519f0a3cb3310695f2a9b04ceed75b0433abee52fcdeaa5f6a3a/pyrtlsdrlib-0.0.3-py3-none-macosx_11_0_x86_64.whl", hash = "sha256:46bb803f1317ac409da0ee7d6cfa63a2df8b24bd72b8673851d8ccf00676b9d9", size = 268447, upload-time = "2024-03-31T21:27:21.311Z" },
-    { url = "https://files.pythonhosted.org/packages/a5/f7/787a97b6b885d3fb7ca959696480936ec5e96abb369510b27ac5d636ae2c/pyrtlsdrlib-0.0.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c30bf72515ae6d7deba96eafa52575ffbfc3c1a0ccbb627342323da7d32a3347", size = 721396, upload-time = "2024-03-31T21:27:22.957Z" },
-    { url = "https://files.pythonhosted.org/packages/4a/b9/5cf7397a705e59431578d77b75e785c830ce8a62756e34766be2cb570114/pyrtlsdrlib-0.0.3-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:b38346727d1e8ba5a6f558773367bae29faf491b07b1664ca0208eab950019f2", size = 1276442, upload-time = "2024-03-31T21:27:24.302Z" },
-    { url = "https://files.pythonhosted.org/packages/4f/6a/164410a14a31e0a715f6d04832bf0b6d08472a0efe7a49a652358deb0946/pyrtlsdrlib-0.0.3-py3-none-win32.whl", hash = "sha256:495089c04e06210664c597c5df6a3d95d4039071435229c0cc3b663dadf6e8d6", size = 1286677, upload-time = "2024-03-31T21:27:25.599Z" },
-    { url = "https://files.pythonhosted.org/packages/c3/fc/070b02746b86ca7ba8e0e0bf5e0e75806101767e58391ac403a2925f8fed/pyrtlsdrlib-0.0.3-py3-none-win_amd64.whl", hash = "sha256:e538521666172eabe96dff6b36c3f303e403721f18fb3f772ecbee93960c144d", size = 1286682, upload-time = "2024-03-31T21:27:27.513Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/05/369c1708d5a22b1bd7b482c75da79657fd9928d0d1c2ec8e62818fdd793c/pyrtlsdrlib-0.0.4-py3-none-macosx_11_0_arm64.whl", hash = "sha256:4426d839be3eb0196ee0b9176710d1597c5bf949ffd49527dd7a0dc89c2f739a", size = 264579, upload-time = "2026-02-28T22:21:33.289Z" },
+    { url = "https://files.pythonhosted.org/packages/87/94/e21c6c1c84360cea94ef2f945b9369226771510c262f5a0d17e2050b93a7/pyrtlsdrlib-0.0.4-py3-none-macosx_11_0_x86_64.whl", hash = "sha256:edab3572a607750f6ad81f09c8de26cc247ccf4c0cc52e4c576529ccce9b03a4", size = 266480, upload-time = "2026-02-28T22:21:35.33Z" },
+    { url = "https://files.pythonhosted.org/packages/12/48/f79ad29b9f980e6cd6b68951519b831cf81b6887c06773439d3d9fc94b81/pyrtlsdrlib-0.0.4-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:fbec8cb4dcb5ca3aec775db5db4be10842a5d12bbd3a59066b78c3a29837f7a7", size = 1280717, upload-time = "2026-02-28T22:21:37.07Z" },
+    { url = "https://files.pythonhosted.org/packages/f7/13/5571715bf2597037355eec3ead38e006b5c7e43b3f72b6ffc69cd6064aaa/pyrtlsdrlib-0.0.4-py3-none-win32.whl", hash = "sha256:2dc811d683a0a63c927f3cf57608071cc006a11e6a0632baf4d63000de3ee4d1", size = 1309993, upload-time = "2026-02-28T22:21:38.656Z" },
+    { url = "https://files.pythonhosted.org/packages/c2/64/a327dd68efbab579316da8cb133ac7ef8c0b20eeb4416e6c773d422e402f/pyrtlsdrlib-0.0.4-py3-none-win_amd64.whl", hash = "sha256:4da583821732071f4c06f5e0eb2c2bc6a98b10031b699b546fb98de4fcbf8011", size = 1309995, upload-time = "2026-02-28T22:21:40.173Z" },
 ]
 
 [[package]]
