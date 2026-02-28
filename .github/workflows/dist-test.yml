@@ -37,7 +37,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, blacksmith-2vcpu-windows-2025 ]
+        os: [blacksmith-2vcpu-ubuntu-2204, macos-latest, blacksmith-2vcpu-windows-2025 ]
         python-version: ["3.8", "3.9", "3.10", "3.11"]
       fail-fast: false
     steps:
