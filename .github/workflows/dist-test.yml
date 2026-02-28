@@ -17,18 +17,17 @@ jobs:
   build:
     runs-on: blacksmith-2vcpu-ubuntu-2404
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.8
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
+          python-version: 3.14
       - name: Build dists
-        run: python setup.py sdist bdist_wheel
+        run: uv build
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: 'dists'
           path: 'dist/*'
@@ -42,18 +41,23 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
+
+      # Note: We're exporting the lockfile without the project or its direct dependencies included.
+      # Then we avoid using uv elsewhere to ensure we're testing the installed package
+      # and not the development environment.
+    - name: Export Lockfile
+      run: uv export --frozen --only-group test --only-group doc --format requirements-txt -o requirements.txt
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip setuptools wheel
-        pip install -U pytest pytest-forked pytest-cov pytest-asyncio
-        pip install numpy
+      run: pip install -r requirements.txt
     - name: Download artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: 'dists'
         path: dist
@@ -64,8 +68,6 @@ jobs:
     - name: Install wheel
       shell: bash
       run: pip install dist/*.whl
-    - name: Install pyrtlsdrlib
-      run: pip install pyrtlsdrlib
     - name: Test wheel
       shell: bash
       run: py.test tests/test_basic.py
@@ -88,16 +90,16 @@ jobs:
     if: ${{ success() && (github.event.inputs.allow_deploy == 'true') }}
     runs-on: blacksmith-2vcpu-ubuntu-2404
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.8
+          python-version: 3.14
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel twine
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: 'dists'
           path: dist

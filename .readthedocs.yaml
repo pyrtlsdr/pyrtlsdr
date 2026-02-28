@@ -2,17 +2,17 @@ version: 2
 
 
 build:
-  os: ubuntu-22.04
+  os: ubuntu-24.04
   tools:
-    python: "3.11"
-
-python:
-  install:
-    - requirements: doc/requirements.txt
-    - method: pip
-      path: .
-      extra_requirements:
-        - lib
+    python: "3.13"
+  jobs:
+    create_environment:
+      - asdf plugin add uv
+      - asdf install uv latest
+      - asdf global uv latest
+      - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv sync --frozen --no-dev --group doc
+    install:
+      - "true"
 
 sphinx:
   configuration: doc/source/conf.py
