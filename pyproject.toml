@@ -48,7 +48,7 @@ testpaths = ["tests"]
 
 [dependency-groups]
 lib = [
-    "pyrtlsdrlib>=0.0.3",
+    "pyrtlsdrlib>=0.0.4",
     "setuptools; python_version < '3.9'",
 ]
 test = [
