@@ -182,7 +182,7 @@ On platforms where the `librtlsdr` library cannot be installed/compiled, it is p
 # Dependencies
 
 * Windows/Linux/OSX
-* Python 2.7.x/3.3+
+* Python>=3.8
 * [librtlsdr](https://github.com/librtlsdr/librtlsdr/releases)
 * **Optional**: NumPy (wraps samples in a more convenient form)
 
