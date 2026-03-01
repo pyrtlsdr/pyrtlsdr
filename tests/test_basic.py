@@ -20,9 +20,10 @@ def test_pkg_version():
     assert rtlsdr.__version__ == pyproject_version
 
 
-def test(sdr_cls, use_numpy):
+def test(use_numpy):
+    from rtlsdr import RtlSdr
     from utils import generic_test
-    sdr = sdr_cls()
+    sdr = RtlSdr()
     generic_test(sdr, use_numpy=use_numpy)
     sdr.close()
 
@@ -106,10 +107,11 @@ def test_example_script(capsys, use_numpy):
                 assert total_count == NUM_SAMPLES * NUM_READS
 
 
-def test_serial_addressing(sdr_cls, use_numpy):
-    for i, serial in enumerate(sdr_cls.get_device_serial_addresses()):
-        assert sdr_cls.get_device_index_by_serial(serial) == i
-        sdr = sdr_cls(serial_number=serial)
+def test_serial_addressing(use_numpy):
+    from rtlsdr import RtlSdr
+    for i, serial in enumerate(RtlSdr.get_device_serial_addresses()):
+        assert RtlSdr.get_device_index_by_serial(serial) == i
+        sdr = RtlSdr(serial_number=serial)
         sdr.close()
 
 def test_error_codes(monkeypatch):

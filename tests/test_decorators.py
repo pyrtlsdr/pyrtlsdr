@@ -1,5 +1,5 @@
-def test(sdr_cls):
-    from rtlsdr import limit_time, limit_calls
+def test():
+    from rtlsdr import RtlSdr, limit_time, limit_calls
 
     @limit_time(0.01)
     @limit_calls(20)
@@ -7,7 +7,7 @@ def test(sdr_cls):
         print('In callback')
         print('   signal mean:', sum(buffer)/len(buffer))
 
-    sdr = sdr_cls()
+    sdr = RtlSdr()
 
     print('Configuring SDR...')
     sdr.rs = 1e6

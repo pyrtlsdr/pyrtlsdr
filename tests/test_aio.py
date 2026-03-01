@@ -9,11 +9,12 @@ def read_format(request):
     return request.param
 
 @pytest.mark.asyncio
-async def test(rtlsdraio, num_samples, read_format):
+async def test(num_samples, read_format):
+    from rtlsdr import RtlSdr
     import math
     from utils import generic_test
 
-    sdr = rtlsdraio.RtlSdrAio()
+    sdr = RtlSdr()
     generic_test(sdr)
 
     print('Configuring SDR...')

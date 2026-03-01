@@ -4,12 +4,13 @@ import errno
 
 import pytest
 
-def test(rtlsdrtcp, use_numpy):
+def test(use_numpy):
+    from rtlsdr import RtlSdrTcpClient, RtlSdrTcpServer
     from utils import generic_test
     port = 1235
     while True:
         try:
-            server = rtlsdrtcp.RtlSdrTcpServer(port=port)
+            server = RtlSdrTcpServer(port=port)
             server.run()
         except socket.error as e:
             if e.errno != errno.EADDRINUSE:
@@ -19,7 +20,7 @@ def test(rtlsdrtcp, use_numpy):
         if server is not None:
             print('server running on port {0}'.format(port))
             break
-    client = rtlsdrtcp.RtlSdrTcpClient(port=port)
+    client = RtlSdrTcpClient(port=port)
     try:
         generic_test(client, test_async=False, test_exceptions=False, use_numpy=use_numpy)
         with pytest.raises(NotImplementedError):
