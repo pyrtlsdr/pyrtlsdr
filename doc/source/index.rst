@@ -12,6 +12,7 @@ Welcome to pyrtlsdr's documentation!
    :maxdepth: 2
 
    Overview
+   Development
    Reference
 
 
