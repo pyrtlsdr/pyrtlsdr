@@ -99,10 +99,10 @@ Then install the package (including development dependencies):
 
 .. note::
 
-  uv will handle virtual environment creation and management, as well as Python version management,
+  ``uv`` will handle virtual environment creation and management, as well as Python version management,
   and will install the package in editable mode by default.
 
-  You can also use uv to run tests and other commands (see the `uv cli documentation`_ for more details).
+  You can also use ``uv`` to run tests and other commands (see the `uv cli documentation`_ for more details).
 
 
 Using ``pip``
@@ -118,7 +118,7 @@ Using ``pip``
 Install the project
 """""""""""""""""""
 
-Install with pip in editable mode:
+Install with ``pip`` in editable mode:
 
 .. code-block:: bash
 
