@@ -94,7 +94,7 @@ Then install the package (including development dependencies):
   uv sync
 
 
-.. note::
+.. tip::
 
   ``uv`` will handle virtual environment creation and management, as well as Python version management,
   and will install the package in editable mode by default.
