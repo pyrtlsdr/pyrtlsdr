@@ -29,6 +29,9 @@ pyrtlsdr can be installed using [pip](https://pip.pypa.io/en/stable/):
 pip install pyrtlsdr
 ```
 
+**Note:** If installing for development, please read the [development page](https://pyrtlsdr.readthedocs.io/en/latest/Development.html) of the project's documentation.
+
+
 ## Full installation (recommended)
 
 **New in version 0.3.0**
