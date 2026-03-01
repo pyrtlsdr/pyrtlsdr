@@ -78,7 +78,7 @@ class BaseRtlSdr(object):
 
     @staticmethod
     def get_device_index_by_serial(serial):
-        """Retrieves the device index for a device matching the given serial number
+        r"""Retrieves the device index for a device matching the given serial number
 
         Arguments:
             serial (str): The serial number to search for
