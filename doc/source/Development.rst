@@ -1,9 +1,6 @@
 Development
 ===========
 
-This section provides instructions for setting up a development environment for pyrtlsdr.
-It covers installing dependencies, setting up a virtual environment, and running tests.
-
 
 Installation
 ------------
