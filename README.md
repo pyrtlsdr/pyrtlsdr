@@ -23,8 +23,11 @@ and also provides a more Pythonic API.
 
 # Installation
 
-pyrtlsdr can be installed by downloading the source files and running `python setup.py install`, or using [pip](https://pip.pypa.io/en/stable/) and
-`pip install pyrtlsdr`.
+pyrtlsdr can be installed using [pip](https://pip.pypa.io/en/stable/):
+
+```bash
+pip install pyrtlsdr
+```
 
 ## Full installation (recommended)
 
