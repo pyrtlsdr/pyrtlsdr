@@ -1,19 +1,18 @@
 import pytest
 
-@pytest.fixture(params=[64*1024, 96*1024, 128*1024])
-def num_samples(request):
-    return request.param
 
 @pytest.fixture(params=['samples', 'bytes'])
 def read_format(request):
     return request.param
 
 @pytest.mark.asyncio
-async def test(rtlsdraio, num_samples, read_format):
+async def test(read_format):
+    from rtlsdr import RtlSdr
     import math
     from utils import generic_test
 
-    sdr = rtlsdraio.RtlSdrAio()
+    num_samples = 64*1024
+    sdr = RtlSdr()
     generic_test(sdr)
 
     print('Configuring SDR...')

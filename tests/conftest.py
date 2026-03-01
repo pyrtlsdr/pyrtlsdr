@@ -63,18 +63,3 @@ def use_numpy(request, monkeypatch):
         monkeypatch.setattr('rtlsdr.rtlsdr.has_numpy', False)
         monkeypatch.setattr('rtlsdr.rtlsdrtcp.base.has_numpy', False)
     return request.param
-
-@pytest.fixture
-def sdr_cls():
-    from rtlsdr import RtlSdr
-    return RtlSdr
-
-@pytest.fixture
-def rtlsdrtcp():
-    from rtlsdr import rtlsdrtcp
-    return rtlsdrtcp
-
-@pytest.fixture
-def rtlsdraio():
-    from rtlsdr import rtlsdraio
-    return rtlsdraio
