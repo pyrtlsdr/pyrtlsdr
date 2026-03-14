@@ -47,7 +47,8 @@ def librtlsdr_override(request,
         if 'no_override_' in module.name:
             print('skipping module {}'.format(module))
             return
-    monkeypatch.setattr('rtlsdr.rtlsdr.tuner_bandwidth_supported', tuner_bandwidth_supported)
+    # # rtlsdr_set_and_get_tuner_bandwidth is deprecated in recent librtlsdr versions
+    # monkeypatch.setattr('rtlsdr.rtlsdr.tuner_bandwidth_supported', tuner_bandwidth_supported)
     monkeypatch.setattr('rtlsdr.rtlsdr.tuner_set_bandwidth_supported', 'tuner_set_bandwidth_supported')
     if not is_travisci():
         return
