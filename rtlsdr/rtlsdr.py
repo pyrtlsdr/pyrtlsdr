@@ -21,7 +21,6 @@ from .librtlsdr import (
     librtlsdr,
     p_rtlsdr_dev,
     rtlsdr_read_async_cb_t,
-    tuner_bandwidth_supported,
     tuner_set_bandwidth_supported,
 )
 
@@ -177,12 +176,13 @@ class BaseRtlSdr(object):
         if result < 0:
             raise LibUSBError(result, 'Could not set test mode')
 
+        # rtlsdr_set_dithering is deprecated in newer versions of librtlsdr.
         # disable PLL dithering if necessary. If it's going to happen, it must
         # happen before frequency is set.
-        result = librtlsdr.rtlsdr_set_dithering(self.dev_p, int(dithering_enabled))
-        if result < 0:
-            raise IOError('Error code %d when setting PLL dithering mode'\
-                           % (result))
+        # result = librtlsdr.rtlsdr_set_dithering(self.dev_p, int(dithering_enabled))
+        # if result < 0:
+        #     raise IOError('Error code %d when setting PLL dithering mode'\
+        #                    % (result))
 
         # reset buffers
         result = librtlsdr.rtlsdr_reset_buffer(self.dev_p)
@@ -290,14 +290,7 @@ class BaseRtlSdr(object):
 
         requested_bw = int(bw)
         bw = int(bw)
-        if tuner_bandwidth_supported:
-            apply_bw = c_int(1)
-            applied_bw = c_uint32(bw)
-            bw = c_uint32(bw)
-            result = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth(
-                self.dev_p, bw, byref(applied_bw), apply_bw)
-            self._bandwidth = applied_bw.value
-        elif tuner_set_bandwidth_supported:
+        if tuner_set_bandwidth_supported:
             bw = int(bw)
             result = librtlsdr.rtlsdr_set_tuner_bandwidth(self.dev_p, bw)
             self._bandwidth = bw
