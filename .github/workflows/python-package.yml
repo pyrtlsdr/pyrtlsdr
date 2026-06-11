@@ -50,7 +50,7 @@ jobs:
     name: Indicate completion to coveralls.io
     needs: test
     runs-on: blacksmith-2vcpu-ubuntu-2404
-    container: python:3-slim@sha256:c845af9399020c7e562969a13689e929074a10fd057acd1b1fad06a2fb068e97
+    container: python:3-slim@sha256:7742e9d8c734ccdfd3bdf9881ea810c6470c81d575f1c9c4cec56d663f47528c
     steps:
     - name: Finished
       run: |
