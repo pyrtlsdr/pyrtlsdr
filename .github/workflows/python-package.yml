@@ -6,8 +6,20 @@ name: Python package
 on:
   push:
     branches: [ master ]
+    paths:
+      - "pyproject.toml"
+      - "uv.lock"
+      - "rtlsdr/**"
+      - "tests/**"
+      - ".github/workflows/python-package.yml"
   pull_request:
     branches: [ master ]
+    paths:
+      - "pyproject.toml"
+      - "uv.lock"
+      - "rtlsdr/**"
+      - "tests/**"
+      - ".github/workflows/python-package.yml"
   workflow_dispatch:
 
 jobs:
