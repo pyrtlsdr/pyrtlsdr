@@ -28,7 +28,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
-      checks: write
     strategy:
       matrix:
         python-version: ["3.10", "3.11"]
@@ -67,7 +66,6 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2404
     permissions:
       contents: read
-      checks: write
     container: python:3-slim@sha256:b877e50bd90de10af8d82c57a022fc2e0dc731c5320d762a27986facfc3355c1
     steps:
     - name: Finished
