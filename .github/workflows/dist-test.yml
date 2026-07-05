@@ -56,7 +56,7 @@ jobs:
       actions: read
     strategy:
       matrix:
-        os: [blacksmith-2vcpu-ubuntu-2204, blacksmith-6vcpu-macos-latest, blacksmith-2vcpu-windows-2025 ]
+        os: [blacksmith-2vcpu-ubuntu-2204, macos-latest, blacksmith-2vcpu-windows-2025 ]
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
       fail-fast: false
     steps:
