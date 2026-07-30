@@ -4,6 +4,14 @@
     "config:best-practices"
   ],
   "labels": ["dependencies"],
+  "minimumReleaseAge": "7 days",
+  "rebaseWhen": "conflicted",
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions-all"
+    }
+  ],
   "lockFileMaintenance": {
     "enabled": true
   }
