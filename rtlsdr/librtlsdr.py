@@ -143,37 +143,38 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 f = librtlsdr.rtlsdr_set_direct_sampling
 f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 
+# Deprecated Functions as they are not available in recent librtlsdr versions
 # RTLSDR_API int rtlsdr_set_dithering(rtlsdr_dev *dev, int on)
-f = librtlsdr.rtlsdr_set_dithering
-f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
+# f = librtlsdr.rtlsdr_set_dithering
+# f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 
 # RTLSDR_API int rtlsdr_set_gpio_output(rtlsdr_dev_t *dev, uint8_t gpio)
-f = librtlsdr.rtlsdr_set_gpio_output
-f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint8]
+# f = librtlsdr.rtlsdr_set_gpio_output
+# f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint8]
 
 # RTLSDR_API int rtlsdr_set_gpio_input(rtlsdr_dev_t *dev, uint8_t gpio)
-f = librtlsdr.rtlsdr_set_gpio_input
-f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint8]
+# f = librtlsdr.rtlsdr_set_gpio_input
+# f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint8]
 
 # RTLSDR_API int librtlsdr.rtlsdr_set_gpio_bit(rtlsdr_dev_t *dev, uint8_t gpio, int val)
-f = librtlsdr.rtlsdr_set_gpio_bit
-f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint8, c_int]
+# f = librtlsdr.rtlsdr_set_gpio_bit
+# f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint8, c_int]
 
 # RTLSDR_API int librtlsdr.rtlsdr_get_gpio_bit(rtlsdr_dev_t *dev, uint8_t gpio, int *val)
-f = librtlsdr.rtlsdr_get_gpio_bit
-f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint8, POINTER(c_int)]
+# f = librtlsdr.rtlsdr_get_gpio_bit
+# f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint8, POINTER(c_int)]
 
 # RTLSDR_API int rtlsdr_set_gpio_byte(rtlsdr_dev_t *dev, int val)
-f = librtlsdr.rtlsdr_set_gpio_byte
-f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
+# f = librtlsdr.rtlsdr_set_gpio_byte
+# f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_int]
 
 # RTLSDR_API int rtlsdr_get_gpio_byte(rtlsdr_dev_t *dev, int *val)
-f = librtlsdr.rtlsdr_get_gpio_byte
-f.restype, f.argtypes = c_int, [p_rtlsdr_dev, POINTER(c_int)]
+# f = librtlsdr.rtlsdr_get_gpio_byte
+# f.restype, f.argtypes = c_int, [p_rtlsdr_dev, POINTER(c_int)]
 
 # RTLSDR_API int rtlsdr_set_gpio_status(rtlsdr_dev_t *dev, int *status )
-f = librtlsdr.rtlsdr_set_gpio_status
-f.restype, f.argtypes = c_int, [p_rtlsdr_dev, POINTER(c_int)]
+# f = librtlsdr.rtlsdr_set_gpio_status
+# f.restype, f.argtypes = c_int, [p_rtlsdr_dev, POINTER(c_int)]
 
 # int rtlsdr_set_sample_rate(rtlsdr_dev_t *dev, uint32_t rate);
 f = librtlsdr.rtlsdr_set_sample_rate
@@ -183,13 +184,14 @@ f.restype, f.argtypes = c_int, [p_rtlsdr_dev, c_uint]
 f = librtlsdr.rtlsdr_get_sample_rate
 f.restype, f.argtypes = c_uint, [p_rtlsdr_dev]
 
+# rtlsdr_set_and_get_tuner_bandwidth is deprecated in recent librtlsdr versions
 # int rtlsdr_set_and_get_tuner_bandwidth(rtlsdr_dev_t *dev, uint32_t bw, uint32_t *applied_bw, int apply_bw );
-try:
-    f = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth
-    f.restype, f.argtypes = c_uint, [p_rtlsdr_dev, c_uint32, POINTER(c_uint32), c_int]
-    tuner_bandwidth_supported = True
-except AttributeError:
-    tuner_bandwidth_supported = False
+# try:
+#     f = librtlsdr.rtlsdr_set_and_get_tuner_bandwidth
+#     f.restype, f.argtypes = c_uint, [p_rtlsdr_dev, c_uint32, POINTER(c_uint32), c_int]
+#     tuner_bandwidth_supported = True
+# except AttributeError:
+#     tuner_bandwidth_supported = False
 
 # int rtlsdr_set_tuner_bandwidth(rtlsdr_dev_t *dev, uint32_t bw);
 try:
