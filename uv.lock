@@ -36,11 +36,11 @@ wheels = [
 
 [[package]]
 name = "certifi"
-version = "2026.7.22"
+version = "2026.10.18"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a3/c2/24167ea9858356b47a87a50d39908bfdb72ceeefe0041586e704e5376b3a/certifi-2026.7.22.tar.gz", hash = "sha256:741e2c3b351ddf169a738da9f2c048608ff7f2c5cc02f1ebc6b118bb090d5d55", size = 138112, upload-time = "2026-07-22T03:35:12.644Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7e/eb/a2aa1ac3ea30dd3f30ca57f40232138b6b0040719316ecb85daf61167771/certifi-2026.10.18.tar.gz", hash = "sha256:b9995d97b64d0431a5af837d8ca8cd6238104d1f319f04bd93ea43124d6c861e", size = 135227, upload-time = "2026-10-18T16:21:07.655Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0b/a7/71ac2cff56fec219ed242bb11b8efb69fcc4bec75db06fb7bfe35de520e6/certifi-2026.7.22-py3-none-any.whl", hash = "sha256:62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775", size = 136983, upload-time = "2026-07-22T03:35:11.276Z" },
+    { url = "https://files.pythonhosted.org/packages/08/ba/95dd616042484f7c83a06974388b37b837732740ee70bc5dc715b5fcd55a/certifi-2026.10.18-py3-none-any.whl", hash = "sha256:73191c47aaa79da394e8fee2dbc2ec827432cab56311122c9e47abf79e390f62", size = 134093, upload-time = "2026-10-18T16:21:06.276Z" },
 ]
 
 [[package]]
@@ -905,11 +905,11 @@ wheels = [
 
 [[package]]
 name = "pluggy"
-version = "1.6.0"
+version = "1.7.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bf/db/7fc19e6f2dc92a966727031389fc2e08b558f0f25eb7403c1119ad4713cd/pluggy-1.7.0.tar.gz", hash = "sha256:d1eaa46ebb595891b860ab086b4d09c8588af65ebd4361b8e8f4bb8920b90ba8", size = 123304, upload-time = "2026-10-15T09:50:58.343Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+    { url = "https://files.pythonhosted.org/packages/40/9e/2b38731e0fc536806f16490e1a12d7f0dc2a1235aa8cc07bcc75416a7daa/pluggy-1.7.0-py3-none-any.whl", hash = "sha256:7dd7b0d8832ba3cb632c306926ded123429211b83641b35dc5c41ad2d34f9bec", size = 27082, upload-time = "2026-10-15T09:50:56.808Z" },
 ]
 
 [[package]]
@@ -1015,16 +1015,16 @@ test = [
 
 [[package]]
 name = "pyrtlsdrlib"
-version = "0.0.6"
+version = "0.0.7"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c2/c2/542ae330df5d91b7911752315bb4c0ee37498a998d8f7a44a16f25389993/pyrtlsdrlib-0.0.6-py3-none-macosx_11_0_arm64.whl", hash = "sha256:ba2f0e910507f96fe02354c05f95ef6fe4e34fea583e30fbc0a50a36f3d23726", size = 264832, upload-time = "2026-09-19T18:06:36.26Z" },
-    { url = "https://files.pythonhosted.org/packages/94/a4/63d6d5d6cb3da906f406a4112145ae7cfd7685716d7755393ca57d7bd591/pyrtlsdrlib-0.0.6-py3-none-macosx_11_0_x86_64.whl", hash = "sha256:960ac74ad2f067798b2a3a884691d4052db569b8f998369b64c5797cb2d8e602", size = 266824, upload-time = "2026-09-19T18:06:38.029Z" },
-    { url = "https://files.pythonhosted.org/packages/08/56/2ce3f915cb445d59a2afbc647beee13690f5ad2e6216a94d8a1a846d48e8/pyrtlsdrlib-0.0.6-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:793e66da25d1897bea9c30b569a80e5a7e13f457c55e2f27461f3bc750b003cb", size = 1268443, upload-time = "2026-09-19T18:06:39.442Z" },
-    { url = "https://files.pythonhosted.org/packages/67/7c/58b9e3aa363babff0d9c46bc87592f7df3256c32b361008ffdf2abfe68e1/pyrtlsdrlib-0.0.6-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:22e27322699632f3f0cf619508d85190b4ef366af193997ce014d4a041c98f9e", size = 1350999, upload-time = "2026-09-19T18:06:41.256Z" },
-    { url = "https://files.pythonhosted.org/packages/b7/db/05912563fbc7bffbcf8555c5960cbb0dcbf0ee3f84111b412a48b7426e77/pyrtlsdrlib-0.0.6-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:0b0a965e73a4d6f8794ba76bdd623696136248b49cf842895f0bb485c692e9be", size = 339640, upload-time = "2026-09-19T18:06:42.967Z" },
-    { url = "https://files.pythonhosted.org/packages/13/fa/17cf3590a6413d120e7bb6d18f5e351dcd7fcfee166ba6c6fa4a88ebb30e/pyrtlsdrlib-0.0.6-py3-none-win32.whl", hash = "sha256:7f4aec49e231a8f96b10b2417bbd237107c2d1a478c25c62645178792146ecb6", size = 1310330, upload-time = "2026-09-19T18:06:44.592Z" },
-    { url = "https://files.pythonhosted.org/packages/ca/f3/56db4e49495d530cf1aa7cc01eb15e2b6dcad5784a10402bd6243bbae09a/pyrtlsdrlib-0.0.6-py3-none-win_amd64.whl", hash = "sha256:3cf62393037fa850c40117dab8118b3a00f9daa90dfa00de693440c1c16d0eb1", size = 1310332, upload-time = "2026-09-19T18:06:46.212Z" },
+    { url = "https://files.pythonhosted.org/packages/d5/dd/433e7446bb426dd11a0078dbd8b3cc7d9ea9fb9d3868553c29128a6c37db/pyrtlsdrlib-0.0.7-py3-none-macosx_11_0_arm64.whl", hash = "sha256:02416b04403bf9c215156881153e86d7f91c2e05452afa3eac2802af829aa5cb", size = 264829, upload-time = "2026-10-14T22:39:35.821Z" },
+    { url = "https://files.pythonhosted.org/packages/7c/93/1e9063fe980844537d387390e874df0bcc5c62b73594ecb2d1024652ad7c/pyrtlsdrlib-0.0.7-py3-none-macosx_11_0_x86_64.whl", hash = "sha256:04023da6257321640c96ecd0fc199e603c80f7a620abd0a31c6091862810178c", size = 266823, upload-time = "2026-10-14T22:39:37.491Z" },
+    { url = "https://files.pythonhosted.org/packages/64/f1/e2290c3ccea6cd1c5d9efb9e171cd5f551c90b2c2a587227d26c3a2a074d/pyrtlsdrlib-0.0.7-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:335205ca5b78b54aba3fdfb0674706ffac603839b0a895e6b88162c1cfb59c6f", size = 1268435, upload-time = "2026-10-14T22:39:39.218Z" },
+    { url = "https://files.pythonhosted.org/packages/a0/bf/e794b13c264af074790630f646d54257959f656bd730b455e82ca2930adc/pyrtlsdrlib-0.0.7-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:89a0454d7dd5d5dd8e2512c591869a53776291b8bb05fc8fae8404f62133f49c", size = 1351010, upload-time = "2026-10-14T22:39:41.091Z" },
+    { url = "https://files.pythonhosted.org/packages/14/3d/2b7df63f4d0e0b0207de3c4dbc32ef6315d4bb8d39aa50bd410d6f79fe51/pyrtlsdrlib-0.0.7-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:4a1cbcd25a0bc412ce6ff5c9646ada7907a8819f4567b4c726159f86e27e217a", size = 339649, upload-time = "2026-10-14T22:39:42.775Z" },
+    { url = "https://files.pythonhosted.org/packages/89/1e/aa6b7c1b532ba439203d908155df843f300323649c1d8bdbc7e6aa23330c/pyrtlsdrlib-0.0.7-py3-none-win32.whl", hash = "sha256:c46b50efebfca5c130f3b1776b8b5ef9e5a9277e3c6478ab8b2db62706620f5b", size = 1310333, upload-time = "2026-10-14T22:39:44.389Z" },
+    { url = "https://files.pythonhosted.org/packages/a9/7d/40e56e94ab2b21c09234483329c2d02f01e9d512a8bc1c63a5e37874602c/pyrtlsdrlib-0.0.7-py3-none-win_amd64.whl", hash = "sha256:fc9d78b3e847b204e95e05c5bd205638d410173d5899eeb563c6bead6f92ff70", size = 1310333, upload-time = "2026-10-14T22:39:46.283Z" },
 ]
 
 [[package]]
