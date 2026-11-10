@@ -131,7 +131,7 @@ class Waterfall(object):
         self.image_buffer = np.roll(self.image_buffer, 1, axis=0)
 
         for scan_num, start_ind in enumerate(range(0, NUM_SCANS_PER_SWEEP*NFFT, NFFT)):
-            self.sdr.fc += self.sdr.rs*scan_num
+            self.sdr.fc = start_fc + self.sdr.rs * scan_num
 
             # estimate PSD for one scan
             samples = self.sdr.read_samples(NUM_SAMPLES_PER_SCAN)

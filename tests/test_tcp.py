@@ -27,3 +27,25 @@ def test(use_numpy):
             generic_test(client, test_async=True, test_exceptions=False, use_numpy=use_numpy)
     finally:
         server.close()
+
+def test_server_error_handling_nak(use_numpy):
+    from rtlsdr import RtlSdrTcpClient, RtlSdrTcpServer
+    from rtlsdr.rtlsdrtcp.base import CommunicationError
+    port = 1245
+    while True:
+        try:
+            server = RtlSdrTcpServer(port=port)
+            server.run()
+        except socket.error as e:
+            if e.errno != errno.EADDRINUSE:
+                raise
+            server = None
+            port += 1
+        if server is not None:
+            break
+    client = RtlSdrTcpClient(port=port)
+    try:
+        with pytest.raises(CommunicationError):
+            client.set_sample_rate(-1)
+    finally:
+        server.close()
