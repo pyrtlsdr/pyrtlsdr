@@ -167,10 +167,10 @@ class RequestHandler(BaseRequestHandler):
             else:
                 r = False
             if r is False:
-                nak = AckMessage(ok=False)
+                nak = ServerMessage(client_message=rx_message, success=False)
                 nak.send_message(self.request)
         except Exception as exc:
-            nak = AckMessage(ok=False, data=str(exc))
+            nak = ServerMessage(client_message=rx_message, success=False, data=str(exc))
             nak.send_message(self.request)
 
     def finish(self):

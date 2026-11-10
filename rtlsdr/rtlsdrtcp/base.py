@@ -226,6 +226,8 @@ class ServerMessage(MessageBase):
         header = cls._recv(sock)
         header = header.decode()
         kwargs = json.loads(header)
+        if kwargs.get('ACK'):
+            return AckMessage(**kwargs)
         struct_fmt = kwargs.get('struct_fmt')
         if struct_fmt is not None:
             struct_fmt = str(struct_fmt)

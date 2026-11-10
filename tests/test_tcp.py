@@ -28,24 +28,17 @@ def test(use_numpy):
     finally:
         server.close()
 
-def test_server_error_handling_nak(use_numpy):
+def test_server_error_handling_nak(unused_tcp_port):
     from rtlsdr import RtlSdrTcpClient, RtlSdrTcpServer
-    from rtlsdr.rtlsdrtcp.base import CommunicationError
-    port = 1245
-    while True:
-        try:
-            server = RtlSdrTcpServer(port=port)
-            server.run()
-        except socket.error as e:
-            if e.errno != errno.EADDRINUSE:
-                raise
-            server = None
-            port += 1
-        if server is not None:
-            break
-    client = RtlSdrTcpClient(port=port)
+    from rtlsdr.rtlsdrtcp.base import CommunicationError, ClientMessage
+
+    server = RtlSdrTcpServer(port=unused_tcp_port)
+    server.run()
     try:
-        with pytest.raises(CommunicationError):
-            client.set_sample_rate(-1)
+        client = RtlSdrTcpClient(port=unused_tcp_port)
+        with pytest.raises(CommunicationError) as exc_info:
+            msg = ClientMessage(type='method', name='disallowed_test_method')
+            client._communicate(msg)
+        assert 'server was unsuccessful' in str(exc_info.value)
     finally:
         server.close()
