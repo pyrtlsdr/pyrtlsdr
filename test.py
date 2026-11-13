@@ -108,10 +108,14 @@ def main(**opts):
 
 class ArgParseFormatter(argparse.ArgumentDefaultsHelpFormatter):
     def _get_default_metavar_for_optional(self, action):
-        return action.type.__name__
+        if action.type is not None:
+            return action.type.__name__
+        return super(ArgParseFormatter, self)._get_default_metavar_for_optional(action)
 
     def _get_default_metavar_for_positional(self, action):
-        return action.type.__name__
+        if action.type is not None:
+            return action.type.__name__
+        return super(ArgParseFormatter, self)._get_default_metavar_for_positional(action)
 
 def parse_args(argv=None):
     if argv is None:

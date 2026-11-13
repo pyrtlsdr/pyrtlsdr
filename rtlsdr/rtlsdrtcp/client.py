@@ -58,6 +58,8 @@ class RtlSdrTcpClient(RtlSdrTcpBase):
         if isinstance(resp, ServerMessage):
             if not resp.header.get('success'):
                 msg = 'server was unsuccessful. msg=%s' % (tx_message.header)
+                if resp.data:
+                    msg += ', error=%s' % (resp.data,)
                 raise CommunicationError(msg)
             resp_data = resp.data
         elif isinstance(resp, AckMessage):

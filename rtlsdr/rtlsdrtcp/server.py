@@ -157,16 +157,20 @@ class RequestHandler(BaseRequestHandler):
         if rx_message is None:
             rx_message = ClientMessage.from_remote(self.request)
         msg_type = rx_message.header.get('type')
-        if msg_type == 'method':
-            r = self.handle_method_call(rx_message)
-        elif msg_type == 'prop_set':
-            r = self.handle_prop_set(rx_message)
-        elif msg_type == 'prop_get':
-            r = self.handle_prop_get(rx_message)
-        else:
-            r = False
-        if r is False:
-            nak = AckMessage(ok=False)
+        try:
+            if msg_type == 'method':
+                r = self.handle_method_call(rx_message)
+            elif msg_type == 'prop_set':
+                r = self.handle_prop_set(rx_message)
+            elif msg_type == 'prop_get':
+                r = self.handle_prop_get(rx_message)
+            else:
+                r = False
+            if r is False:
+                nak = ServerMessage(client_message=rx_message, success=False)
+                nak.send_message(self.request)
+        except Exception as exc:
+            nak = ServerMessage(client_message=rx_message, success=False, data=str(exc))
             nak.send_message(self.request)
 
     def finish(self):

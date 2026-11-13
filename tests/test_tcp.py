@@ -27,3 +27,18 @@ def test(use_numpy):
             generic_test(client, test_async=True, test_exceptions=False, use_numpy=use_numpy)
     finally:
         server.close()
+
+def test_server_error_handling_nak(unused_tcp_port):
+    from rtlsdr import RtlSdrTcpClient, RtlSdrTcpServer
+    from rtlsdr.rtlsdrtcp.base import CommunicationError, ClientMessage
+
+    server = RtlSdrTcpServer(port=unused_tcp_port)
+    server.run()
+    try:
+        client = RtlSdrTcpClient(port=unused_tcp_port)
+        with pytest.raises(CommunicationError) as exc_info:
+            msg = ClientMessage(type='method', name='disallowed_test_method')
+            client._communicate(msg)
+        assert 'server was unsuccessful' in str(exc_info.value)
+    finally:
+        server.close()
