@@ -226,7 +226,7 @@ works, then you should be okay. Also note that you can't mix the 64 bit version 
 
 # License
 
-All of the code contained here is licensed by the GNU General Public License v3.
+All of the code contained here is licensed by the GNU General Public License v3. See [LICENSE](LICENSE).
 
 # Credit
 

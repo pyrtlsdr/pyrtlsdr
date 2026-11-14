@@ -9,6 +9,7 @@ description = "A Python wrapper for librtlsdr (a driver for Realtek RTL2832U bas
 readme = "README.md"
 
 license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 authors = [
     { name = "roger" },
